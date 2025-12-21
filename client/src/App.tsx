@@ -5,7 +5,7 @@ import { ErrorNotification } from "./components/ErrorNotification";
 import { Sidebar } from "./components/Sidebar";
 import { FlippoGame } from "./components/games/Flippo/FlippoGame";
 import { TappoGame } from "./components/games/Tappo/TappoGame";
-import { useMemoryGame } from "./hooks/useMemoryGame";
+import { usePlayoGame } from "./hooks/usePlayoGame";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -22,7 +22,7 @@ function App() {
     }
   }, [isDarkMode]);
 
-  const { address, isLoading, transactionError } = useMemoryGame();
+  const { address, isLoading, transactionError } = usePlayoGame();
 
   const bgColor = isDarkMode ? "bg-[#3C1F47]" : "bg-[#FFFFFF]";
   const textColor = isDarkMode ? "text-white" : "text-gray-900";

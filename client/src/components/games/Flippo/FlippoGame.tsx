@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { GameBoard } from "../../GameBoard";
 import { GameResult } from "../../GameResult";
 import { GameStats } from "../../GameStats";
-import { useMemoryGame } from "../../../hooks/useMemoryGame";
+import { usePlayoGame } from "../../../hooks/usePlayoGame";
 
 interface FlippoGameProps {
   isDarkMode: boolean;
@@ -37,7 +37,7 @@ export function FlippoGame({
     incrementFlips,
     checkFlipLimit,
     withdrawWinnings,
-  } = useMemoryGame("flippo");
+  } = usePlayoGame();
 
   // Handle transaction confirmations
   useEffect(() => {

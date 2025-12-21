@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { GameResult } from "../../GameResult";
-import { useMemoryGame } from "../../../hooks/useMemoryGame";
+import { usePlayoGame } from "../../../hooks/usePlayoGame";
 
 interface TappoGameProps {
   isDarkMode: boolean;
@@ -35,7 +35,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
     handleConfirmation,
     isLoading: isTransactionLoading,
     isConfirmed,
-  } = useMemoryGame("tappo");
+  } = usePlayoGame();
 
   const textColor = isDarkMode ? "text-white" : "text-gray-900";
   const borderColor = "border-black border-2";
@@ -382,86 +382,111 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
         <div
           className={`lg:col-span-2 rounded-lg border ${borderColor} ${cardBg} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] p-6 flex flex-col max-h-[800px]`}
         >
-          {/* Stats Header - shown in both idle and playing states */}
-          <div className="flex justify-around items-center mb-4 gap-4">
-            {/* Timer */}
-            <div className="flex items-center gap-3">
-              <span className={`text-2xl font-bold ${textColor}`}>Timer</span>
-              <div
-                className={`px-6 py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-2xl font-bold min-w-[60px] text-center`}
-                style={{
-                  backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
-                  color: isDarkMode ? "#ffffff" : "#000000",
-                }}
-              >
-                {gameStatus === "idle" ? "0" : currentTimer}
-              </div>
-            </div>
-
-            {/* Hit Target */}
-            <div className="flex items-center gap-3">
-              <span className={`text-2xl font-bold ${textColor}`}>Hit</span>
-              <div
-                className={`px-6 py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-2xl font-bold min-w-[60px] text-center`}
-                style={{
-                  backgroundColor:
-                    gameStatus === "idle"
-                      ? isDarkMode
-                        ? "#1d505c"
-                        : "#F4F9E9"
-                      : isDarkMode
-                      ? "#0fa594"
-                      : "#FCFF51",
-                  color:
-                    gameStatus === "idle"
-                      ? isDarkMode
-                        ? "#ffffff"
-                        : "#000000"
-                      : "#000000",
-                }}
-              >
-                {gameStatus === "idle" ? "-" : hitTarget}
-              </div>
-            </div>
-
-            {/* Score */}
-            <div className="flex items-center gap-3">
-              <span className={`text-2xl font-bold ${textColor}`}>Score</span>
-              <div className="relative">
+          {gameStatus === "starting" && (
+            <div className="flex items-center justify-center flex-1">
+              <div className="text-center">
                 <div
-                  className={`px-6 py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-2xl font-bold min-w-[60px] text-center transition-all ${
-                    shakeScore ? "animate-shake" : ""
-                  }`}
+                  className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-t-transparent mb-4"
                   style={{
-                    backgroundColor: shakeScore
-                      ? "#fecaca"
-                      : isDarkMode
-                      ? "#1d505c"
-                      : "#F4F9E9",
-                    color: isDarkMode ? "#ffffff" : "#000000",
+                    borderColor: isDarkMode ? "#0fa594" : "#000000",
+                    borderTopColor: "transparent",
                   }}
-                >
-                  {gameStatus === "idle" ? "0" : score}
-                </div>
-                {showPenalty && (
-                  <span
-                    className="absolute -top-8 left-1/2 -translate-x-1/2 text-red-500 font-bold text-lg animate-fade-up"
-                    style={{ animation: "fadeUp 0.6s ease-out" }}
-                  >
-                    -5
-                  </span>
-                )}
-                {showBonus && (
-                  <span
-                    className="absolute -top-8 left-1/2 -translate-x-1/2 text-green-500 font-bold text-lg animate-fade-up"
-                    style={{ animation: "fadeUp 0.6s ease-out" }}
-                  >
-                    +10
-                  </span>
-                )}
+                ></div>
+                <p className={`text-lg opacity-70 ${textColor}`}>
+                  Starting game...
+                </p>
               </div>
             </div>
-          </div>
+          )}
+
+          {gameStatus !== "starting" && (
+            <>
+              {/* Stats Header - shown in both idle and playing states */}
+              <div className="flex justify-around items-center mb-4 gap-4">
+                {/* Timer */}
+                <div className="flex items-center gap-3">
+                  <span className={`text-2xl font-bold ${textColor}`}>
+                    Timer
+                  </span>
+                  <div
+                    className={`px-6 py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-2xl font-bold min-w-[60px] text-center`}
+                    style={{
+                      backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
+                      color: isDarkMode ? "#ffffff" : "#000000",
+                    }}
+                  >
+                    {gameStatus === "idle" ? "0" : currentTimer}
+                  </div>
+                </div>
+
+                {/* Hit Target */}
+                <div className="flex items-center gap-3">
+                  <span className={`text-2xl font-bold ${textColor}`}>Hit</span>
+                  <div
+                    className={`px-6 py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-2xl font-bold min-w-[60px] text-center`}
+                    style={{
+                      backgroundColor:
+                        gameStatus === "idle"
+                          ? isDarkMode
+                            ? "#1d505c"
+                            : "#F4F9E9"
+                          : isDarkMode
+                          ? "#0fa594"
+                          : "#FCFF51",
+                      color:
+                        gameStatus === "idle"
+                          ? isDarkMode
+                            ? "#ffffff"
+                            : "#000000"
+                          : "#000000",
+                    }}
+                  >
+                    {gameStatus === "idle" ? "-" : hitTarget}
+                  </div>
+                </div>
+
+                {/* Score */}
+                <div className="flex items-center gap-3">
+                  <span className={`text-2xl font-bold ${textColor}`}>
+                    Score
+                  </span>
+                  <div className="relative">
+                    <div
+                      className={`px-6 py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-2xl font-bold min-w-[60px] text-center transition-all ${
+                        shakeScore ? "animate-shake" : ""
+                      }`}
+                      style={{
+                        backgroundColor: shakeScore
+                          ? "#fecaca"
+                          : isDarkMode
+                          ? "#1d505c"
+                          : "#F4F9E9",
+                        color: isDarkMode ? "#ffffff" : "#000000",
+                      }}
+                    >
+                      {gameStatus === "idle" ? "0" : score}
+                    </div>
+                    {showPenalty && (
+                      <span
+                        className="absolute -top-8 left-1/2 -translate-x-1/2 text-red-500 font-bold text-lg animate-fade-up"
+                        style={{ animation: "fadeUp 0.6s ease-out" }}
+                      >
+                        -5
+                      </span>
+                    )}
+                    {showBonus && (
+                      <span
+                        className="absolute -top-8 left-1/2 -translate-x-1/2 text-green-500 font-bold text-lg animate-fade-up"
+                        style={{ animation: "fadeUp 0.6s ease-out" }}
+                      >
+                        +10
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
 
           {gameStatus === "idle" && (
             <div className="flex items-center justify-center flex-1">
