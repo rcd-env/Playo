@@ -1,7 +1,7 @@
 // Contract Address - Deploy to Mantle Sepolia testnet
 // Run: cd contract && npx hardhat run scripts/deploy.js --network mantleSepolia
 export const PLAYO_GAMES_ADDRESS =
-  "0x0000000000000000000000000000000000000000" as `0x${string}`; // UPDATE AFTER DEPLOYMENT
+  "0x1F2F46E8883Fe8bB2ef09CED2387bA66899934d6" as `0x${string}`;
 
 // Contract ABI
 export const PLAYO_GAMES_ABI = [
@@ -24,12 +24,6 @@ export const PLAYO_GAMES_ABI = [
         internalType: "uint256",
         name: "amount",
         type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "string",
-        name: "gameType",
-        type: "string",
       },
     ],
     name: "Deposited",
@@ -87,7 +81,7 @@ export const PLAYO_GAMES_ABI = [
     type: "event",
   },
   {
-    inputs: [{ internalType: "string", name: "gameType", type: "string" }],
+    inputs: [],
     name: "deposit",
     outputs: [],
     stateMutability: "payable",
