@@ -1,11 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-contract MemoryGame {
+/**
+ * @title PlayoGames
+ * @dev Multi-game contract for Playo platform supporting Flippo and Tappo games
+ * @notice Players deposit funds to play games and withdraw rewards based on performance
+ */
+contract PlayoGames {
     mapping(address => uint256) public deposits;
     address public owner;
     
-    event Deposited(address indexed player, uint256 amount);
+    event Deposited(address indexed player, uint256 amount, string gameType);
     event Withdrawn(address indexed player, uint256 amount);
     event PrizePoolFunded(uint256 amount);
     event OwnerWithdrawal(address indexed owner, uint256 amount);
@@ -19,21 +24,32 @@ contract MemoryGame {
         owner = msg.sender;
     }
     
-    // Deposit funds (used when starting a game)
-    function deposit() external payable {
+    /**
+     * @dev Deposit funds when starting a game
+     * @param gameType The type of game being played ("flippo" or "tappo")
+     */
+    function deposit(string memory gameType) external payable {
         require(msg.value > 0, "Deposit amount must be greater than 0");
+        require(
+            keccak256(bytes(gameType)) == keccak256(bytes("flippo")) || 
+            keccak256(bytes(gameType)) == keccak256(bytes("tappo")),
+            "Invalid game type"
+        );
+        
         deposits[msg.sender] += msg.value;
-        emit Deposited(msg.sender, msg.value);
+        emit Deposited(msg.sender, msg.value, gameType);
     }
     
-    // Withdraw winnings (can withdraw more than deposited if there's prize pool)
+    /**
+     * @dev Withdraw rewards after game completion
+     * @param amount The amount to withdraw (calculated by frontend based on game performance)
+     */
     function withdraw(uint256 amount) external {
         require(amount > 0, "Withdrawal amount must be greater than 0");
         require(address(this).balance >= amount, "Insufficient contract balance");
         
-        // Allow withdrawal up to what they deposited or earned
-        // The frontend calculates the proper amount based on game results
-        deposits[msg.sender] = 0; // Reset their deposit tracking
+        // Reset player's deposit tracking
+        deposits[msg.sender] = 0;
         
         (bool success, ) = payable(msg.sender).call{value: amount}("");
         require(success, "Transfer failed");
@@ -41,13 +57,18 @@ contract MemoryGame {
         emit Withdrawn(msg.sender, amount);
     }
     
-    // Owner can fund the prize pool
+    /**
+     * @dev Owner funds the prize pool to enable game rewards
+     */
     function fundPrizePool() external payable {
         require(msg.value > 0, "Fund amount must be greater than 0");
         emit PrizePoolFunded(msg.value);
     }
     
-    // Owner can withdraw funds from the contract
+    /**
+     * @dev Owner withdraws specific amount from contract
+     * @param amount The amount to withdraw
+     */
     function ownerWithdraw(uint256 amount) external onlyOwner {
         require(amount > 0, "Withdrawal amount must be greater than 0");
         require(address(this).balance >= amount, "Insufficient contract balance");
@@ -58,7 +79,9 @@ contract MemoryGame {
         emit OwnerWithdrawal(owner, amount);
     }
     
-    // Owner can withdraw all funds from the contract
+    /**
+     * @dev Owner withdraws all funds from contract
+     */
     function ownerWithdrawAll() external onlyOwner {
         uint256 balance = address(this).balance;
         require(balance > 0, "No funds to withdraw");
@@ -69,17 +92,26 @@ contract MemoryGame {
         emit OwnerWithdrawal(owner, balance);
     }
     
-    // Get player balance
+    /**
+     * @dev Get player's deposit balance
+     * @param player The player's address
+     * @return The deposited amount
+     */
     function getBalance(address player) external view returns (uint256) {
         return deposits[player];
     }
     
-    // Get contract balance (total prize pool + deposits)
+    /**
+     * @dev Get total contract balance (prize pool + player deposits)
+     * @return The total contract balance
+     */
     function getContractBalance() external view returns (uint256) {
         return address(this).balance;
     }
     
-    // Allow contract to receive funds
+    /**
+     * @dev Receive function to accept direct ETH transfers as prize pool funding
+     */
     receive() external payable {
         emit PrizePoolFunded(msg.value);
     }

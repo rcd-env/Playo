@@ -1,21 +1,21 @@
 const hre = require("hardhat");
 
 async function main() {
-  console.log("Deploying MemoryGame contract to Mantle Sepolia...");
+  console.log("Deploying PlayoGames contract to Mantle Sepolia...");
 
   const [deployer] = await hre.ethers.getSigners();
   console.log("Deploying with account:", deployer.address);
 
-  const MemoryGame = await hre.ethers.getContractFactory("MemoryGame");
-  const memoryGame = await MemoryGame.deploy();
+  const PlayoGames = await hre.ethers.getContractFactory("PlayoGames");
+  const playoGames = await PlayoGames.deploy();
 
-  await memoryGame.waitForDeployment();
+  await playoGames.waitForDeployment();
 
-  const address = await memoryGame.getAddress();
+  const address = await playoGames.getAddress();
 
-  console.log("\n✅ MemoryGame deployed to:", address);
+  console.log("\n✅ PlayoGames deployed to:", address);
   console.log("\nUpdate this address in client/src/lib/contract.ts");
-  console.log(`export const MEMORY_GAME_ADDRESS = "${address}";`);
+  console.log(`export const PLAYO_GAMES_ADDRESS = "${address}";`);
   console.log(
     `\nView on Mantle Sepolia Explorer: https://sepolia.mantlescan.xyz/address/${address}`
   );
