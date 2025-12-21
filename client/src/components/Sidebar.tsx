@@ -5,28 +5,38 @@ interface Game {
   name: string;
   imagePath: string;
   isActive: boolean;
+  badge?: "new" | "popular" | "live";
 }
 
 interface SidebarProps {
   isDarkMode: boolean;
   onHover: (isHovered: boolean) => void;
+  selectedGame: string;
+  onSelectGame: (gameId: string) => void;
 }
 
-export function Sidebar({ isDarkMode, onHover }: SidebarProps) {
+export function Sidebar({
+  isDarkMode,
+  onHover,
+  selectedGame,
+  onSelectGame,
+}: SidebarProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const games: Game[] = [
     {
-      id: "memory",
+      id: "flippo",
       name: "Flippo",
       imagePath: "/images/earno-logo.jpg",
       isActive: true,
+      badge: "popular",
     },
     {
-      id: "coming-soon-1",
+      id: "tappo",
       name: "Tappo",
       imagePath: "/images/earno-logo.jpg",
-      isActive: false,
+      isActive: true,
+      badge: "new",
     },
   ];
 
@@ -42,11 +52,11 @@ export function Sidebar({ isDarkMode, onHover }: SidebarProps) {
 
   const bgColor = isDarkMode ? "#1d505c" : "#F4F9E9";
   const textColor = isDarkMode ? "white" : "#000000";
-  const borderColor = "border-black border-2";
+  const borderColor = "border-black border";
 
   return (
     <aside
-      className={`fixed z-50 transition-all duration-300 ease-in-out ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] rounded-lg`}
+      className={`fixed z-50 transition-all duration-300 ease-in-out ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] rounded-lg overflow-hidden`}
       style={{
         left: "16px",
         top: "16px",
@@ -58,76 +68,55 @@ export function Sidebar({ isDarkMode, onHover }: SidebarProps) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Logo Section */}
-      <div className="p-5 border-b-2 border-black">
-        <div className="flex items-center gap-4">
-          <div
-            className={`w-10 h-10 rounded-full border-2 border-black flex items-center justify-center font-bold text-lg`}
-            style={{
-              backgroundColor: isDarkMode ? "#0fa594" : "#FCFF51",
-              color: "#000000",
-            }}
-          >
-            E
-          </div>
-          {isExpanded && (
-            <span
-              className="font-bold font-Tsuchigumo text-3xl whitespace-nowrap overflow-hidden brand tracking-widest"
-              style={{ color: textColor }}
-            >
-              Playo
-            </span>
-          )}
-        </div>
-      </div>
-
       {/* Games List */}
       <div className="py-4">
-        {games.map((game, index) => (
+        {games.map((game) => (
           <button
             key={game.id}
-            disabled={!game.isActive}
-            className={`w-full flex items-center gap-4 px-5 py-4 transition-all hover:translate-x-1 ${
-              game.isActive ? "cursor-pointer" : "cursor-not-allowed opacity-60"
-            } ${
-              game.isActive && index === 0
-                ? `border-l-4 ${
-                    isDarkMode ? "border-[#0fa594]" : "border-[#FCFF51]"
-                  }`
-                : ""
+            onClick={() => onSelectGame(game.id)}
+            className={`w-full flex items-center gap-4 px-5 py-4 transition-all relative cursor-pointer ${
+              selectedGame === game.id ? "bg-opacity-20" : ""
             }`}
             style={{
-              color: game.isActive ? textColor : isDarkMode ? "#666" : "#999",
+              color: textColor,
+              backgroundColor:
+                selectedGame === game.id
+                  ? isDarkMode
+                    ? "rgba(15, 165, 148, 0.2)"
+                    : "rgba(252, 255, 81, 0.3)"
+                  : "transparent",
             }}
           >
             <div
-              className={`w-10 h-10 rounded-full ${borderColor} flex items-center justify-center shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.8)] overflow-hidden`}
-              style={{
-                backgroundColor: game.isActive
-                  ? isDarkMode
-                    ? "#0fa594"
-                    : "#FCFF51"
-                  : isDarkMode
-                  ? "#333"
-                  : "#ddd",
-                color: "#000000",
-              }}
+              className="relative shrink-0"
+              style={{ minWidth: "40px", width: "40px", height: "40px" }}
             >
               <img
                 src={game.imagePath}
                 alt={game.name}
-                className="w-6 h-6 object-contain"
-                style={{
-                  filter: game.isActive
-                    ? "none"
-                    : "grayscale(100%) opacity(0.5)",
-                }}
+                className="w-full h-full object-cover rounded-full border border-black"
               />
             </div>
             {isExpanded && (
-              <span className="font-medium whitespace-nowrap overflow-hidden text-left">
-                {game.name}
-              </span>
+              <div className="flex items-center justify-between flex-1">
+                <span className="font-medium whitespace-nowrap overflow-hidden text-left">
+                  {game.name}
+                </span>
+                {/* Badge on expanded view */}
+                {game.badge && (
+                  <span
+                    className={`text-xs font-bold px-2 py-1 rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.8)] ${
+                      game.badge === "live"
+                        ? "bg-red-500 text-white animate-pulse"
+                        : game.badge === "new"
+                        ? "bg-cyan-400 text-black"
+                        : "bg-pink-500 text-white"
+                    }`}
+                  >
+                    {game.badge.toUpperCase()}
+                  </span>
+                )}
+              </div>
             )}
           </button>
         ))}
