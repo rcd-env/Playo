@@ -8,9 +8,8 @@ import { parseEther } from "viem";
 import { PLAYO_GAMES_ADDRESS, PLAYO_GAMES_ABI } from "../lib/contract";
 
 export type GameStatus = "idle" | "starting" | "playing" | "completed";
-export type GameType = "flippo" | "tappo";
 
-export function useMemoryGame(gameType: GameType = "flippo") {
+export function usePlayoGame() {
   const { address } = useAccount();
   const [gridSize, setGridSize] = useState(4);
   const [betAmount, setBetAmount] = useState("");
@@ -146,12 +145,11 @@ export function useMemoryGame(gameType: GameType = "flippo") {
       const reward = calculateReward(gridSize, betAmount);
       setPotentialReward(reward);
 
-      // Call deposit function with gameType parameter
+      // Call deposit function (no gameType parameter needed)
       writeContract({
         address: PLAYO_GAMES_ADDRESS,
         abi: PLAYO_GAMES_ABI,
         functionName: "deposit",
-        args: [gameType],
         value: parseEther(betAmount),
       });
     } catch (error) {
