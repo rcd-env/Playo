@@ -3,14 +3,15 @@ pragma solidity ^0.8.20;
 
 /**
  * @title PlayoGames
- * @dev Multi-game contract for Playo platform supporting Flippo and Tappo games
+ * @dev Multi-game contract for Playo platform - supports any game type
  * @notice Players deposit funds to play games and withdraw rewards based on performance
+ * @notice Game types are tracked in events but not validated, allowing new games without redeployment
  */
 contract PlayoGames {
     mapping(address => uint256) public deposits;
     address public owner;
     
-    event Deposited(address indexed player, uint256 amount, string gameType);
+    event Deposited(address indexed player, uint256 amount);
     event Withdrawn(address indexed player, uint256 amount);
     event PrizePoolFunded(uint256 amount);
     event OwnerWithdrawal(address indexed owner, uint256 amount);
@@ -26,18 +27,12 @@ contract PlayoGames {
     
     /**
      * @dev Deposit funds when starting a game
-     * @param gameType The type of game being played ("flippo" or "tappo")
      */
-    function deposit(string memory gameType) external payable {
+    function deposit() external payable {
         require(msg.value > 0, "Deposit amount must be greater than 0");
-        require(
-            keccak256(bytes(gameType)) == keccak256(bytes("flippo")) || 
-            keccak256(bytes(gameType)) == keccak256(bytes("tappo")),
-            "Invalid game type"
-        );
         
         deposits[msg.sender] += msg.value;
-        emit Deposited(msg.sender, msg.value, gameType);
+        emit Deposited(msg.sender, msg.value);
     }
     
     /**
