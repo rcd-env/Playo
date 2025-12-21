@@ -118,3 +118,39 @@
 [data-theme="light"] ::-webkit-scrollbar-thumb:hover {
   background: #d4d800 !important;
 }
+
+/* Penalty animations for Tappo game */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-8px);
+  }
+  50% {
+    transform: translateX(8px);
+  }
+  75% {
+    transform: translateX(-8px);
+  }
+}
+
+@keyframes fadeUp {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+}
+
+.animate-shake {
+  animation: shake 0.3s ease-in-out;
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.6s ease-out;
+}
