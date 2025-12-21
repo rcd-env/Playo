@@ -56,26 +56,25 @@ export function Sidebar({
 
   return (
     <aside
-      className={`fixed z-50 transition-all duration-300 ease-in-out ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] rounded-lg overflow-hidden`}
+      className={`fixed z-50 transition-all duration-300 ease-in-out ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] rounded-lg overflow-hidden top-1/2 -translate-y-1/2`}
       style={{
         left: "16px",
-        top: "16px",
-        bottom: "16px",
-        height: "calc(100vh - 32px)",
         width: isExpanded ? "280px" : "80px",
         backgroundColor: bgColor,
+        transform: "translateZ(0)",
+        willChange: "width",
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {/* Games List */}
-      <div className="py-4">
+      <div className="py-4 space-y-2">
         {games.map((game) => (
           <button
             key={game.id}
             onClick={() => onSelectGame(game.id)}
             className={`w-full flex items-center gap-4 px-5 py-4 transition-all relative cursor-pointer ${
-              selectedGame === game.id ? "bg-opacity-20" : ""
+              selectedGame === game.id ? "bg-opacity-20" : "hover:bg-opacity-10"
             }`}
             style={{
               color: textColor,
@@ -86,6 +85,18 @@ export function Sidebar({
                     : "rgba(252, 255, 81, 0.3)"
                   : "transparent",
             }}
+            onMouseEnter={(e) => {
+              if (selectedGame !== game.id) {
+                e.currentTarget.style.backgroundColor = isDarkMode
+                  ? "rgba(255, 255, 255, 0.05)"
+                  : "rgba(0, 0, 0, 0.05)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (selectedGame !== game.id) {
+                e.currentTarget.style.backgroundColor = "transparent";
+              }
+            }}
           >
             <div
               className="relative shrink-0"
@@ -94,7 +105,7 @@ export function Sidebar({
               <img
                 src={game.imagePath}
                 alt={game.name}
-                className="w-full h-full object-cover rounded-full border border-black"
+                className="w-full h-full object-cover rounded-xl border border-black"
               />
             </div>
             {isExpanded && (
@@ -121,22 +132,6 @@ export function Sidebar({
           </button>
         ))}
       </div>
-
-      {/* Bottom Section - Coming Soon Badge */}
-      {isExpanded && (
-        <div className="absolute bottom-8 left-0 right-0 px-5">
-          <div
-            className={`${borderColor} rounded-lg p-3 text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]`}
-            style={{
-              backgroundColor: isDarkMode ? "#153243" : "#E8F5E9",
-              color: textColor,
-            }}
-          >
-            <p className="text-xs font-medium opacity-70">More games</p>
-            <p className="text-sm font-bold">Coming Soon!</p>
-          </div>
-        </div>
-      )}
     </aside>
   );
 }
