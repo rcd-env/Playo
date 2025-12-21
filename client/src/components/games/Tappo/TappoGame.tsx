@@ -31,7 +31,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
     startGame: depositFunds,
     withdrawWinnings,
     resetGame,
-  } = useMemoryGame();
+  } = useMemoryGame("tappo");
 
   const textColor = isDarkMode ? "text-white" : "text-gray-900";
   const borderColor = "border-black border-2";

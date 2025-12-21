@@ -5,11 +5,12 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import { parseEther } from "viem";
-import { MEMORY_GAME_ADDRESS, MEMORY_GAME_ABI } from "../lib/contract";
+import { PLAYO_GAMES_ADDRESS, PLAYO_GAMES_ABI } from "../lib/contract";
 
 export type GameStatus = "idle" | "starting" | "playing" | "completed";
+export type GameType = "flippo" | "tappo";
 
-export function useMemoryGame() {
+export function useMemoryGame(gameType: GameType = "flippo") {
   const { address } = useAccount();
   const [gridSize, setGridSize] = useState(4);
   const [betAmount, setBetAmount] = useState("");
@@ -145,11 +146,12 @@ export function useMemoryGame() {
       const reward = calculateReward(gridSize, betAmount);
       setPotentialReward(reward);
 
-      // Call deposit function instead of startGame
+      // Call deposit function with gameType parameter
       writeContract({
-        address: MEMORY_GAME_ADDRESS,
-        abi: MEMORY_GAME_ABI,
+        address: PLAYO_GAMES_ADDRESS,
+        abi: PLAYO_GAMES_ABI,
         functionName: "deposit",
+        args: [gameType],
         value: parseEther(betAmount),
       });
     } catch (error) {
@@ -269,8 +271,8 @@ export function useMemoryGame() {
       try {
         setIsWithdrawing(true);
         writeContract({
-          address: MEMORY_GAME_ADDRESS,
-          abi: MEMORY_GAME_ABI,
+          address: PLAYO_GAMES_ADDRESS,
+          abi: PLAYO_GAMES_ABI,
           functionName: "withdraw",
           args: [parseEther(amount)],
         });

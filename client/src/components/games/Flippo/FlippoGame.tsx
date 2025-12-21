@@ -37,7 +37,7 @@ export function FlippoGame({
     incrementFlips,
     checkFlipLimit,
     withdrawWinnings,
-  } = useMemoryGame();
+  } = useMemoryGame("flippo");
 
   // Handle transaction confirmations
   useEffect(() => {
