@@ -9,28 +9,32 @@ interface TappoGameProps {
 }
 
 export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
-  const [gameStatus, setGameStatus] = useState<
-    "idle" | "playing" | "completed"
-  >("idle");
   const [currentTimer, setCurrentTimer] = useState(60);
   const [score, setScore] = useState(0);
   const [hitTarget, setHitTarget] = useState(0);
   const [bubbles, setBubbles] = useState<number[]>([]);
-  const [betAmount, setBetAmount] = useState("0.00");
   const [timerDuration, setTimerDuration] = useState(30);
   const [isInputFrozen, setIsInputFrozen] = useState(false);
   const [showPenalty, setShowPenalty] = useState(false);
   const [shakeScore, setShakeScore] = useState(false);
   const [showBonus, setShowBonus] = useState(false);
+  const [gameStartPending, setGameStartPending] = useState(false);
 
   // Audio refs
   const successSound = useRef<HTMLAudioElement | null>(null);
   const errorSound = useRef<HTMLAudioElement | null>(null);
 
   const {
-    startGame: depositFunds,
+    startGame,
+    betAmount,
+    gameStatus,
+    updateBetAmount,
     withdrawWinnings,
     resetGame,
+    endGame,
+    handleConfirmation,
+    isLoading: isTransactionLoading,
+    isConfirmed,
   } = useMemoryGame("tappo");
 
   const textColor = isDarkMode ? "text-white" : "text-gray-900";
@@ -81,21 +85,27 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
     generateBubbles();
   }, []);
 
-  // Start game
-  const startGame = async () => {
-    try {
-      // Deposit funds first
-      await depositFunds();
+  // Handle transaction confirmations
+  useEffect(() => {
+    handleConfirmation();
+  }, [handleConfirmation]);
 
-      setGameStatus("playing");
+  // Initialize game when transaction is confirmed
+  useEffect(() => {
+    if (isConfirmed && gameStartPending && gameStatus === "playing") {
       setCurrentTimer(timerDuration);
       setScore(0);
       setIsInputFrozen(false);
       generateBubbles();
       generateNewHit();
-    } catch (error) {
-      console.error("Failed to start game:", error);
+      setGameStartPending(false);
     }
+  }, [isConfirmed, gameStartPending, gameStatus, timerDuration]);
+
+  // Handle game start button click
+  const handleStartGame = () => {
+    setGameStartPending(true);
+    startGame();
   };
 
   // Timer countdown
@@ -106,9 +116,9 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
       }, 1000);
       return () => clearInterval(interval);
     } else if (currentTimer === 0 && gameStatus === "playing") {
-      setGameStatus("completed");
+      endGame();
     }
-  }, [gameStatus, currentTimer]);
+  }, [gameStatus, currentTimer, endGame]);
 
   // Handle bubble click
   const handleBubbleClick = (clickedNumber: number) => {
@@ -190,10 +200,10 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
   // Handle play again
   const handlePlayAgain = () => {
     resetGame();
-    setGameStatus("idle");
     setScore(0);
     setCurrentTimer(timerDuration);
     setIsInputFrozen(false);
+    setGameStartPending(false);
   };
 
   // Handle withdraw
@@ -237,7 +247,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
                 step="0.01"
                 min="0.01"
                 value={betAmount}
-                onChange={(e) => setBetAmount(e.target.value)}
+                onChange={(e) => updateBetAmount(e.target.value)}
                 disabled={gameStatus !== "idle"}
                 placeholder="0.00"
                 className={`w-full px-4 py-3 rounded-lg border ${borderColor} ${cardBg} ${textColor} text-xl text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] focus:outline-none 
@@ -255,7 +265,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
               {["0.01", "0.5", "2", "5", "10"].map((amount) => (
                 <button
                   key={amount}
-                  onClick={() => setBetAmount(amount)}
+                  onClick={() => updateBetAmount(amount)}
                   disabled={gameStatus !== "idle"}
                   className={`px-4 py-2 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer disabled:opacity-80 disabled:cursor-not-allowed`}
                   style={{
@@ -282,9 +292,11 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
 
           {/* Start Game Button */}
           <button
-            onClick={startGame}
+            onClick={handleStartGame}
             disabled={
               !address ||
+              isLoading ||
+              isTransactionLoading ||
               !betAmount ||
               parseFloat(betAmount) <= 0 ||
               gameStatus !== "idle"
@@ -293,6 +305,8 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
             style={{
               backgroundColor:
                 !address ||
+                isLoading ||
+                isTransactionLoading ||
                 !betAmount ||
                 parseFloat(betAmount) <= 0 ||
                 gameStatus !== "idle"
@@ -307,6 +321,10 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
           >
             {!address
               ? "Wallet Not Connected"
+              : isTransactionLoading
+              ? "Confirming Transaction..."
+              : gameStatus === "starting"
+              ? "Starting Game..."
               : gameStatus === "playing"
               ? "Game in Progress"
               : "Start Game"}
