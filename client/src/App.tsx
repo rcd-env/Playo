@@ -535,21 +535,32 @@ function App() {
                     Claiming Your Reward
                   </h3>
                   <p className="mb-2">
-                    After the game ends, you have two options:
+                    After the timer expires, rewards are based on your score:
                   </p>
                   <ul className="list-disc list-inside space-y-2 ml-2">
                     <li>
-                      <strong>Withdraw Reward:</strong> If your score is above
-                      0, claim your calculated reward from the prize pool
+                      <strong>Profit (Score &gt; Break-Even):</strong> Withdraw
+                      your reward if you scored above the break-even threshold.
+                      You earn more than your initial stake!
                     </li>
                     <li>
-                      <strong>Partial Refund:</strong> If you score 0 points,
-                      you receive your original stake back minus the reward that
-                      would have been paid (effectively getting a refund)
+                      <strong>Break-Even (Score = Threshold):</strong> Receive
+                      your full stake back with no profit or loss.
                     </li>
                     <li>
-                      All transactions are processed through the smart contract
-                      on Mantle Sepolia
+                      <strong>
+                        Partial Refund (0 &lt; Score &lt; Break-Even):
+                      </strong>{" "}
+                      Get back a portion of your stake proportional to your
+                      score. The better you perform, the more you recover.
+                    </li>
+                    <li>
+                      <strong>No Score (Score = 0):</strong> If you score 0
+                      points, no reward is earned and your stake is lost.
+                    </li>
+                    <li>
+                      All withdrawals are processed instantly through the smart
+                      contract on Mantle Sepolia.
                     </li>
                   </ul>
                 </div>
