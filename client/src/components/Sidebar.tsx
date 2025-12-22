@@ -5,7 +5,7 @@ interface Game {
   name: string;
   imagePath: string;
   isActive: boolean;
-  badge?: "new" | "popular" | "live";
+  badge?: "new" | "original" | "live";
 }
 
 interface SidebarProps {
@@ -29,7 +29,7 @@ export function Sidebar({
       name: "Flippo",
       imagePath: "/images/earno-logo.jpg",
       isActive: true,
-      badge: "popular",
+      badge: "original",
     },
     {
       id: "tappo",
@@ -63,6 +63,7 @@ export function Sidebar({
         backgroundColor: bgColor,
         transform: "translateZ(0)",
         willChange: "width",
+        fontFamily: "'Space Grotesk', sans-serif",
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -110,13 +111,13 @@ export function Sidebar({
             </div>
             {isExpanded && (
               <div className="flex items-center justify-between flex-1">
-                <span className="font-medium whitespace-nowrap overflow-hidden text-left">
+                <span className="font-bold whitespace-nowrap overflow-hidden text-left tracking-wide">
                   {game.name}
                 </span>
                 {/* Badge on expanded view */}
                 {game.badge && (
                   <span
-                    className={`text-xs font-bold px-2 py-1 rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.8)] ${
+                    className={`text-xs font-bold tracking-widest px-2 py-1 rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.8)] ${
                       game.badge === "live"
                         ? "bg-red-500 text-white animate-pulse"
                         : game.badge === "new"
