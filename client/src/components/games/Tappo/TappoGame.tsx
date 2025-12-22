@@ -14,7 +14,6 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
   const [hitTarget, setHitTarget] = useState(0);
   const [bubbles, setBubbles] = useState<number[]>([]);
   const [timerDuration, setTimerDuration] = useState(30);
-  const [isInputFrozen, setIsInputFrozen] = useState(false);
   const [showPenalty, setShowPenalty] = useState(false);
   const [shakeScore, setShakeScore] = useState(false);
   const [showBonus, setShowBonus] = useState(false);
@@ -95,7 +94,6 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
     if (isConfirmed && gameStartPending && gameStatus === "playing") {
       setCurrentTimer(timerDuration);
       setScore(0);
-      setIsInputFrozen(false);
       generateBubbles();
       generateNewHit();
       setGameStartPending(false);
@@ -108,28 +106,38 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
     startGame();
   };
 
-  // Timer countdown
+  // Timer countdown - optimized to not recreate interval every second
   useEffect(() => {
-    if (gameStatus === "playing" && currentTimer > 0) {
+    // Only start timer if game is playing AND bubbles have been generated AND there's a hit target
+    if (gameStatus === "playing" && bubbles.length > 0 && hitTarget !== null) {
       const interval = setInterval(() => {
-        setCurrentTimer((prev) => prev - 1);
+        setCurrentTimer((prev) => {
+          if (prev <= 1) {
+            // Timer hit zero, end the game
+            clearInterval(interval);
+            endGame();
+            return 0;
+          }
+          return prev - 1;
+        });
       }, 1000);
       return () => clearInterval(interval);
-    } else if (currentTimer === 0 && gameStatus === "playing") {
-      endGame();
     }
-  }, [gameStatus, currentTimer, endGame]);
+  }, [gameStatus, bubbles.length, hitTarget, endGame]);
 
   // Handle bubble click
   const handleBubbleClick = (clickedNumber: number) => {
-    if (gameStatus !== "playing" || isInputFrozen) return;
+    if (gameStatus !== "playing") return;
 
     if (clickedNumber === hitTarget) {
       // Correct hit
       setScore((prev) => prev + 10);
 
-      // Play success sound
-      successSound.current?.play().catch(() => {});
+      // Play success sound - reset to start for rapid clicks
+      if (successSound.current) {
+        successSound.current.currentTime = 0;
+        successSound.current.play().catch(() => {});
+      }
 
       // Visual feedback
       setShowBonus(true);
@@ -137,23 +145,18 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
         setShowBonus(false);
       }, 600);
 
-      // Freeze input before reshuffle
-      setIsInputFrozen(true);
-
-      // Random delay between 150-250ms
-      const delay = 150 + Math.random() * 100;
-
-      setTimeout(() => {
-        generateBubbles();
-        generateNewHit();
-        setIsInputFrozen(false);
-      }, delay);
+      // Immediately reshuffle
+      generateBubbles();
+      generateNewHit();
     } else {
       // Wrong click penalty: -5 points (but don't go below 0)
       setScore((prev) => Math.max(0, prev - 5));
 
-      // Play error sound
-      errorSound.current?.play().catch(() => {});
+      // Play error sound - reset to start for rapid clicks
+      if (errorSound.current) {
+        errorSound.current.currentTime = 0;
+        errorSound.current.play().catch(() => {});
+      }
 
       // Visual feedback
       setShowPenalty(true);
@@ -190,6 +193,11 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
   // Calculate max achievable points
   const maxAchievablePoints = Math.floor((timerDuration * 6) / 10) * 10; // 6 hits per 10 seconds, 10 points each
 
+  // Calculate minimum points needed to break even (secure initial bet)
+  const minPointsToBreakEven = Math.ceil(
+    maxAchievablePoints / getWinMultiplier()
+  );
+
   // Play hover sound
   const playHoverSound = () => {
     const hoverSound = new Audio("/audios/hover.mp3");
@@ -202,7 +210,6 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
     resetGame();
     setScore(0);
     setCurrentTimer(timerDuration);
-    setIsInputFrozen(false);
     setGameStartPending(false);
   };
 
@@ -262,7 +269,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
               Quick Bets:
             </p>
             <div className="flex flex-wrap gap-2">
-              {["0.01", "0.5", "2", "5", "10"].map((amount) => (
+              {["0.01", "1", "5", "10"].map((amount) => (
                 <button
                   key={amount}
                   onClick={() => updateBetAmount(amount)}
@@ -337,41 +344,109 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
             <h3 className={`text-xl font-medium mb-4 ${textColor}`}>
               Game Stats
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-2">
               <div className="flex justify-between">
-                <span>Time Limit:</span>
-                <span className="font-bold">{timerDuration} seconds</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Win Multiplier:</span>
-                <span className="font-bold">{getWinMultiplier()}x</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Points per Hit:</span>
-                <span className="font-bold">10 points</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Max Achievable Points:</span>
                 <span
-                  className="font-bold"
-                  style={{
-                    color: isDarkMode ? "#0fa594" : "#000000",
-                    fontWeight: "bolder",
-                  }}
+                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
                 >
-                  {maxAchievablePoints} points
+                  Game Duration:
+                </span>
+                <span
+                  className={`font-bold ${
+                    isDarkMode ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  {timerDuration} seconds
                 </span>
               </div>
               <div className="flex justify-between">
-                <span>Max Potential Reward:</span>
+                <span
+                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                >
+                  Reward Multiplier:
+                </span>
+                <span
+                  className={`font-bold ${
+                    isDarkMode ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  {getWinMultiplier()}x
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span
+                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                >
+                  Maximum Possible Reward:
+                </span>
                 <span
                   className="font-bold"
                   style={{
-                    color: isDarkMode ? "#0fa594" : "#000000",
+                    color: isDarkMode ? "#10b981" : "#059669",
                     fontWeight: "bolder",
                   }}
                 >
                   {maxReward} MNT
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span
+                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                >
+                  Points per Correct Hit:
+                </span>
+                <span
+                  className={`font-bold ${
+                    isDarkMode ? "text-green-400" : "text-green-600"
+                  }`}
+                >
+                  + 10 points
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span
+                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                >
+                  Penalty per Wrong Click:
+                </span>
+                <span
+                  className={`font-bold ${
+                    isDarkMode ? "text-red-400" : "text-red-600"
+                  }`}
+                >
+                  - 5 points
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span
+                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                >
+                  Break-Even Score:
+                </span>
+                <span
+                  className="font-bold"
+                  style={{
+                    color: isDarkMode ? "#fbbf24" : "#d97706",
+                    fontWeight: "bolder",
+                  }}
+                >
+                  {minPointsToBreakEven} points
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span
+                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                >
+                  Maximum Possible Score:
+                </span>
+                <span
+                  className="font-bold"
+                  style={{
+                    color: isDarkMode ? "#10b981" : "#059669",
+                    fontWeight: "bolder",
+                  }}
+                >
+                  {maxAchievablePoints} points
                 </span>
               </div>
             </div>
@@ -556,7 +631,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
           netGain={netGain}
           onPlayAgain={handlePlayAgain}
           onWithdraw={handleWithdraw}
-          isWithdrawing={isLoading}
+          isWithdrawing={isTransactionLoading}
           isDarkMode={isDarkMode}
         />
       )}
