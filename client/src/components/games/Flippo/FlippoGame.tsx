@@ -37,6 +37,7 @@ export function FlippoGame({
     incrementFlips,
     checkFlipLimit,
     withdrawWinnings,
+    isLoading: isTransactionLoading,
   } = usePlayoGame();
 
   // Handle transaction confirmations
@@ -183,29 +184,83 @@ export function FlippoGame({
 
             {gameStatus === "idle" && (
               <div className="space-y-3">
-                <p className="text-sm opacity-70">
-                  Configure your game settings above
-                </p>
                 <div className="flex justify-between">
-                  <span className="">Grid Size:</span>
-                  <span className="font-bold">
+                  <span
+                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                  >
+                    Grid Size:
+                  </span>
+                  <span
+                    className={`font-bold ${
+                      isDarkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
                     {gridSize}×{gridSize}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="">Max Flips Allowed:</span>
-                  <span className="font-bold">{maxFlips}</span>
+                  <span
+                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                  >
+                    Reward Multiplier:
+                  </span>
+                  <span
+                    className={`font-bold ${
+                      isDarkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
+                    {gridSize === 2
+                      ? "1.2"
+                      : gridSize === 4
+                      ? "1.5"
+                      : gridSize === 6
+                      ? "2.0"
+                      : "2.5"}
+                    x
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="">Potential Reward:</span>
+                  <span
+                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                  >
+                    Maximum Possible Reward:
+                  </span>
                   <span
                     className="font-bold"
                     style={{
-                      color: isDarkMode ? "#fff" : "#000000",
+                      color: isDarkMode ? "#10b981" : "#059669",
                       fontWeight: "bolder",
                     }}
                   >
                     {potentialReward} MNT
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span
+                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                  >
+                    Maximum Flips Allowed:
+                  </span>
+                  <span
+                    className={`font-bold ${
+                      isDarkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
+                    {maxFlips}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span
+                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                  >
+                    Total Pairs:
+                  </span>
+                  <span
+                    className={`font-bold ${
+                      isDarkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
+                    {totalPairs}
                   </span>
                 </div>
               </div>
@@ -305,7 +360,7 @@ export function FlippoGame({
           netGain={netGain}
           onPlayAgain={resetGame}
           onWithdraw={withdrawWinnings}
-          isWithdrawing={isLoading}
+          isWithdrawing={isTransactionLoading}
           isDarkMode={isDarkMode}
         />
       )}
