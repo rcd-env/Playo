@@ -253,16 +253,12 @@ function App() {
                       multiplier (Beginner)
                     </li>
                     <li>
-                      <strong>4×4 Grid:</strong> 8 pairs, 8 flips - 1.5×
+                      <strong>4×4 Grid:</strong> 8 pairs, 13 flips - 1.5×
                       multiplier (Easy)
                     </li>
                     <li>
-                      <strong>6×6 Grid:</strong> 18 pairs, 18 flips - 2.0×
+                      <strong>6×6 Grid:</strong> 18 pairs, 25 flips - 2.0×
                       multiplier (Medium)
-                    </li>
-                    <li>
-                      <strong>8×8 Grid:</strong> 32 pairs, 32 flips - 2.5×
-                      multiplier (Hard)
                     </li>
                   </ul>
                 </div>

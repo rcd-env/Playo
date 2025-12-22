@@ -38,13 +38,12 @@ export function usePlayoGame() {
     error: receiptError,
   } = useWaitForTransactionReceipt({ hash });
 
-  // Calculate max flips based on grid size - strict limits
+  // Calculate max flips based on grid size - balanced for fairness and skill
   useEffect(() => {
     const flipLimits: Record<number, number> = {
-      2: 2, // Very tight
-      4: 8, // Challenging
-      6: 18, // Moderate
-      8: 32, // Generous but still limited
+      2: 2,
+      4: 12,
+      6: 26,
     };
     setMaxFlips(flipLimits[gridSize] || 10);
   }, [gridSize]);

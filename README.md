@@ -58,8 +58,8 @@ A classic memory card game where you match identical pairs with limited flips.
 **Difficulty Levels:**
 
 - **2x2 Grid**: 2 pairs, 2 flips, 1.2x multiplier
-- **4x4 Grid**: 8 pairs, 8 flips, 1.5x multiplier
-- **6x6 Grid**: 18 pairs, 18 flips, 2.0x multiplier
+- **4x4 Grid**: 8 pairs, 13 flips, 1.5x multiplier
+- **6x6 Grid**: 18 pairs, 25 flips, 2.0x multiplier
 
 **Gameplay:**
 
@@ -396,8 +396,10 @@ After any game ends, your reward is automatically calculated based on your perfo
 | Grid Size | Total Pairs | Max Flips | Reward Multiplier |
 | --------- | ----------- | --------- | ----------------- |
 | 2x2       | 2 pairs     | 2 flips   | 1.2x              |
-| 4x4       | 8 pairs     | 8 flips   | 1.5x              |
-| 6x6       | 18 pairs    | 18 flips  | 2.0x              |
+| 4x4       | 8 pairs     | 13 flips  | 1.5x              |
+| 6x6       | 18 pairs    | 25 flips  | 2.0x              |
+
+_\*Rewards are proportional to the number of pairs successfully matched, encouraging both precision and progress._
 
 ### Tappo - Reward Multipliers by Difficulty
 
