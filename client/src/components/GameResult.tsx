@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 interface GameResultProps {
   won: boolean;
   reward: string;
@@ -26,6 +28,8 @@ export function GameResult({
   isWithdrawing = false,
   isDarkMode = false,
 }: GameResultProps) {
+  console.log("GameResult rendered with isWithdrawing:", isWithdrawing);
+
   const bgColor = isDarkMode ? "#1d505c" : "#F4F9E9";
   const textColor = isDarkMode ? "white" : "#000000";
   const borderColor = "border-black border-2";
@@ -44,11 +48,14 @@ export function GameResult({
     "Win mode: ON. Play again to confirm.",
   ];
 
-  // Select random quote based on result
-  const quote =
-    netGain > 0
-      ? winQuotes[Math.floor(Math.random() * winQuotes.length)]
-      : loseQuotes[Math.floor(Math.random() * loseQuotes.length)];
+  // Select random quote based on result - memoized so it doesn't change on re-renders
+  const quote = useMemo(
+    () =>
+      netGain > 0
+        ? winQuotes[Math.floor(Math.random() * winQuotes.length)]
+        : loseQuotes[Math.floor(Math.random() * loseQuotes.length)],
+    [netGain]
+  );
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
@@ -56,19 +63,6 @@ export function GameResult({
         className={`rounded-2xl p-8 max-w-md w-full text-center space-y-6 animate-fade-in ${borderColor} shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)]`}
         style={{ backgroundColor: bgColor }}
       >
-        {/* Result Title */}
-        {/* <h2 className="text-4xl font-bold" style={{ color: textColor }}>
-          {won ? (
-            <span className="flex gap-3 justify-center items-center">
-              You Won <Crown size={45} strokeWidth={2} />
-            </span>
-          ) : (
-            <span className="flex gap-3 justify-center items-center text-rose-400">
-              Try Again <HeartCrack size={45} strokeWidth={2} />
-            </span>
-          )}
-        </h2> */}
-
         {/* Stats */}
         <div className="space-y-3">
           {/* Net Gain/Loss - Prominent */}
@@ -82,12 +76,15 @@ export function GameResult({
             }}
           >
             <div className="text-sm opacity-70 font-medium uppercase tracking-wider">
-              {netGain > 0 ? "Profit" : "Profit"}
+              {netGain > 0 ? "Profit" : "Partial Refund"}
             </div>
 
             <div className="text-3xl font-bold">
               {netGain > 0 ? "+" : ""}
-              {netGain > 0 ? netGain.toFixed(4) : "0.0000"} MNT
+              {netGain > 0
+                ? netGain.toFixed(4)
+                : parseFloat(reward).toFixed(4)}{" "}
+              MNT
             </div>
           </div>
           {/* Video */}
