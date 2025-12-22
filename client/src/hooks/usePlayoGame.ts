@@ -314,7 +314,7 @@ export function usePlayoGame() {
     wrongPairs,
     netGain,
     portionValue,
-    isLoading: isPending || isConfirming,
+    isLoading: isPending || isConfirming || isWithdrawing,
     isConfirmed,
     transactionError: writeError || receiptError,
 
