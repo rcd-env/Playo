@@ -401,11 +401,13 @@ After any game ends, your reward is automatically calculated based on your perfo
 
 ### Tappo - Reward Multipliers by Difficulty
 
-| Difficulty | Max Points | Time Limit | Reward Multiplier | Break-Even Points |
-| ---------- | ---------- | ---------- | ----------------- | ----------------- |
-| Easy       | 360        | 60s        | 1.3x              | 277               |
-| Medium     | 180        | 30s        | 1.6x              | 113               |
-| Hard       | 90         | 15s        | 2.0x              | 45                |
+| Difficulty | Target Score\* | Time Limit | Reward Multiplier | Break-Even Points |
+| ---------- | -------------- | ---------- | ----------------- | ----------------- |
+| Easy       | 360            | 60s        | 1.3x              | 277               |
+| Medium     | 180            | 30s        | 1.6x              | 113               |
+| Hard       | 90             | 15s        | 2.0x              | 45                |
+
+_\*Target Score is the benchmark for maximum reward. Scoring at or above this earns the full multiplier. Scoring below it gives proportional rewards._
 
 ### Proportional Rewards System
 
@@ -416,14 +418,27 @@ Your final payout is calculated proportionally based on your performance:
 ```
 Earned Reward = (Correct Pairs / Total Pairs) × Max Possible Reward
 Max Possible Reward = Bet Amount × Reward Multiplier
+Net Gain/Loss = Earned Reward - Bet Amount
 ```
 
 **Tappo Formula:**
 
 ```
-Earned Reward = (Score / Max Possible Score) × Max Possible Reward
-Max Possible Reward = Bet Amount × Reward Multiplier
+Performance Ratio = Score / Target Score (capped at 1.0)
+Earned Reward = Bet Amount × Reward Multiplier × Performance Ratio
+Net Gain/Loss = Earned Reward - Bet Amount
 ```
+
+_Note: Scoring above the Target Score doesn't increase your reward beyond the maximum multiplier._
+
+**Break-Even Formula:**
+
+```
+Flippo: Break-Even Pairs = Total Pairs / Reward Multiplier
+Tappo: Break-Even Points = Target Score / Reward Multiplier
+```
+
+_This tells you the minimum score needed to recover your bet (neither profit nor loss)._
 
 ### Examples
 
