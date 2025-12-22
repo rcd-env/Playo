@@ -60,7 +60,6 @@ A classic memory card game where you match identical pairs with limited flips.
 - **2x2 Grid**: 2 pairs, 2 flips, 1.2x multiplier
 - **4x4 Grid**: 8 pairs, 8 flips, 1.5x multiplier
 - **6x6 Grid**: 18 pairs, 18 flips, 2.0x multiplier
-- **8x8 Grid**: 32 pairs, 32 flips, 2.5x multiplier
 
 **Gameplay:**
 
@@ -71,19 +70,19 @@ A classic memory card game where you match identical pairs with limited flips.
 
 ### ⚡ Tappo - Reflex Challenge
 
-A fast-paced bubble-tapping reflex game with 30-second rounds.
+A fast-paced bubble-tapping reflex game with timed challenges.
 
 **Difficulty Levels:**
 
-- **Easy**: 250 points possible, 2.0x multiplier
-- **Medium**: 350 points possible, 2.5x multiplier
-- **Hard**: 500 points possible, 3.0x multiplier
+- **Easy (60s)**: 360 points possible, 1.3x multiplier
+- **Medium (30s)**: 180 points possible, 1.6x multiplier
+- **Hard (15s)**: 90 points possible, 2.0x multiplier
 
 **Gameplay:**
 
 - Tap bubbles before they disappear
-- Higher difficulty = faster movement & more points
-- 30-second time limit
+- Higher difficulty = less time but higher multiplier
+- Timer durations: 60s (Easy), 30s (Medium), 15s (Hard)
 - Progressive difficulty with dynamic spawning
 
 ---
@@ -318,7 +317,8 @@ npm run dev
 
 3. **Select Difficulty**
 
-   - **Flippo**: 2x2, 4x4, 6x6, or 8x8 grid sizes
+   - **Flippo**: 2x2, 4x4, or 6x6 grid sizes
+   - **Tappo**: Easy (60s), Medium (30s), or Hard (15s)
    - **Tappo**: Easy, Medium, or Hard difficulty
 
 4. **Place Your Bet**
@@ -356,12 +356,12 @@ npm run dev
 2. **Track Stats**
 
    - **Score**: Current points earned
-   - **Time**: Countdown from 30 seconds
+   - **Time**: Countdown timer (60s/30s/15s based on difficulty)
    - **Potential Reward**: Current earnings estimate
    - **Break-Even**: Points needed to profit
 
 3. **Game Ends**
-   - When the 30-second timer reaches zero
+   - When the timer reaches zero
    - Your reward is calculated based on final score
 
 ### Claiming Your Reward
@@ -398,15 +398,14 @@ After any game ends, your reward is automatically calculated based on your perfo
 | 2x2       | 2 pairs     | 2 flips   | 1.2x              |
 | 4x4       | 8 pairs     | 8 flips   | 1.5x              |
 | 6x6       | 18 pairs    | 18 flips  | 2.0x              |
-| 8x8       | 32 pairs    | 32 flips  | 2.5x              |
 
 ### Tappo - Reward Multipliers by Difficulty
 
 | Difficulty | Max Points | Time Limit | Reward Multiplier | Break-Even Points |
 | ---------- | ---------- | ---------- | ----------------- | ----------------- |
-| Easy       | 250        | 30s        | 2.0x              | 125               |
-| Medium     | 350        | 30s        | 2.5x              | 140               |
-| Hard       | 500        | 30s        | 3.0x              | 167               |
+| Easy       | 360        | 60s        | 1.3x              | 277               |
+| Medium     | 180        | 30s        | 1.6x              | 113               |
+| Hard       | 90         | 15s        | 2.0x              | 45                |
 
 ### Proportional Rewards System
 
@@ -428,12 +427,12 @@ Max Possible Reward = Bet Amount × Reward Multiplier
 
 ### Examples
 
-**Flippo - Perfect Game (8x8):**
+**Flippo - Perfect Game (6x6):**
 
 - Bet: 10 MNT
-- Result: Matched all 32 pairs
-- Reward: 10 × 2.5 = 25 MNT
-- **Profit: 15 MNT** ✨
+- Result: Matched all 18 pairs
+- Reward: 10 × 2.0 = 20 MNT
+- **Profit: 10 MNT** ✨
 
 **Flippo - Partial Win (4x4):**
 
@@ -445,14 +444,14 @@ Max Possible Reward = Bet Amount × Reward Multiplier
 **Tappo - High Score (Hard):**
 
 - Bet: 20 MNT
-- Result: 400/500 points (80%)
-- Reward: 20 × 3.0 × 0.8 = 48 MNT
-- **Profit: 28 MNT** 🔥
+- Result: 72/90 points (80%)
+- Reward: 20 × 2.0 × 0.8 = 32 MNT
+- **Profit: 12 MNT** 🔥
 
 **Tappo - Break-Even (Medium):**
 
 - Bet: 10 MNT
-- Result: 140/350 points (exactly break-even)
+- Result: 113/180 points (exactly break-even)
 - Reward: 10 MNT back
 - **Profit: 0 MNT** (no loss, no gain)
 
