@@ -1,8 +1,8 @@
-# 🎮 Playo - Memory Game on Mantle
+# 🎮 Playo - A Gaming Platform on Mantle
 
-> **Play to Earn on the Blockchain**
+> **Play-to-Earn Gaming with Multiple Games on the Blockchain**
 
-Playo is a decentralized memory card game built on Mantle Sepolia Testnet where players bet MNT tokens and earn proportional rewards based on their performance. Test your memory skills and earn crypto rewards!
+Playo is a decentralized gaming platform built on Mantle Sepolia Testnet featuring multiple skill-based games where players bet MNT tokens and earn proportional rewards based on their performance. Challenge yourself with memory and reflex games, and earn crypto rewards instantly!
 
 [![Built with React](https://img.shields.io/badge/React-19.1.1-61DAFB?logo=react)](https://reactjs.org/)
 [![Solidity](https://img.shields.io/badge/Solidity-0.8.20-363636?logo=solidity)](https://soliditylang.org/)
@@ -14,6 +14,7 @@ Playo is a decentralized memory card game built on Mantle Sepolia Testnet where 
 ## 📋 Table of Contents
 
 - [Overview](#overview)
+- [Games](#games)
 - [Features](#features)
 - [Screenshots](#screenshots)
 - [Smart Contract](#smart-contract)
@@ -31,69 +32,128 @@ Playo is a decentralized memory card game built on Mantle Sepolia Testnet where 
 
 ## 🌟 Overview
 
-Playo is a blockchain-based memory card matching game featuring:
+Playo is a blockchain-based gaming platform featuring multiple skill-based games:
 
-- **Bet MNT tokens** on your memory skills
-- **Earn proportional rewards** based on game performance
-- **Multiple difficulty levels**: 2x2, 4x4, 6x6, and 8x8 grids
-- **Win up to 2.5x** your bet amount on perfect games
+- **🃏 Flippo** - Test your memory with card matching challenges
+- **⚡ Tappo** - Challenge your reflexes with fast-paced bubble tapping
 
-Built on Mantle Sepolia Testnet with a Solidity smart contract ensuring transparent, trustless gameplay and instant MNT rewards.
+Key Platform Features:
+
+- **Bet MNT tokens** on your gaming skills
+- **Earn proportional rewards** based on game performance (1.2x to 3.0x multipliers)
+- **Multiple difficulty levels** for both games
+- **Instant on-chain payouts** with transparent smart contracts
+- **Break-even indicators** to track your profit targets
+
+Built on Mantle Sepolia Testnet with Solidity smart contracts ensuring transparent, trustless gameplay and instant MNT rewards.
+
+---
+
+## 🎲 Games
+
+### 🃏 Flippo - Memory Card Matching
+
+A classic memory card game where you match identical pairs with limited flips.
+
+**Difficulty Levels:**
+
+- **2x2 Grid**: 2 pairs, 2 flips, 1.2x multiplier
+- **4x4 Grid**: 8 pairs, 8 flips, 1.5x multiplier
+- **6x6 Grid**: 18 pairs, 18 flips, 2.0x multiplier
+- **8x8 Grid**: 32 pairs, 32 flips, 2.5x multiplier
+
+**Gameplay:**
+
+- Click cards to reveal them
+- Match identical pairs
+- Limited flips based on grid size
+- Focus on accuracy with no time pressure
+
+### ⚡ Tappo - Reflex Challenge
+
+A fast-paced bubble-tapping reflex game with 30-second rounds.
+
+**Difficulty Levels:**
+
+- **Easy**: 250 points possible, 2.0x multiplier
+- **Medium**: 350 points possible, 2.5x multiplier
+- **Hard**: 500 points possible, 3.0x multiplier
+
+**Gameplay:**
+
+- Tap bubbles before they disappear
+- Higher difficulty = faster movement & more points
+- 30-second time limit
+- Progressive difficulty with dynamic spawning
 
 ---
 
 ## ✨ Features
 
-### 🎯 Core Features
+### 🎯 Platform Features
 
-- **Multiple Difficulty Levels**: Choose from 2x2, 4x4, 6x6, or 8x8 grids
-- **Progressive Rewards**: Higher multipliers for larger grids (1.2x - 2.5x)
-- **Proportional Payouts**: Earn based on matched pairs, even partial completions
-- **Prize Pool System**: Owner-funded prize pool for sustainable rewards
-- **Real-time Stats**: Track matches, flips, and potential earnings live
-- **Multi-Wallet Support**: MetaMask, Rainbow, WalletConnect, and more
-- **Expandable Sidebar**: Easy navigation with hover-to-expand menu
+- **🎮 Multiple Games**: Choose between Flippo (memory) and Tappo (reflex)
+- **💰 Proportional Rewards**: Earn based on performance with 1.2x to 3.0x multipliers
+- **⚡ Instant Payouts**: Withdraw earnings immediately after games
+- **🔐 Secure Smart Contracts**: Battle-tested on Mantle Sepolia Testnet
+- **📊 Real-time Statistics**: Track score, accuracy, time, and potential earnings
+- **💡 Break-Even Indicators**: See exactly what score you need to profit
+- **🎨 Beautiful UI**: Space Grotesk typography with vibrant colors
+- **🌊 Prize Pool System**: Owner can fund pool for larger payouts
+- **👛 Easy Wallet Connection**: Powered by RainbowKit (MetaMask, Rainbow, WalletConnect, etc.)
+- **🎵 Audio Feedback**: Immersive sound effects for all game actions
+- **📱 Responsive Design**: Smooth animations with Framer Motion
 
-### 🔒 Security Features
+### 🃏 Flippo Features
 
-- **Decentralized**: Smart contract handles all game funds
-- **Transparent**: Open-source code on GitHub
-- **Non-custodial**: You maintain full control of your wallet
-- **Auditable**: All transactions on Mantle Sepolia Explorer
+- **Four Difficulty Levels**: 2x2, 4x4, 6x6, or 8x8 grids
+- **Memory Challenge**: Match identical card pairs
+- **Limited Flips**: Strategic gameplay with flip restrictions
+- **Progressive Multipliers**: 1.2x to 2.5x based on grid size
+- **No Time Pressure**: Focus purely on accuracy
+
+### ⚡ Tappo Features
+
+- **Three Difficulty Levels**: Easy, Medium, Hard
+- **30-Second Rounds**: Fast-paced reflex challenge
+- **Progressive Difficulty**: Bubbles move faster as difficulty increases
+- **High Multipliers**: 2.0x to 3.0x reward potential
+- **Dynamic Spawning**: Unique bubble patterns every game
+- **Score Targets**: Clear break-even points displayed in stats
 
 ---
 
 ## 📸 Screenshots
 
-### Game Wireframe
-
-![Game Wireframe](./docs/screenshots/wireframe.png)
-
 ### Home Screen
 
 ![Home Screen](./docs/screenshots/home.png)
-![Home Screen Dark Mode](./docs/screenshots/home-dark.png)
-_Connect your wallet and choose your difficulty level_
+_Choose your game and difficulty level_
 
-### Game Board
+### Flippo - Game Board
 
-![Game Board - 4x4 Grid](./docs/screenshots/4x4-grid.png)
-_Match pairs to earn rewards - the more you match, the more you earn_
+![Flippo Game Board](./docs/screenshots/game-board.png)
+_Match identical cards with limited flips_
 
-### Game Stats
+### Tappo - Reflex Challenge
 
-![Game Statistics](./docs/screenshots/stats.png)
-_Real-time tracking of your performance and potential rewards_
+![Tappo Game](./docs/screenshots/tappo.png)
+_Tap bubbles before they disappear in 30 seconds_
+
+### Game Statistics
+
+![Game Stats](./docs/screenshots/stats.png)
+_Track your performance with clear, readable real-time metrics_
 
 ### Winning Screen
 
-![Victory Screen](./docs/screenshots/won.png)
-_Celebrate your win and withdraw your earnings_
+![Winning Screen](./docs/screenshots/winning.png)
+_Celebrate your victory and claim your rewards_
 
-### Losing Screen
+### Partial Refund
 
-![Victory Screen](./docs/screenshots/lose.png)
-_"Pandavo ko v krishna bet harne ke bad hi mile the"_
+![Losing Screen](./docs/screenshots/losing.png)
+_Get proportional refunds based on your performance_
 
 ### Wallet Connection
 
@@ -106,23 +166,23 @@ _Multiple wallet options powered by RainbowKit_
 
 ### Deployed Contract Address
 
-```
-Deploy your own contract using the instructions in contract/README.md
-```
-
 **Network**: Mantle Sepolia Testnet (Chain ID: 5003)  
 **Compiler**: Solidity 0.8.20  
-**Block Explorer**: https://sepolia.mantlescan.xyz
+**Contract**: `PlayoGames.sol`  
+**Block Explorer**: https://sepolia.mantlescan.xyz  
 **Faucet**: https://faucet.sepolia.mantle.xyz/
+
+Deploy your own contract using the instructions in [contract/README.md](contract/README.md)
 
 ### Contract Features
 
-- **Deposits**: Players deposit CELO to start a game
-- **Withdrawals**: Players can withdraw their winnings (proportional to performance)
-- **Prize Pool**: Owner can fund the prize pool to ensure payouts exceed deposits
-- **Owner Withdrawals**: Contract owner can withdraw funds from the contract at any time
-- **Balance Tracking**: Tracks iMNTidual player deposits and contract balance
+- **Deposits**: Players deposit MNT to start games
+- **Withdrawals**: Players withdraw winnings proportional to performance
+- **Prize Pool**: Owner can fund prize pool to ensure payouts exceed deposits
+- **Owner Withdrawals**: Contract owner can withdraw funds anytime
+- **Balance Tracking**: Tracks individual player deposits and contract balance
 - **Access Control**: Owner-only functions protected with modifiers
+- **Game Management**: Support for multiple game types with different reward multipliers
 
 ### Contract Functions
 
@@ -158,25 +218,31 @@ event OwnerWithdrawal(address indexed owner, uint256 amount)
 
 ### Frontend
 
-- **React 19.1.1** - UI framework
-- **TypeScript** - Type safety
-- **Vite 7.1.7** - Build tool & dev server
-- **Tailwind CSS 4.1.15** - Styling
-- **Framer Motion** - Animations
-- **Lucide React** - Icons
+- **React 19.1.1** - UI framework with modern features
+- **TypeScript** - Type safety and better developer experience
+- **Vite 7.1.7** - Lightning-fast build tool & dev server
+- **Tailwind CSS 4.1.15** - Utility-first styling framework
+- **Framer Motion** - Smooth animations and transitions
+- **Lucide React** - Beautiful, consistent icon set
+- **Space Grotesk** - Modern, clean typography
 
 ### Web3 Integration
 
 - **Wagmi 2.18.2** - React hooks for Ethereum
 - **Viem 2.38.3** - TypeScript Ethereum library
-- **RainbowKit 2.2.9** - Wallet connection UI
-- **TanStack Query** - Async state management
+- **RainbowKit 2.2.9** - Beautiful wallet connection UI
+- **TanStack Query** - Async state management for Web3
 
 ### Smart Contract
 
 - **Solidity 0.8.20** - Smart contract language
 - **Hardhat 2.26.3** - Development environment
-- **Mantle Sepolia** - Testnet deployment
+- **Mantle Sepolia** - Testnet deployment (Chain ID: 5003)
+
+### Audio & Media
+
+- **HTML5 Audio API** - Game sound effects
+- **Video Preloading** - Optimized media loading
 
 ---
 
@@ -236,38 +302,96 @@ npm run dev
 
 ## 🎮 How to Play
 
+### Getting Started
+
 1. **Connect Wallet**
 
    - Click "Connect Wallet" button
-   - Select your preferred wallet (MetaMask, Rainbow, etc.)
+   - Select your preferred wallet (MetaMask, Rainbow, WalletConnect, etc.)
    - Approve the connection
+   - Ensure you're on Mantle Sepolia Testnet
 
-2. **Choose Difficulty**
+2. **Choose a Game**
 
-   - Select grid size: 2x2, 4x4, 6x6, or 8x8
-   - Larger grids = higher potential rewards
+   - **Flippo**: Test your memory with card matching
+   - **Tappo**: Challenge your reflexes with bubble tapping
 
-3. **Place Your Bet**
+3. **Select Difficulty**
 
-   - Enter the amount of CELO you want to bet
+   - **Flippo**: 2x2, 4x4, 6x6, or 8x8 grid sizes
+   - **Tappo**: Easy, Medium, or Hard difficulty
+
+4. **Place Your Bet**
+   - Enter the amount of MNT you want to bet
    - Approve the deposit transaction
+   - Wait for blockchain confirmation
 
-4. **Play the Game**
+### Playing Flippo
+
+1. **Match Cards**
 
    - Click cards to reveal them
-   - Match pairs of identMNT cards
-   - Limited flips based on grid size
+   - Find and match identical pairs
+   - You have limited flips based on grid size
 
-5. **Claim Your Rewards**
-   - After the game ends, your reward is calculated
-   - Click "Withdraw" to claim your earnings
-   - Approve the withdrawal transaction
+2. **Track Stats**
+
+   - **Score**: Pairs matched / Total pairs
+   - **Flips**: Remaining flips
+   - **Potential Reward**: Your current earnings
+   - **Break-Even**: Score needed to profit
+
+3. **Game Ends**
+   - When all pairs are matched (Win!)
+   - When you run out of flips (Partial win/loss)
+
+### Playing Tappo
+
+1. **Tap Bubbles**
+
+   - Tap on bubbles before they disappear
+   - Each successful tap increases your score
+   - Faster difficulty = more points per bubble
+
+2. **Track Stats**
+
+   - **Score**: Current points earned
+   - **Time**: Countdown from 30 seconds
+   - **Potential Reward**: Current earnings estimate
+   - **Break-Even**: Points needed to profit
+
+3. **Game Ends**
+   - When the 30-second timer reaches zero
+   - Your reward is calculated based on final score
+
+### Claiming Your Reward
+
+After any game ends, your reward is automatically calculated based on your performance:
+
+**For Tappo (Score-Based):**
+
+- **Profit (Score ≥ Break-Even Points)**: If you score above the break-even threshold, you earn a profit! Click "Claim Reward" to withdraw your bet plus winnings instantly to your wallet.
+- **Break-Even (Score = Break-Even Points)**: If you score exactly at the break-even point, you get your original bet back with no profit or loss. Click "Claim Refund" to recover your bet.
+- **Partial Refund (Score < Break-Even Points but > 0)**: If you scored some points but didn't reach break-even, you'll receive a proportional refund. The more points you scored, the more you get back. Click "Claim Partial Refund" to recover what you earned.
+- **No Score (Score = 0)**: If you didn't score any points, no refund is available. The game will show your results, but there's no withdrawal option.
+
+**For Flippo (Pairs-Based):**
+
+- Similar reward structure based on pairs matched vs total pairs
+- Proportional refunds for partial completions
+
+**Transaction Process:**
+
+1. Click the appropriate claim button
+2. Approve the withdrawal transaction in your wallet
+3. Wait for blockchain confirmation
+4. Funds are instantly transferred to your wallet!
 
 ---
 
 ## 💰 Game Rules & Rewards
 
-### Reward Multipliers by Grid Size
+### Flippo - Reward Multipliers by Grid Size
 
 | Grid Size | Total Pairs | Max Flips | Reward Multiplier |
 | --------- | ----------- | --------- | ----------------- |
@@ -276,67 +400,184 @@ npm run dev
 | 6x6       | 18 pairs    | 18 flips  | 2.0x              |
 | 8x8       | 32 pairs    | 32 flips  | 2.5x              |
 
+### Tappo - Reward Multipliers by Difficulty
+
+| Difficulty | Max Points | Time Limit | Reward Multiplier | Break-Even Points |
+| ---------- | ---------- | ---------- | ----------------- | ----------------- |
+| Easy       | 250        | 30s        | 2.0x              | 125               |
+| Medium     | 350        | 30s        | 2.5x              | 140               |
+| Hard       | 500        | 30s        | 3.0x              | 167               |
+
 ### Proportional Rewards System
 
 Your final payout is calculated proportionally based on your performance:
 
+**Flippo Formula:**
+
 ```
 Earned Reward = (Correct Pairs / Total Pairs) × Max Possible Reward
+Max Possible Reward = Bet Amount × Reward Multiplier
 ```
 
-**Examples:**
+**Tappo Formula:**
 
-- **Perfect Game (8x8)**: Bet 10 CELO → Match all 32 pairs → Earn 25 CELO (15 CELO profit)
-- **Partial Win (4x4)**: Bet 5 CELO → Match 4/8 pairs → Earn 3.75 CELO (1.25 CELO loss)
-- **50% Success (2x2)**: Bet 2 CELO → Match 1/2 pairs → Earn 1.2 CELO (0.8 CELO loss)
+```
+Earned Reward = (Score / Max Possible Score) × Max Possible Reward
+Max Possible Reward = Bet Amount × Reward Multiplier
+```
+
+### Examples
+
+**Flippo - Perfect Game (8x8):**
+
+- Bet: 10 MNT
+- Result: Matched all 32 pairs
+- Reward: 10 × 2.5 = 25 MNT
+- **Profit: 15 MNT** ✨
+
+**Flippo - Partial Win (4x4):**
+
+- Bet: 5 MNT
+- Result: Matched 4/8 pairs (50%)
+- Reward: 5 × 1.5 × 0.5 = 3.75 MNT
+- **Loss: 1.25 MNT** (but you get 3.75 MNT back!)
+
+**Tappo - High Score (Hard):**
+
+- Bet: 20 MNT
+- Result: 400/500 points (80%)
+- Reward: 20 × 3.0 × 0.8 = 48 MNT
+- **Profit: 28 MNT** 🔥
+
+**Tappo - Break-Even (Medium):**
+
+- Bet: 10 MNT
+- Result: 140/350 points (exactly break-even)
+- Reward: 10 MNT back
+- **Profit: 0 MNT** (no loss, no gain)
 
 ### Game Over Conditions
 
-- **Out of flips**: Used all avaiMNT → Match all 32 pairs → Earn 25 MNT (15 MNT profit)
-- **Partial Win (4x4)**: Bet 5 MNT → Match 4/8 pairs → Earn 3.75 MNT (1.25 MNT loss)
-- **50% Success (2x2)**: Bet 2 MNT → Match 1/2 pairs → Earn 1.2 MNT (0.8 MNT
+**Flippo:**
+
+- ✅ **Win**: All pairs matched
+- ⚠️ **Partial**: Out of flips with some pairs matched
+- ❌ **Loss**: Out of flips with few/no pairs matched (but still get proportional refund)
+
+**Tappo:**
+
+- ✅ **Win**: Score ≥ Break-even points
+- ⚠️ **Partial**: 0 < Score < Break-even points (proportional refund)
+- ❌ **Loss**: Score = 0 (no refund)
+- **Multi-Wallet Support**: MetaMask, Rainbow, WalletConnect, and more
+- **Expandable Sidebar**: Easy navigation with hover-to-expand menu
+
+### 🔒 Security Features
+
+- **Decentralized**: Smart contract handles all game funds
+- **Transparent**: Open-source code on GitHub
+- **Non-custodial**: You maintain full control of your wallet
+- **Auditable**: All transactions on Mantle Sepolia Explorer
+
+---
+
+## 📸 Screenshots
+
+### Game Wireframe
+
+![Game Wireframe](./docs/screenshots/wireframe.png)
+
+### Home Screen
+
+![Home Screen](./docs/screenshots/home.png)
+![Home Screen Dark Mode](./docs/screenshots/home-dark.png)
+_Connect your wallet and choose your difficulty level_
+
+### Game Board
+
+![Game Board - 4x4 Grid](./docs/screenshots/4x4-grid.png)
+_Match pairs to earn rewards - the more you match, the more you earn_
+
+### Game Stats
+
+![Game Statistics](./docs/screenshots/stats.png)
+_Real-time tracking of your performance and potential rewards_
+
+### Winning Screen
+
+![Victory Screen](./docs/screenshots/won.png)
+_Celebrate your win and withdraw your earnings_
+
+### Losing Screen
+
+![Victory Screen](./docs/screenshots/lose.png)
+_"Pandavo ko v krishna bet harne ke bad hi mile the"_
+
+### Wallet Connection
 
 ---
 
 ## 📁 Project Structure
 
 ```
-earno/
-├── client/                  # Frontend React application
+Playo/
+├── client/                     # Frontend React application
 │   ├── public/
-│   │   └── images/         # Static images
+│   │   ├── audios/            # Game sound effects
+│   │   ├── fonts/             # Custom fonts
+│   │   ├── images/            # Static images and icons
+│   │   └── videos/            # Game videos and animations
 │   ├── src/
-│   │   ├── components/     # React components
-│   │   │   ├── GameBoard.tsx
-│   │   │   ├── GameStart.tsx
-│   │   │   ├── GameResult.tsx
-│   │   │   ├── GameStats.tsx
-│   │   │   ├── Card.tsx
-│   │   │   └── wallet-connect.tsx
-│   │   ├── hooks/          # Custom React hooks
-│   │   │   └── useMemoryGame.ts
-│   │   ├── lib/            # Configuration & utilities
-│   │   │   ├── contract.ts # Contract ABI & address
-│   │   │   ├── wagmi.ts    # Wagmi configuration
-│   │   │   └── config.ts   # App configuration
-│   │   ├── App.tsx         # Main app component
-│   │   └── main.tsx        # Entry point
+│   │   ├── components/        # React components
+│   │   │   ├── Card.tsx                # Flippo card component
+│   │   │   ├── ErrorNotification.tsx   # Error handling UI
+│   │   │   ├── GameBoard.tsx           # Flippo game board
+│   │   │   ├── GameResult.tsx          # Post-game results modal
+│   │   │   ├── GameStart.tsx           # Game initialization
+│   │   │   ├── GameStats.tsx           # Real-time statistics
+│   │   │   ├── provider.tsx            # Context providers
+│   │   │   ├── Sidebar.tsx             # Game navigation
+│   │   │   ├── wallet-connect.tsx      # Wallet connection UI
+│   │   │   └── games/
+│   │   │       ├── Flippo/
+│   │   │       │   └── FlippoGame.tsx  # Flippo game logic
+│   │   │       └── Tappo/
+│   │   │           └── TappoGame.tsx   # Tappo game logic
+│   │   ├── hooks/             # Custom React hooks
+│   │   │   ├── usePlayoGame.ts         # Main game state hook
+│   │   │   └── useVideoPreloader.ts    # Media preloading
+│   │   ├── lib/               # Configuration & utilities
+│   │   │   ├── contract.ts             # Contract ABI & address
+│   │   │   ├── wagmi.ts                # Wagmi configuration
+│   │   │   └── config.ts               # App configuration
+│   │   ├── App.tsx            # Main app component with routing
+│   │   ├── App.css            # Global styles
+│   │   ├── index.css          # Tailwind imports & base styles
+│   │   └── main.tsx           # Entry point
 │   ├── package.json
-│   └── vite.config.ts
+│   ├── vite.config.ts
+│   ├── tailwind.config.js
+│   └── tsconfig.json
 │
-├── contract/               # Smart contract
+├── contract/                   # Smart contract
 │   ├── contracts/
-│   │   └── MemoryGame.sol  # Main game contract
+│   │   └── PlayoGames.sol     # Main game contract
 │   ├── scripts/
-│   │   ├── deploy.js       # Deployment script
-│   │   └── fundPrizePool.js # Prize pool funding script
-│   ├── hardhat.config.js   # Hardhat configuration
+│   │   ├── deploy.js          # Deployment script
+│   │   ├── checkBalance.js    # Check contract balance
+│   │   ├── fundPrizePool.js   # Prize pool funding
+│   │   ├── ownerWithdraw.js   # Owner withdrawal script
+│   │   └── README.md          # Contract deployment guide
+│   ├── artifacts/             # Compiled contracts
+│   ├── cache/                 # Hardhat cache
+│   ├── hardhat.config.js      # Hardhat configuration
 │   └── package.json
 │
-├── docs/                   # Documentation
-│   └── screenshots/        # App screenshots
+├── docs/                      # Documentation
+│   └── screenshots/           # App screenshots
 │
-└── README.md              # This file
+├── LICENSE                    # MIT License
+└── README.md                  # This file
 ```
 
 ---
@@ -388,11 +629,17 @@ npx hardhat run scripts/deploy.js --network localhost
 
 3. **Update contract address** in `client/src/lib/contract.ts`
 
+4. **Fund the prize pool** (optional)
+
+```bash
+npx hardhat run scripts/fundPrizePool.js --network localhost
+```
+
 ---
 
 ## 🚀 Deployment
 
-### Deploy Smart Contract to Mainnet
+### Deploy Smart Contract to Mantle Sepolia
 
 1. **Set up environment variables**
 
@@ -402,87 +649,43 @@ cd contract
 echo "PRIVATE_KEY=your_private_key_here" > .env
 ```
 
-2. **Ensure you have CELO for gas**
+**⚠️ Security**: Never commit `.env` to git!
 
-You need at least 1-2 CELO in your wallet:
+2. **Ensure you have MNT for gas**
 
-- For deployment gas fees (~0.5 CELO)
-- For funding the prize pool (optional, recommended 10-100 CELO)
+Get testnet MNT from the [Mantle Faucet](https://faucet.sepolia.mantle.xyz/)
 
-3. **Deploy to Celo Mainnet**
+3. **Deploy to Mantle Sepolia**
 
 ```bash
-npx hardhat run scripts/deploy-mainnet.js --network celo
+npx hardhat run scripts/deploy.js --network mantleSepolia
 ```
 
 This will output your contract address. Save it!
 
-4. **Fund the prize pool (optional but recommended)**
+4. **Fund the prize pool** (optional but recommended)
 
-Edit `scripts/fund-mainnet.js` with your contract address and desired amount:
+Edit `scripts/fundPrizePool.js` with your contract address:
 
 ```javascript
-const CONTRACT_ADDRESS = "0x153C0cb779Cf4955329989d23304736A9889eD0d";
-const FUND_AMOUNT = "10"; // Amount in CELO
+const CONTRACT_ADDRESS = "0xYourContractAddress";
+const FUND_AMOUNT = "10"; // Amount in MNT
 ```
 
 Then run:
 
 ```bash
-npx hardhat run scripts/fund-mainnet.js --network celo
+npx hardhat run scripts/fundPrizePool.js --network mantleSepolia
 ```
 
 5. **Update client configuration**
 
 Update `client/src/lib/contract.ts` with your new contract address.
 
-### Withdraw Funds as Contract Owner
-
-You can withdraw accumulated funds from the contract at any time:
-
-**Withdraw all funds:**
+6. **Verify contract** (optional)
 
 ```bash
-cd contract
-npx hardhat run scripts/owner-withdraw.js --network celo
-```
-
-**Withdraw partial amount:**
-
-Edit `scripts/owner-withdraw.js`:
-
-```javascript
-const WITHDRAW_TYPE = "partial";
-const PARTIAL_AMOUNT = "10"; // Amount in CELO
-```
-
-Then run the script.
-
-**Check contract balance:**
-
-```bash
-npx hardhat console --network celo
-```
-
-```javascript
-const contract = await ethers.getContractAt(
-  "MemoryGame",
-  "0x153C0cb779Cf4955329989d23304736A9889eD0d"
-);
-const balance = await contract.getContractBalance();
-console.log("Balance:", ethers.formatEther(balance), "CELO");
-```
-
-### Deploy to Testnet (for testing)
-
-```bash
-npx hardhat run scripts/deploy.js --network alfajores
-```
-
-### Verify Contract (optional)
-
-```bash
-npx hardhat verify --network celo 0x37E170C1853999bcDb71B2633C406c8b8Bb23334
+npx hardhat verify --network mantleSepolia YOUR_CONTRACT_ADDRESS
 ```
 
 ### Deploy Frontend
@@ -509,8 +712,25 @@ netlify deploy --prod --dir=dist
 ```bash
 cd client
 npm run build
-# Push dist/ folder to gh-pages branch
+# Deploy dist/ folder to gh-pages branch
 ```
+
+### Managing the Contract
+
+**Check Contract Balance:**
+
+```bash
+cd contract
+npx hardhat run scripts/checkBalance.js --network mantleSepolia
+```
+
+**Owner Withdraw Funds:**
+
+```bash
+npx hardhat run scripts/ownerWithdraw.js --network mantleSepolia
+```
+
+Edit the script to choose between full or partial withdrawal.
 
 ---
 
@@ -526,49 +746,21 @@ Contributions are welcome! Please follow these steps:
 
 ### Development Guidelines
 
-- Follow existing code style
+- Follow existing code style and TypeScript conventions
 - Add tests for new features
 - Update documentation as needed
 - Ensure all tests pass before submitting PR
+- Keep commits atomic and well-described
 
----
+### Areas for Contribution
 
-## 🌐 Mainnet vs Testnet
-
-### Current Deployment: Celo Mainnet
-
-**Mainnet Contract**: `0x153C0cb779Cf4955329989d23304736A9889eD0d`
-
-- ✅ Real CELO tokens
-- ✅ Real rewards and prizes
-- ✅ Production-ready
-- ✅ Owner withdrawal enabled
-- ⚠️ Requires real funds
-
-### Testnet (for Development)
-
-**Testnet Contract**: `0x8E22e7b63FBF78a9d5CA69262Fb0E53e2FD5Dc8f` (Alfajores)
-
-- ✅ Free test tokens
-- ✅ Safe for testing
-- ✅ No real money risk
-- 🔗 [Get testnet CELO](https://faucet.celo.org/alfajores)
-
-### Switching Networks
-
-To switch between mainnet and testnet, update the `VITE_USE_MAINNET` environment variable:
-
-**For Mainnet** (default):
-
-```env
-VITE_USE_MAINNET=true
-```
-
-**For Testnet**:
-
-```env
-VITE_USE_MAINNET=false
-```
+- 🎮 New game modes and mechanics
+- 🎨 UI/UX improvements and animations
+- 🔐 Security audits and improvements
+- 📊 Advanced statistics and analytics
+- 🌐 Internationalization (i18n)
+- ♿ Accessibility enhancements
+- 📱 Mobile responsiveness improvements
 
 ---
 
@@ -580,35 +772,62 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- **Celo Foundation** - For the amazing blockchain platform
+- **Mantle Network** - For the blazing-fast L2 blockchain platform
 - **RainbowKit** - For the beautiful wallet connection UI
-- **Wagmi & Viem** - For excellent Web3 React hooks
-- **Hardhat** - For the robust development environment
+- **Wagmi & Viem** - For excellent Web3 React hooks and utilities
+- **Hardhat** - For the robust smart contract development environment
+- **React Team** - For the amazing React 19 framework
+- **Tailwind CSS** - For the utility-first CSS framework
+- **Google Fonts** - For Space Grotesk typography
 
 ---
 
 ## 📞 Contact & Support
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/rcd-env/earno/issues)
-- **Celo Discord**: Join the Celo community for support
+- **GitHub Issues**: [Report bugs or request features](https://github.com/yourusername/playo/issues)
+- **Mantle Discord**: Join the Mantle community for support
+- **Documentation**: Check our comprehensive docs for guides
 
 ---
 
 ## 🔗 Links
 
-- **Live Demo**: [Earno on Vercel](https://earno-celo.vercel.app)
-- **Mainnet Contract**: [View on CeloScan](https://celoscan.io/address/0x153C0cb779Cf4955329989d23304736A9889eD0d)
-- **Testnet Contract**: [View on BlockScout](https://celo-alfajores.blockscout.com/address/0x8E22e7b63FBF78a9d5CA69262Fb0E53e2FD5Dc8f)
-- **Celo Faucet** (testnet): [https://faucet.celo.org/alfajores](https://faucet.celo.org/alfajores)
-- **Celo Documentation**: [https://docs.celo.org](https://docs.celo.org)
-- **Buy CELO**: [Binance](https://www.binance.com/en/trade/CELO_USDT) | [Coinbase](https://www.coinbase.com/price/celo)
+- **Live Demo**: [Coming Soon]
+- **Mantle Sepolia Explorer**: [View Transactions](https://sepolia.mantlescan.xyz)
+- **Mantle Faucet**: [Get Test MNT](https://faucet.sepolia.mantle.xyz/)
+- **Mantle Documentation**: [https://docs.mantle.xyz](https://docs.mantle.xyz)
+- **Smart Contract Code**: [View on GitHub](./contract/contracts/PlayoGames.sol)
+
+---
+
+## 🎯 Roadmap
+
+### Current Features ✅
+
+- Flippo memory game with 4 difficulty levels
+- Tappo reflex game with 3 difficulty levels
+- Proportional reward system
+- Real-time statistics and break-even indicators
+- Beautiful UI with Space Grotesk typography
+- Multi-wallet support via RainbowKit
+
+### Upcoming Features 🚀
+
+- [ ] **Mainnet Deployment** - Launch on Mantle mainnet
+- [ ] **Leaderboards** - Global and per-game rankings
+- [ ] **Achievements System** - Unlock badges and rewards
+- [ ] **Tournament Mode** - Competitive multiplayer events
+- [ ] **New Games** - More skill-based games
+- [ ] **NFT Rewards** - Earn collectible NFTs for achievements
+- [ ] **Social Features** - Share scores and challenge friends
+- [ ] **Mobile App** - Native iOS and Android apps
 
 ---
 
 <div align="center">
 
-Made with ❤️ for the Celo ecosystem
+**Made with ❤️ for the Mantle ecosystem**
 
-**[⬆ back to top](#-earno---memory-game-on-celo)**
+[⬆ Back to Top](#-playo---blockchain-gaming-platform-on-mantle)
 
 </div>
