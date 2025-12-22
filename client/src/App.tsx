@@ -517,7 +517,9 @@ function App() {
                     </li>
                     <li>
                       <strong>Performance Ratio:</strong> Your score divided by
-                      maximum achievable score, capped at 1.0 for fairness
+                      target score (capped at 1.0). Scoring above the target
+                      score doesn't increase rewards beyond the maximum
+                      multiplier
                     </li>
                     <li>
                       <strong>Example:</strong> 1 MNT stake, 30s duration

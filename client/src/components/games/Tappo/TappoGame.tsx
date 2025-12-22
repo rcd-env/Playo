@@ -393,28 +393,16 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
                 <span
                   className={isDarkMode ? "text-gray-300" : "text-gray-700"}
                 >
-                  Points per Correct Hit:
+                  Target Score (for max reward):
                 </span>
                 <span
-                  className={`font-bold ${
-                    isDarkMode ? "text-green-400" : "text-green-600"
-                  }`}
+                  className="font-bold"
+                  style={{
+                    color: isDarkMode ? "#10b981" : "#059669",
+                    fontWeight: "bolder",
+                  }}
                 >
-                  + 10 points
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span
-                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
-                >
-                  Penalty per Wrong Click:
-                </span>
-                <span
-                  className={`font-bold ${
-                    isDarkMode ? "text-red-400" : "text-red-600"
-                  }`}
-                >
-                  - 5 points
+                  {maxAchievablePoints} points
                 </span>
               </div>
               <div className="flex justify-between">
@@ -437,16 +425,28 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
                 <span
                   className={isDarkMode ? "text-gray-300" : "text-gray-700"}
                 >
-                  Maximum Possible Score:
+                  Points per Correct Hit:
                 </span>
                 <span
-                  className="font-bold"
-                  style={{
-                    color: isDarkMode ? "#10b981" : "#059669",
-                    fontWeight: "bolder",
-                  }}
+                  className={`font-bold ${
+                    isDarkMode ? "text-green-400" : "text-green-600"
+                  }`}
                 >
-                  {maxAchievablePoints} points
+                  + 10 points
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span
+                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                >
+                  Penalty per Wrong Click:
+                </span>
+                <span
+                  className={`font-bold ${
+                    isDarkMode ? "text-red-400" : "text-red-600"
+                  }`}
+                >
+                  - 5 points
                 </span>
               </div>
             </div>
