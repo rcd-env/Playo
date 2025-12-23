@@ -164,16 +164,35 @@ function App() {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h2
-              className={`text-3xl font-bold mb-6 ${textColor} font-Tsuchigumo`}
-            >
-              {selectedGame === "flippo"
-                ? "Flippo - Flip Your Fate"
-                : "Tappo - Tap to Win"}
-            </h2>
-
             {selectedGame === "flippo" && (
               <div className={`space-y-4 ${textColor}`}>
+                {/* Game Header with Logo and Title */}
+                <div className="flex items-start gap-6 mb-6 pb-6 border-b-2 border-black">
+                  {/* Game Logo */}
+                  <div className="shrink-0">
+                    <img
+                      src="/images/earno-logo.jpg"
+                      alt="Flippo Logo"
+                      className="w-24 h-24 object-cover rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]"
+                    />
+                  </div>
+                  {/* Title and Description */}
+                  <div className="flex-1">
+                    <h2
+                      className={`text-3xl font-bold mb-3 ${textColor} font-Tsuchigumo`}
+                    >
+                      Flippo - Flip Your Fate
+                    </h2>
+                    <p
+                      className={`text-lg ${
+                        isDarkMode ? "text-gray-300" : "text-gray-700"
+                      }`}
+                    >
+                      Memory matching game - flip cards to find pairs
+                    </p>
+                  </div>
+                </div>
+
                 <div>
                   <h3 className="text-xl font-bold mb-2">Game Objective</h3>
                   <p>
@@ -396,6 +415,33 @@ function App() {
 
             {selectedGame === "tappo" && (
               <div className={`space-y-4 ${textColor}`}>
+                {/* Game Header with Logo and Title */}
+                <div className="flex items-start gap-6 mb-6 pb-6 border-b-2 border-black">
+                  {/* Game Logo */}
+                  <div className="shrink-0">
+                    <img
+                      src="/images/tappo-logo.png"
+                      alt="Tappo Logo"
+                      className="w-24 h-24 object-cover rounded-3xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]"
+                    />
+                  </div>
+                  {/* Title and Description */}
+                  <div className="flex-1">
+                    <h2
+                      className={`text-3xl font-bold mb-3 ${textColor} font-Tsuchigumo`}
+                    >
+                      Tappo - Tap to Win
+                    </h2>
+                    <p
+                      className={`text-lg ${
+                        isDarkMode ? "text-gray-300" : "text-gray-700"
+                      }`}
+                    >
+                      Reflex game - tap bubbles matching the target number
+                    </p>
+                  </div>
+                </div>
+
                 <div>
                   <h3 className="text-xl font-bold mb-2">Game Objective</h3>
                   <p>

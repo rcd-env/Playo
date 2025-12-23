@@ -34,7 +34,7 @@ export function Sidebar({
     {
       id: "tappo",
       name: "Tappo",
-      imagePath: "/images/earno-logo.jpg",
+      imagePath: "/images/tappo-logo.png",
       isActive: true,
       badge: "new",
     },
