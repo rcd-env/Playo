@@ -27,7 +27,7 @@ export function Sidebar({
     {
       id: "flippo",
       name: "Flippo",
-      imagePath: "/images/earno-logo.jpg",
+      imagePath: "/images/flippo-logo.jpeg",
       isActive: true,
       badge: "original",
     },

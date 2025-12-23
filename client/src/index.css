@@ -133,11 +133,11 @@
 
 /* Light mode scrollbar */
 [data-theme="light"] ::-webkit-scrollbar-track {
-  background: #fffffd !important;
+  background: transparent !important;
 }
 
 [data-theme="light"] ::-webkit-scrollbar-thumb {
-  background: #f6f954 !important;
+  background: transparent !important;
   border-radius: 4px;
 }
 

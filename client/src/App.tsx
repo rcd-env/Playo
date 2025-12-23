@@ -171,7 +171,7 @@ function App() {
                   {/* Game Logo */}
                   <div className="shrink-0">
                     <img
-                      src="/images/earno-logo.jpg"
+                      src="/images/flippo-logo.jpeg"
                       alt="Flippo Logo"
                       className="w-24 h-24 object-cover rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]"
                     />
