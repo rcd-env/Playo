@@ -200,7 +200,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
 
   // Play hover sound
   const playHoverSound = () => {
-    const hoverSound = new Audio("/audios/hover.mp3");
+    const hoverSound = new Audio("/audios/bubble-sound.mpeg");
     hoverSound.volume = 1;
     hoverSound.play().catch(() => {});
   };
