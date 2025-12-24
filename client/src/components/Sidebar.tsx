@@ -5,7 +5,7 @@ interface Game {
   name: string;
   imagePath: string;
   isActive: boolean;
-  badge?: "new" | "most played" | "live";
+  badge?: "new" | "original" | "live";
 }
 
 interface SidebarProps {
@@ -29,12 +29,19 @@ export function Sidebar({
       name: "Flippo",
       imagePath: "/images/flippo-logo.png",
       isActive: true,
-      badge: "most played",
+      badge: "original",
     },
     {
       id: "tappo",
       name: "Tappo",
       imagePath: "/images/tappo-logo.jpeg",
+      isActive: true,
+      badge: "new",
+    },
+    {
+      id: "simon",
+      name: "Simono",
+      imagePath: "/images/simono-logo.png",
       isActive: true,
       badge: "new",
     },
