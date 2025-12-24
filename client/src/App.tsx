@@ -5,6 +5,7 @@ import { ErrorNotification } from "./components/ErrorNotification";
 import { Sidebar } from "./components/Sidebar";
 import { FlippoGame } from "./components/games/Flippo/FlippoGame";
 import { TappoGame } from "./components/games/Tappo/TappoGame";
+import { SimonGame } from "./components/games/Simon/SimonGame";
 import { usePlayoGame } from "./hooks/usePlayoGame";
 
 function App() {
@@ -129,6 +130,14 @@ function App() {
 
           {selectedGame === "tappo" && (
             <TappoGame
+              isDarkMode={isDarkMode}
+              address={address}
+              isLoading={isLoading}
+            />
+          )}
+
+          {selectedGame === "simon" && (
+            <SimonGame
               isDarkMode={isDarkMode}
               address={address}
               isLoading={isLoading}
@@ -408,6 +417,276 @@ function App() {
                       Larger grids offer higher multipliers but are harder
                     </li>
                     <li>Take your time to memorize patterns before rushing</li>
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {selectedGame === "simon" && (
+              <div className={`space-y-4 ${textColor}`}>
+                {/* Game Header with Logo and Title */}
+                <div className="flex items-start gap-6 mb-6 pb-6 border-b-2 border-black">
+                  {/* Game Logo */}
+                  <div className="shrink-0">
+                    <img
+                      src="/images/simono-logo.png"
+                      alt="Simono Logo"
+                      className="w-24 h-24 object-cover rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]"
+                    />
+                  </div>
+                  {/* Title and Description */}
+                  <div className="flex-1">
+                    <h2
+                      className={`text-3xl font-bold mb-3 ${textColor} font-Tsuchigumo`}
+                    >
+                      Simon - Memory Master
+                    </h2>
+                    <p
+                      className={`text-lg ${
+                        isDarkMode ? "text-gray-300" : "text-gray-700"
+                      }`}
+                    >
+                      Sequence memory game - watch, remember, and repeat
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Game Objective</h3>
+                  <p>
+                    Simon is a skill-based sequence memory game where you must
+                    watch and repeat an increasingly long sequence of colored
+                    signals. Your focus and memory directly determine your
+                    rewards based on how many sequences you successfully
+                    complete.
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Getting Started</h3>
+                  <ul className="list-disc list-inside space-y-2 ml-2">
+                    <li>
+                      <strong>Connect Wallet:</strong> Ensure your wallet is
+                      connected to Mantle Sepolia testnet
+                    </li>
+                    <li>
+                      <strong>Select Difficulty:</strong> Choose from Easy,
+                      Medium, or Hard difficulty levels
+                    </li>
+                    <li>
+                      <strong>Stake Amount:</strong> Enter your MNT stake amount
+                      to participate
+                    </li>
+                    <li>
+                      <strong>Start Game:</strong> Click "Start Game" to begin
+                      and deposit your stake into the smart contract
+                    </li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Gameplay Mechanics</h3>
+                  <ul className="list-disc list-inside space-y-2 ml-2">
+                    <li>
+                      <strong>Watch Phase:</strong> The game displays a sequence
+                      of colored signals (Red, Blue, Green, Yellow)
+                    </li>
+                    <li>
+                      <strong>Memorize:</strong> Pay attention to the order and
+                      timing of each signal
+                    </li>
+                    <li>
+                      <strong>Repeat Phase:</strong> Click the colored buttons
+                      in the exact same order you saw them
+                    </li>
+                    <li>
+                      <strong>Time Limit:</strong> You have a limited time
+                      window to input each signal (varies by difficulty)
+                    </li>
+                    <li>
+                      <strong>Sequence Growth:</strong> After each successful
+                      round, the sequence increases by one signal
+                    </li>
+                    <li>
+                      <strong>Game Over:</strong> Making a mistake or timing out
+                      ends the game immediately
+                    </li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-bold mb-2">
+                    Difficulty Levels & Multipliers
+                  </h3>
+                  <p className="mb-2">
+                    Choose your difficulty level based on speed and challenge:
+                  </p>
+                  <ul className="list-disc list-inside space-y-2 ml-2">
+                    <li>
+                      <strong>Easy:</strong> Slow playback speed, 3 seconds per
+                      input - 1.3× multiplier
+                    </li>
+                    <li>
+                      <strong>Medium:</strong> Normal playback speed, 2 seconds
+                      per input - 1.6× multiplier
+                    </li>
+                    <li>
+                      <strong>Hard:</strong> Fast playback speed, 1.5 seconds
+                      per input - 2.0× multiplier
+                    </li>
+                  </ul>
+                  <p className="mt-2">
+                    <strong>Note:</strong> Difficulty affects speed and
+                    pressure, not randomness. All players see the same sequence
+                    patterns.
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-bold mb-2">
+                    Scoring & Performance
+                  </h3>
+                  <p className="mb-2">
+                    Your score is the maximum sequence length you successfully
+                    completed:
+                  </p>
+                  <ul className="list-disc list-inside space-y-2 ml-2">
+                    <li>
+                      <strong>Score:</strong> Increases by +1 for each sequence
+                      you complete correctly
+                    </li>
+                    <li>
+                      <strong>Partial Rounds:</strong> Incomplete sequences
+                      don't count toward your score
+                    </li>
+                    <li>
+                      <strong>Mistake:</strong> First incorrect input or timeout
+                      ends the game
+                    </li>
+                    <li>
+                      <strong>No Retries:</strong> One mistake ends the
+                      session—no second chances
+                    </li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Reward Calculation</h3>
+                  <p className="mb-2">
+                    Your reward is calculated proportionally and capped at the
+                    maximum multiplier:
+                  </p>
+                  <ul className="list-disc list-inside space-y-2 ml-2">
+                    <li>
+                      <strong>Formula:</strong> Reward = Stake Amount ×
+                      Difficulty Multiplier × Performance Ratio
+                    </li>
+                    <li>
+                      <strong>Performance Ratio:</strong> Your score divided by
+                      the target score (capped at 1.0)
+                    </li>
+                    <li>
+                      <strong>Target Scores:</strong> Easy = 10, Medium = 7,
+                      Hard = 5
+                    </li>
+                    <li>
+                      <strong>Example (Medium):</strong> 5 MNT stake, score 7/7
+                      = 8 MNT reward (3 MNT profit)
+                    </li>
+                    <li>
+                      <strong>Example (Hard):</strong> 10 MNT stake, score 3/5 =
+                      12 MNT reward (2 MNT profit)
+                    </li>
+                    <li>
+                      <strong>Reward Cap:</strong> Scoring above the target
+                      doesn't increase rewards beyond the maximum
+                    </li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-bold mb-2">
+                    Claiming Your Reward
+                  </h3>
+                  <p className="mb-2">
+                    After the game ends, rewards are based on your final score:
+                  </p>
+                  <ul className="list-disc list-inside space-y-2 ml-2">
+                    <li>
+                      <strong>Proportional Rewards:</strong> Even if you don't
+                      reach the target score, you receive proportional rewards
+                      based on your progress
+                    </li>
+                    <li>
+                      <strong>Perfect Performance:</strong> Reaching or
+                      exceeding the target score earns the maximum multiplier
+                    </li>
+                    <li>
+                      <strong>Zero Score:</strong> If you score 0 (fail on first
+                      sequence), no reward is earned
+                    </li>
+                    <li>
+                      <strong>Instant Settlement:</strong> All transactions are
+                      processed through the smart contract on Mantle Sepolia
+                    </li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-bold mb-2">
+                    Fair Play Principles
+                  </h3>
+                  <ul className="list-disc list-inside space-y-2 ml-2">
+                    <li>
+                      <strong>Skill-Based Only:</strong> Outcomes depend
+                      entirely on your memory and focus—no luck involved
+                    </li>
+                    <li>
+                      <strong>Deterministic Sequences:</strong> Sequences are
+                      generated at game start using a deterministic algorithm
+                    </li>
+                    <li>
+                      <strong>No Mid-Game Changes:</strong> No randomness
+                      affects rewards after the sequence is generated
+                    </li>
+                    <li>
+                      <strong>Equal Challenge:</strong> Same rules and mechanics
+                      apply across all devices and sessions
+                    </li>
+                    <li>
+                      <strong>Transparent Rewards:</strong> All reward
+                      calculations are verifiable on-chain
+                    </li>
+                    <li>
+                      <strong>No Cashout Tricks:</strong> No double-or-nothing
+                      or mid-game cashout mechanics
+                    </li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Strategy Tips</h3>
+                  <ul className="list-disc list-inside space-y-2 ml-2">
+                    <li>
+                      Start with Easy difficulty to learn the game mechanics
+                    </li>
+                    <li>
+                      Watch the entire sequence before attempting to repeat it
+                    </li>
+                    <li>
+                      Use mnemonic techniques like creating a story with the
+                      colors
+                    </li>
+                    <li>
+                      Practice rhythmic tapping to help remember timing patterns
+                    </li>
+                    <li>
+                      Stay focused and avoid distractions during the watch phase
+                    </li>
+                    <li>
+                      Hard mode offers the best multiplier but requires intense
+                      concentration
+                    </li>
                   </ul>
                 </div>
               </div>

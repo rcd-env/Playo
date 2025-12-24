@@ -455,7 +455,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
 
         {/* Right Column - Game Board (2/3 width) */}
         <div
-          className={`lg:col-span-2 rounded-lg border ${borderColor} ${cardBg} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] p-6 flex flex-col max-h-[800px]`}
+          className={`lg:col-span-2 rounded-lg border ${borderColor} ${cardBg} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] p-6 flex flex-col max-h-[1000px]`}
         >
           {gameStatus === "starting" && (
             <div className="flex items-center justify-center flex-1">
