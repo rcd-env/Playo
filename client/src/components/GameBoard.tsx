@@ -83,7 +83,7 @@ export function GameBoard({
     successSoundRef.current = new Audio("/audios/success.mp3");
     successSoundRef.current.volume = 0.3;
 
-    errorSoundRef.current = new Audio("/audios/error.mp3");
+    errorSoundRef.current = new Audio("/audios/fail.mp3");
     errorSoundRef.current.volume = 1;
   }, []);
 
