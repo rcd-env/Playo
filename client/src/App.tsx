@@ -95,7 +95,7 @@ function App() {
               }}
             >
               <Info className="w-5 h-5" />
-              <span className="font-semibold">How to Play</span>
+              <span className="font-semibold">Game Info</span>
             </button>
 
             {/* Theme Toggle & Wallet Connect */}
@@ -439,14 +439,15 @@ function App() {
                     <h2
                       className={`text-3xl font-bold mb-3 ${textColor} font-Tsuchigumo`}
                     >
-                      Simon - Memory Master
+                      Simono - Choose Your Fate
                     </h2>
                     <p
                       className={`text-lg ${
                         isDarkMode ? "text-gray-300" : "text-gray-700"
                       }`}
                     >
-                      Sequence memory game - watch, remember, and repeat
+                      Pure sequential memory - watch the new signal, remember
+                      the entire sequence
                     </p>
                   </div>
                 </div>
@@ -454,11 +455,10 @@ function App() {
                 <div>
                   <h3 className="text-xl font-bold mb-2">Game Objective</h3>
                   <p>
-                    Simon is a skill-based sequence memory game where you must
-                    watch and repeat an increasingly long sequence of colored
-                    signals. Your focus and memory directly determine your
-                    rewards based on how many sequences you successfully
-                    complete.
+                    Simon is a pure sequential memory challenge where only the
+                    newly added signal is shown each round. You must remember
+                    and input the entire growing sequence from memory. Your
+                    focus and recall ability directly determine your rewards.
                   </p>
                 </div>
 
@@ -488,28 +488,29 @@ function App() {
                   <h3 className="text-xl font-bold mb-2">Gameplay Mechanics</h3>
                   <ul className="list-disc list-inside space-y-2 ml-2">
                     <li>
-                      <strong>Watch Phase:</strong> The game displays a sequence
-                      of colored signals (Red, Blue, Green, Yellow)
+                      <strong>Round 1:</strong> Watch the first colored signal
+                      (Red, Blue, Green, or Yellow), then repeat it
                     </li>
                     <li>
-                      <strong>Memorize:</strong> Pay attention to the order and
-                      timing of each signal
+                      <strong>Each New Round:</strong> Only the newly added
+                      signal is shown—no full sequence replay
                     </li>
                     <li>
-                      <strong>Repeat Phase:</strong> Click the colored buttons
-                      in the exact same order you saw them
+                      <strong>Sequential Input:</strong> You must input the
+                      entire sequence from memory, in correct order
                     </li>
                     <li>
-                      <strong>Time Limit:</strong> You have a limited time
-                      window to input each signal (varies by difficulty)
+                      <strong>Input Timer:</strong> You have base time + time
+                      per signal to complete the full sequence (e.g., Round 5 =
+                      longer time than Round 2)
                     </li>
                     <li>
-                      <strong>Sequence Growth:</strong> After each successful
-                      round, the sequence increases by one signal
+                      <strong>Level Progress:</strong> Successfully completing a
+                      sequence advances you to the next level with +1 signal
                     </li>
                     <li>
-                      <strong>Game Over:</strong> Making a mistake or timing out
-                      ends the game immediately
+                      <strong>Game Over:</strong> Any incorrect signal or
+                      timeout ends the game immediately—no partial credit
                     </li>
                   </ul>
                 </div>
@@ -519,26 +520,28 @@ function App() {
                     Difficulty Levels & Multipliers
                   </h3>
                   <p className="mb-2">
-                    Choose your difficulty level based on speed and challenge:
+                    Difficulty affects signal speed, total time, and per-input
+                    pressure:
                   </p>
                   <ul className="list-disc list-inside space-y-2 ml-2">
                     <li>
-                      <strong>Easy:</strong> Slow playback speed, 3 seconds per
-                      input - 1.3× multiplier
+                      <strong>Easy:</strong> 1s signal display, 1.2s max per
+                      input - 1.3× multiplier, target 16 levels
                     </li>
                     <li>
-                      <strong>Medium:</strong> Normal playback speed, 2 seconds
-                      per input - 1.6× multiplier
+                      <strong>Medium:</strong> 0.7s signal display, 0.9s max per
+                      input - 1.6× multiplier, target 12 levels
                     </li>
                     <li>
-                      <strong>Hard:</strong> Fast playback speed, 1.5 seconds
-                      per input - 2.0× multiplier
+                      <strong>Hard:</strong> 0.5s signal display, 0.6s max per
+                      input - 2.0× multiplier, target 8 levels
                     </li>
                   </ul>
                   <p className="mt-2">
-                    <strong>Note:</strong> Difficulty affects speed and
-                    pressure, not randomness. All players see the same sequence
-                    patterns.
+                    <strong>Note:</strong> Total time scales sub-linearly (early
+                    levels are forgiving, late levels get tighter). After level
+                    5, per-input timeout reduces every 2 levels for increased
+                    pressure.
                   </p>
                 </div>
 
@@ -547,27 +550,69 @@ function App() {
                     Scoring & Performance
                   </h3>
                   <p className="mb-2">
-                    Your score is the maximum sequence length you successfully
-                    completed:
+                    Your score equals the highest level (sequence length) you
+                    successfully completed:
                   </p>
                   <ul className="list-disc list-inside space-y-2 ml-2">
                     <li>
-                      <strong>Score:</strong> Increases by +1 for each sequence
-                      you complete correctly
+                      <strong>Score = Levels Completed:</strong> Each correct
+                      full sequence = +1 level
                     </li>
                     <li>
-                      <strong>Partial Rounds:</strong> Incomplete sequences
-                      don't count toward your score
+                      <strong>No Partial Credit:</strong> Incomplete sequences
+                      or wrong inputs don't count
                     </li>
                     <li>
-                      <strong>Mistake:</strong> First incorrect input or timeout
-                      ends the game
+                      <strong>One Strike Rule:</strong> First mistake or timeout
+                      ends the game permanently
                     </li>
                     <li>
-                      <strong>No Retries:</strong> One mistake ends the
-                      session—no second chances
+                      <strong>Visual Feedback:</strong> Wrong inputs flash red
+                      before game ends
+                    </li>
+                    <li>
+                      <strong>No Retries:</strong> Each game session allows only
+                      one attempt—no continues
                     </li>
                   </ul>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-bold mb-2">
+                    Timing & Pressure Mechanics
+                  </h3>
+                  <p className="mb-2">
+                    Advanced timing system creates skill-based challenge:
+                  </p>
+                  <ul className="list-disc list-inside space-y-2 ml-2">
+                    <li>
+                      <strong>Per-Input Timeout:</strong> Each click must happen
+                      within the max time limit (1.2s Easy, 0.9s Medium, 0.6s
+                      Hard) or game ends
+                    </li>
+                    <li>
+                      <strong>Sub-Linear Scaling:</strong> Total time grows
+                      slower than sequence length—early levels are generous,
+                      late levels demand efficiency
+                    </li>
+                    <li>
+                      <strong>Late-Game Pressure Ramp:</strong> After level 5,
+                      per-input timeout shrinks by ~8-12% every 2 levels
+                    </li>
+                    <li>
+                      <strong>Execution Matters:</strong> Can't hesitate on late
+                      levels—memorization alone isn't enough
+                    </li>
+                    <li>
+                      <strong>Hard Mode Ramps Fastest:</strong> High risk, high
+                      reward—pressure increases more aggressively
+                    </li>
+                  </ul>
+                  <p className="mt-2">
+                    <strong>Why This Matters:</strong> Prevents consistent
+                    profit by making execution under pressure the real
+                    challenge, not just memory.
+                  </p>
                 </div>
 
                 <div>
@@ -586,16 +631,16 @@ function App() {
                       the target score (capped at 1.0)
                     </li>
                     <li>
-                      <strong>Target Scores:</strong> Easy = 10, Medium = 7,
-                      Hard = 5
+                      <strong>Target Scores:</strong> Easy = 16 levels, Medium =
+                      12 levels, Hard = 8 levels
                     </li>
                     <li>
-                      <strong>Example (Medium):</strong> 5 MNT stake, score 7/7
-                      = 8 MNT reward (3 MNT profit)
+                      <strong>Example (Medium):</strong> 5 MNT stake, 12/12
+                      levels = 8 MNT reward (3 MNT profit)
                     </li>
                     <li>
-                      <strong>Example (Hard):</strong> 10 MNT stake, score 3/5 =
-                      12 MNT reward (2 MNT profit)
+                      <strong>Example (Hard):</strong> 10 MNT stake, 6/8 levels
+                      = 15 MNT reward (5 MNT profit)
                     </li>
                     <li>
                       <strong>Reward Cap:</strong> Scoring above the target
@@ -668,24 +713,34 @@ function App() {
                   <h3 className="text-xl font-bold mb-2">Strategy Tips</h3>
                   <ul className="list-disc list-inside space-y-2 ml-2">
                     <li>
-                      Start with Easy difficulty to learn the game mechanics
+                      Start with Easy to learn sequential memory and timing
+                      mechanics
                     </li>
                     <li>
-                      Watch the entire sequence before attempting to repeat it
+                      Focus intensely on each new signal—you won't see it again
                     </li>
                     <li>
-                      Use mnemonic techniques like creating a story with the
-                      colors
+                      Build mental patterns: group colors, create stories, or
+                      use spatial memory
                     </li>
                     <li>
-                      Practice rhythmic tapping to help remember timing patterns
+                      Practice speed—after level 5, hesitation becomes dangerous
                     </li>
                     <li>
-                      Stay focused and avoid distractions during the watch phase
+                      Input with rhythm and confidence—consistent timing reduces
+                      mistakes
                     </li>
                     <li>
-                      Hard mode offers the best multiplier but requires intense
-                      concentration
+                      Train muscle memory for color positions to speed up
+                      execution
+                    </li>
+                    <li>
+                      Eliminate distractions—late levels require perfect recall
+                      AND fast execution
+                    </li>
+                    <li>
+                      Hard mode offers 2× rewards but demands instant recall and
+                      lightning-fast inputs
                     </li>
                   </ul>
                 </div>
