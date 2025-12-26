@@ -43,7 +43,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
   // Initialize audio
   useEffect(() => {
     successSound.current = new Audio("/audios/success.mp3");
-    errorSound.current = new Audio("/audios/error.mp3");
+    errorSound.current = new Audio("/audios/fail.mp3");
     successSound.current.volume = 0.5;
     errorSound.current.volume = 0.5;
   }, []);
@@ -576,7 +576,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
                   <div
                     key={index}
                     onMouseEnter={playHoverSound}
-                    className={`aspect-square rounded-full border border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center justify-center text-xl font-bold cursor-not-allowed opacity-80`}
+                    className={`aspect-square rounded-full border border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center justify-center text-xl font-bold cursor-pointer opacity-80`}
                     style={{
                       backgroundColor: isDarkMode ? "#153243" : "#F4F9E9",
                       color: textColor === "text-white" ? "white" : "#000000",

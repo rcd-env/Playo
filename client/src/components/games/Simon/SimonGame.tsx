@@ -12,30 +12,42 @@ type Difficulty = "easy" | "medium" | "hard";
 type GamePhase = "idle" | "starting" | "showing" | "input" | "completed";
 
 interface DifficultyConfig {
-  playbackSpeed: number; // milliseconds per signal
-  inputTimeWindow: number; // seconds to input each signal
+  playbackSpeed: number; // milliseconds for signal display
+  baseInputTime: number; // base seconds for total input
+  timePerSignal: number; // additional seconds per signal in sequence
+  perInputTimeout: number; // max seconds per single input
   rewardMultiplier: number;
   targetScore: number;
+  pressureRampRate: number; // timeout reduction rate for late game
 }
 
 const DIFFICULTY_CONFIGS: Record<Difficulty, DifficultyConfig> = {
   easy: {
     playbackSpeed: 1000,
-    inputTimeWindow: 3,
+    baseInputTime: 5,
+    timePerSignal: 1.5,
+    perInputTimeout: 1.2,
     rewardMultiplier: 1.3,
-    targetScore: 10,
+    targetScore: 16,
+    pressureRampRate: 0.08, // 8% reduction every 2 levels after level 5
   },
   medium: {
     playbackSpeed: 700,
-    inputTimeWindow: 2,
+    baseInputTime: 4,
+    timePerSignal: 1,
+    perInputTimeout: 0.9,
     rewardMultiplier: 1.6,
-    targetScore: 7,
+    targetScore: 12,
+    pressureRampRate: 0.1, // 10% reduction every 2 levels after level 5
   },
   hard: {
     playbackSpeed: 500,
-    inputTimeWindow: 1.5,
+    baseInputTime: 3,
+    timePerSignal: 0.7,
+    perInputTimeout: 0.6,
     rewardMultiplier: 2.0,
-    targetScore: 5,
+    targetScore: 8,
+    pressureRampRate: 0.12, // 12% reduction every 2 levels after level 5
   },
 };
 
@@ -64,14 +76,19 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
   const [sequence, setSequence] = useState<number[]>([]);
   const [playerInput, setPlayerInput] = useState<number[]>([]);
   const [score, setScore] = useState(0);
+  const [completedInputs, setCompletedInputs] = useState(0); // Track completed inputs for display
+  const [currentLevelLength, setCurrentLevelLength] = useState(1); // Track current level length for display
   const [activeSignal, setActiveSignal] = useState<number | null>(null);
+  const [wrongSignal, setWrongSignal] = useState<number | null>(null);
   const [inputTimer, setInputTimer] = useState(0);
+  const [lastInputTime, setLastInputTime] = useState(0);
   const [gameStartPending, setGameStartPending] = useState(false);
   const [earnedReward, setEarnedReward] = useState("0");
   const [netGain, setNetGain] = useState(0);
 
   // Audio refs
   const signalSounds = useRef<HTMLAudioElement[]>([]);
+  const successSound = useRef<HTMLAudioElement | null>(null);
   const errorSound = useRef<HTMLAudioElement | null>(null);
 
   const {
@@ -103,7 +120,9 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
       return audio;
     });
 
-    errorSound.current = new Audio("/audios/error.mp3");
+    successSound.current = new Audio("/audios/success.mp3");
+    successSound.current.volume = 0.5;
+    errorSound.current = new Audio("/audios/fail.mp3");
     errorSound.current.volume = 0.5;
   }, []);
 
@@ -147,36 +166,35 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
     }
   };
 
-  // Show sequence to player
+  // Show only the NEW signal to player (not full sequence)
   useEffect(() => {
     if (gamePhase !== "showing") return;
 
-    const currentSequence = sequence.slice(0, score + 1);
-    let step = 0;
+    // Only show the newly added signal (the one at position 'score')
+    const newSignalIndex = score;
+    const signalId = sequence[newSignalIndex];
 
-    const showNextSignal = () => {
-      if (step >= currentSequence.length) {
-        // Sequence shown, switch to input phase
-        setTimeout(() => {
-          setGamePhase("input");
-          setPlayerInput([]);
-          setInputTimer(config.inputTimeWindow);
-        }, 500);
-        return;
-      }
+    // Show the new signal
+    setActiveSignal(signalId);
+    playSignalSound(signalId);
 
-      const signalId = currentSequence[step];
-      setActiveSignal(signalId);
-      playSignalSound(signalId);
-
+    setTimeout(() => {
+      setActiveSignal(null);
+      // Switch to input phase after showing the new signal
       setTimeout(() => {
-        setActiveSignal(null);
-        step++;
-        setTimeout(showNextSignal, 300);
-      }, config.playbackSpeed);
-    };
-
-    showNextSignal();
+        setGamePhase("input");
+        setPlayerInput([]);
+        // Calculate input time with sub-linear scaling: base + perSignal × (sequenceLength ^ 0.7)
+        const sequenceLength = score + 1;
+        setCurrentLevelLength(sequenceLength); // Set current level length for display
+        const totalInputTime =
+          config.baseInputTime +
+          config.timePerSignal * Math.pow(sequenceLength, 0.7);
+        setInputTimer(totalInputTime);
+        setLastInputTime(totalInputTime); // Initialize last input time
+        setCompletedInputs(0); // Reset completed inputs for new level
+      }, 500);
+    }, config.playbackSpeed);
   }, [gamePhase, score, sequence, config]);
 
   // Input timer countdown
@@ -211,33 +229,85 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
     return () => clearTimeout(timer);
   }, [gamePhase, inputTimer, betAmount, score, config, endGame]);
 
-  // Reset input timer when player makes correct input
-  useEffect(() => {
-    if (gamePhase === "input" && playerInput.length > 0) {
-      setInputTimer(config.inputTimeWindow);
-    }
-  }, [playerInput.length, gamePhase, config]);
+  // No longer reset timer per input - timer runs continuously for entire sequence
 
   // Handle player input
   const handleSignalClick = (signalId: number) => {
     if (gamePhase !== "input" || gameStatus !== "playing") return;
 
+    const currentTime = inputTimer;
+
+    // Calculate per-input timeout with late-game pressure ramp
+    const sequenceLength = score + 1;
+    let effectivePerInputTimeout = config.perInputTimeout;
+
+    // Apply pressure ramp after level 5 (every 2 levels)
+    if (sequenceLength > 5) {
+      const levelsAbove5 = sequenceLength - 5;
+      const rampSteps = Math.floor(levelsAbove5 / 2);
+      const reductionFactor = Math.pow(1 - config.pressureRampRate, rampSteps);
+      effectivePerInputTimeout *= reductionFactor;
+    }
+
+    // Check per-input timeout ONLY for subsequent inputs (not the first input)
+    // First input has no previous input to check against
+    if (playerInput.length > 0) {
+      const timeSinceLastInput = lastInputTime - currentTime;
+
+      if (timeSinceLastInput > effectivePerInputTimeout) {
+        // Input took too long - game over
+        setTimeout(() => {
+          setWrongSignal(signalId);
+          if (errorSound.current) {
+            errorSound.current.currentTime = 0;
+            errorSound.current.play().catch(() => {});
+          }
+          setTimeout(() => {
+            setWrongSignal(null);
+            handleMistake();
+          }, 800);
+        }, 200);
+        return;
+      }
+    }
+
     const newInput = [...playerInput, signalId];
     setPlayerInput(newInput);
+    setLastInputTime(currentTime); // Update last input time
 
     setActiveSignal(signalId);
-    playSignalSound(signalId);
-    setTimeout(() => setActiveSignal(null), 200);
 
     const currentSequence = sequence.slice(0, score + 1);
     const inputIndex = newInput.length - 1;
 
     // Check if input is correct
     if (newInput[inputIndex] !== currentSequence[inputIndex]) {
-      // Wrong input - game over
-      handleMistake();
+      // Wrong input - play error sound and show red flash
+      if (errorSound.current) {
+        errorSound.current.currentTime = 0;
+        errorSound.current.play().catch(() => {});
+      }
+      setTimeout(() => {
+        setActiveSignal(null);
+        setWrongSignal(signalId);
+        // End game after brief visual feedback
+        setTimeout(() => {
+          setWrongSignal(null);
+          handleMistake();
+        }, 800);
+      }, 200);
       return;
     }
+
+    // Input is correct - play success sound
+    if (successSound.current) {
+      successSound.current.currentTime = 0;
+      successSound.current.play().catch(() => {});
+    }
+    setTimeout(() => setActiveSignal(null), 200);
+
+    // Input is correct - update completed count for real-time progress
+    setCompletedInputs(newInput.length);
 
     // Check if sequence is complete
     if (newInput.length === currentSequence.length) {
@@ -274,7 +344,8 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
 
   // Handle mistake (wrong input or timeout)
   const handleMistake = useCallback(() => {
-    if (errorSound.current) {
+    // For timeout, play error sound (not played yet)
+    if (wrongSignal === null && errorSound.current) {
       errorSound.current.currentTime = 0;
       errorSound.current.play().catch(() => {});
     }
@@ -284,7 +355,7 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
 
     setGamePhase("completed");
     endGame();
-  }, [score, calculateReward, endGame]);
+  }, [score, calculateReward, endGame, wrongSignal]);
 
   // Handle reset
   const handleReset = () => {
@@ -292,8 +363,12 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
     setSequence([]);
     setScore(0);
     setPlayerInput([]);
+    setCompletedInputs(0);
+    setCurrentLevelLength(1);
     setActiveSignal(null);
+    setWrongSignal(null);
     setInputTimer(0);
+    setLastInputTime(0);
     setEarnedReward("0");
     setNetGain(0);
     setGameStartPending(false);
@@ -412,319 +487,319 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
               : "Start Game"}
           </button>
 
-          {/* Game Stats Box */}
+          {/* Game Stats - Always visible */}
           <div
             className={`p-6 rounded-lg border ${borderColor} ${cardBg} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] min-h-[200px]`}
           >
             <h3 className={`text-xl font-medium mb-4 ${textColor}`}>
-              {gameStatus === "idle" ? "Game Stats" : "Game Progress"}
+              Game Stats
             </h3>
-
-            {gameStatus === "idle" && (
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span
-                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
-                  >
-                    Difficulty:
-                  </span>
-                  <span
-                    className={`font-bold ${
-                      isDarkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span
-                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
-                  >
-                    Reward Multiplier:
-                  </span>
-                  <span
-                    className={`font-bold ${
-                      isDarkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    {config.rewardMultiplier}x
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span
-                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
-                  >
-                    Playback Speed:
-                  </span>
-                  <span
-                    className={`font-bold ${
-                      isDarkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    {difficulty === "easy"
-                      ? "Slow"
-                      : difficulty === "medium"
-                      ? "Normal"
-                      : "Fast"}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span
-                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
-                  >
-                    Input Time:
-                  </span>
-                  <span
-                    className={`font-bold ${
-                      isDarkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    {config.inputTimeWindow}s per signal
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span
-                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
-                  >
-                    Maximum Possible Reward:
-                  </span>
-                  <span
-                    className="font-bold"
-                    style={{
-                      color: isDarkMode ? "#10b981" : "#059669",
-                      fontWeight: "bolder",
-                    }}
-                  >
-                    {betAmount && parseFloat(betAmount) > 0
-                      ? (
-                          parseFloat(betAmount) * config.rewardMultiplier
-                        ).toFixed(4)
-                      : "0.0000"}{" "}
-                    MNT
-                  </span>
-                </div>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span
+                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                >
+                  Difficulty:
+                </span>
+                <span
+                  className={`font-bold ${
+                    isDarkMode ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
+                </span>
               </div>
-            )}
-
-            {(gameStatus === "playing" || gameStatus === "starting") && (
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span
-                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
-                  >
-                    Current Sequence:
-                  </span>
-                  <span
-                    className={`font-bold text-2xl ${
-                      isDarkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    {score + 1}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span
-                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
-                  >
-                    Score:
-                  </span>
-                  <span
-                    className={`font-bold text-2xl ${
-                      isDarkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    {score}
-                  </span>
-                </div>
-                {gamePhase === "input" && (
-                  <div className="flex justify-between">
-                    <span
-                      className={isDarkMode ? "text-gray-300" : "text-gray-700"}
-                    >
-                      Input Progress:
-                    </span>
-                    <span
-                      className={`font-bold ${
-                        isDarkMode ? "text-white" : "text-gray-900"
-                      }`}
-                    >
-                      {playerInput.length} / {score + 1}
-                    </span>
-                  </div>
-                )}
-                {gamePhase === "input" && (
-                  <div className="flex justify-between">
-                    <span
-                      className={isDarkMode ? "text-gray-300" : "text-gray-700"}
-                    >
-                      Time Remaining:
-                    </span>
-                    <span
-                      className={`font-bold ${
-                        inputTimer < 1
-                          ? "text-red-500"
-                          : isDarkMode
-                          ? "text-white"
-                          : "text-gray-900"
-                      }`}
-                    >
-                      {inputTimer.toFixed(1)}s
-                    </span>
-                  </div>
-                )}
-                <div className="flex justify-between">
-                  <span
-                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
-                  >
-                    Current Reward:
-                  </span>
-                  <span
-                    className="font-bold"
-                    style={{
-                      color: isDarkMode ? "#10b981" : "#059669",
-                      fontWeight: "bolder",
-                    }}
-                  >
-                    {earnedReward} MNT
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span
-                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
-                  >
-                    Net Gain/Loss:
-                  </span>
-                  <span
-                    className={`font-bold ${
-                      netGain > 0
-                        ? "text-green-500"
-                        : netGain < 0
-                        ? "text-red-500"
-                        : isDarkMode
-                        ? "text-white"
-                        : "text-gray-900"
-                    }`}
-                  >
-                    {netGain > 0 ? "+" : ""}
-                    {netGain.toFixed(4)} MNT
-                  </span>
-                </div>
+              <div className="flex justify-between">
+                <span
+                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                >
+                  Reward Multiplier:
+                </span>
+                <span
+                  className={`font-bold ${
+                    isDarkMode ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  {config.rewardMultiplier}x
+                </span>
               </div>
-            )}
+              <div className="flex justify-between">
+                <span
+                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                >
+                  Maximum Possible Reward:
+                </span>
+                <span
+                  className="font-bold"
+                  style={{
+                    color: isDarkMode ? "#10b981" : "#059669",
+                    fontWeight: "bolder",
+                  }}
+                >
+                  {betAmount && parseFloat(betAmount) > 0
+                    ? (parseFloat(betAmount) * config.rewardMultiplier).toFixed(
+                        4
+                      )
+                    : "0.0000"}{" "}
+                  MNT
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span
+                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                >
+                  Playback Speed:
+                </span>
+                <span
+                  className={`font-bold ${
+                    isDarkMode ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  {difficulty === "easy"
+                    ? "Slow (1s)"
+                    : difficulty === "medium"
+                    ? "Normal (0.7s)"
+                    : "Fast (0.5s)"}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span
+                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                >
+                  Base Input Time:
+                </span>
+                <span
+                  className={`font-bold ${
+                    isDarkMode ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  {config.baseInputTime}s + {config.timePerSignal}s/signal
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Right Column - Game Board */}
         <div
-          className={`rounded-lg border ${borderColor} ${cardBg} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] p-6 flex flex-col items-center justify-center min-h-[600px]`}
+          className={`rounded-lg border ${borderColor} ${cardBg} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] p-6 flex flex-col min-h-[600px]`}
         >
-          {gameStatus === "idle" && (
-            <div className="w-full max-w-md">
-              {/* Simon Signals Grid */}
-              <div className="grid grid-cols-2 gap-3">
-                {COLORS.map((color) => {
-                  // Determine which corners to round for each box
-                  let roundedCorners = "";
-                  if (color.id === 0) {
-                    // Top-left: round outer corners (top-left) and inner corner (bottom-right)
-                    roundedCorners = "rounded-4xl";
-                  } else if (color.id === 1) {
-                    // Top-right: round outer corners (top-right) and inner corner (bottom-left)
-                    roundedCorners = "rounded-4xl";
-                  } else if (color.id === 2) {
-                    // Bottom-left: round outer corners (bottom-left) and inner corner (top-right)
-                    roundedCorners = "rounded-4xl";
-                  } else if (color.id === 3) {
-                    // Bottom-right: round outer corners (bottom-right) and inner corner (top-left)
-                    roundedCorners = "rounded-4xl";
-                  }
-
-                  return (
-                    <div
-                      key={color.id}
-                      className={`aspect-square border-2 transition-all duration-150 cursor-not-allowed ${roundedCorners}`}
-                      style={{
-                        backgroundColor: color.bg,
-                        borderColor: color.border,
-                        opacity: 0.7,
-                      }}
-                    >
-                      <div className="w-full h-full flex items-center justify-center">
-                        {/* <span className="text-black text-2xl font-bold drop-shadow-lg">
-                          {color.name}
-                        </span> */}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
           {gameStatus === "starting" && (
-            <div className="text-center">
-              <div
-                className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-t-transparent mb-4"
-                style={{
-                  borderColor: isDarkMode ? "#0fa594" : "#000000",
-                  borderTopColor: "transparent",
-                }}
-              ></div>
-              <p className="text-lg opacity-70">Starting game...</p>
+            <div className="flex items-center justify-center flex-1">
+              <div className="text-center">
+                <div
+                  className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-t-transparent mb-4"
+                  style={{
+                    borderColor: isDarkMode ? "#0fa594" : "#000000",
+                    borderTopColor: "transparent",
+                  }}
+                ></div>
+                <p className={`text-lg opacity-70 ${textColor}`}>
+                  Starting game...
+                </p>
+              </div>
             </div>
           )}
 
-          {gameStatus === "playing" && (
-            <div className="w-full max-w-md">
-              {/* Simon Signals Grid */}
-              <div className="grid grid-cols-2 gap-3">
-                {COLORS.map((color) => {
-                  // Determine which corners to round for each box
-                  let roundedCorners = "";
-                  if (color.id === 0) {
-                    // Top-left: round outer corners (top-left) and inner corner (bottom-right)
-                    roundedCorners = "rounded-4xl";
-                  } else if (color.id === 1) {
-                    // Top-right: round outer corners (top-right) and inner corner (bottom-left)
-                    roundedCorners = "rounded-4xl";
-                  } else if (color.id === 2) {
-                    // Bottom-left: round outer corners (bottom-left) and inner corner (top-right)
-                    roundedCorners = "rounded-4xl";
-                  } else if (color.id === 3) {
-                    // Bottom-right: round outer corners (bottom-right) and inner corner (top-left)
-                    roundedCorners = "rounded-4xl";
-                  }
+          {gameStatus !== "starting" && (
+            <>
+              {/* Stats Header - shown in both idle and playing states */}
+              <div className="flex justify-around items-center mb-6 gap-4">
+                {/* Status / Progress */}
+                <div className="flex items-center gap-3">
+                  <span className={`text-2xl font-bold ${textColor}`}>
+                    Done
+                  </span>
+                  <div
+                    className={`px-6 py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-2xl font-bold min-w-20 text-center`}
+                    style={{
+                      backgroundColor:
+                        gamePhase === "input" && inputTimer < 3
+                          ? "#fecaca"
+                          : isDarkMode
+                          ? "#1d505c"
+                          : "#F4F9E9",
+                      color: isDarkMode ? "#ffffff" : "#000000",
+                    }}
+                  >
+                    {gameStatus === "idle"
+                      ? "-"
+                      : `${completedInputs}/${currentLevelLength}`}
+                  </div>
+                </div>
 
-                  return (
-                    <button
-                      key={color.id}
-                      onClick={() => handleSignalClick(color.id)}
-                      disabled={gamePhase !== "input"}
-                      className={`aspect-square border-2 transition-all duration-150 cursor-pointer hover:scale-105 
-                          ${roundedCorners}`}
-                      style={{
-                        backgroundColor:
-                          activeSignal === color.id ? color.active : color.bg,
-                        borderColor: color.border,
-                        opacity: activeSignal === color.id ? 1 : 0.7,
-                        transform:
-                          activeSignal === color.id
-                            ? "scale(0.95)"
-                            : "scale(1)",
-                        boxShadow:
-                          activeSignal === color.id
-                            ? `0 0 30px ${color.active}`
-                            : "none",
-                      }}
-                    >
-                      <div className="w-full h-full flex items-center justify-center">
-                        {/* Label removed for cleaner design */}
-                      </div>
-                    </button>
-                  );
-                })}
+                {/* Level (Sequence Length) */}
+                <div className="flex items-center gap-3">
+                  <span className={`text-2xl font-bold ${textColor}`}>
+                    Level
+                  </span>
+                  <div
+                    className={`px-6 py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-2xl font-bold min-w-[60px] text-center`}
+                    style={{
+                      backgroundColor:
+                        gameStatus === "idle"
+                          ? isDarkMode
+                            ? "#1d505c"
+                            : "#F4F9E9"
+                          : isDarkMode
+                          ? "#0fa594"
+                          : "#FCFF51",
+                      color:
+                        gameStatus === "idle"
+                          ? isDarkMode
+                            ? "#ffffff"
+                            : "#000000"
+                          : "#000000",
+                    }}
+                  >
+                    {gameStatus === "idle" ? "-" : score + 1}
+                  </div>
+                </div>
+
+                {/* Time Remaining */}
+                <div className="flex items-center gap-3">
+                  <span className={`text-2xl font-bold ${textColor}`}>
+                    Time
+                  </span>
+                  <div
+                    className={`px-6 py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-2xl font-bold min-w-[60px] text-center`}
+                    style={{
+                      backgroundColor:
+                        gamePhase === "input" && inputTimer < 3
+                          ? "#fecaca"
+                          : isDarkMode
+                          ? "#1d505c"
+                          : "#F4F9E9",
+                      color:
+                        gamePhase === "input" && inputTimer < 3
+                          ? "#dc2626"
+                          : isDarkMode
+                          ? "#ffffff"
+                          : "#000000",
+                    }}
+                  >
+                    {gameStatus === "idle" || gamePhase !== "input"
+                      ? "-"
+                      : `${inputTimer.toFixed(1)}s`}
+                  </div>
+                </div>
               </div>
-            </div>
+
+              {/* Game Board Content */}
+              <div className="flex items-center justify-center flex-1">
+                {gameStatus === "idle" && (
+                  <div className="w-full max-w-md">
+                    {/* Simon Signals Grid */}
+                    <div className="grid grid-cols-2 gap-3">
+                      {COLORS.map((color) => {
+                        // Determine which corners to round for each box
+                        let roundedCorners = "";
+                        if (color.id === 0) {
+                          // Top-left: round outer corners (top-left) and inner corner (bottom-right)
+                          roundedCorners = "rounded-4xl";
+                        } else if (color.id === 1) {
+                          // Top-right: round outer corners (top-right) and inner corner (bottom-left)
+                          roundedCorners = "rounded-4xl";
+                        } else if (color.id === 2) {
+                          // Bottom-left: round outer corners (bottom-left) and inner corner (top-right)
+                          roundedCorners = "rounded-4xl";
+                        } else if (color.id === 3) {
+                          // Bottom-right: round outer corners (bottom-right) and inner corner (top-left)
+                          roundedCorners = "rounded-4xl";
+                        }
+
+                        return (
+                          <div
+                            key={color.id}
+                            className={`aspect-square border-2 transition-all duration-150 cursor-pointer hover:scale-105 ${roundedCorners}`}
+                            style={{
+                              backgroundColor: color.bg,
+                              borderColor: color.border,
+                              opacity: 0.7,
+                            }}
+                          >
+                            <div className="w-full h-full flex items-center justify-center">
+                              {/* <span className="text-black text-2xl font-bold drop-shadow-lg">
+                                {color.name}
+                              </span> */}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {gameStatus === "playing" && (
+                  <div className="w-full max-w-md">
+                    {/* Simon Signals Grid */}
+                    <div className="grid grid-cols-2 gap-3">
+                      {COLORS.map((color) => {
+                        // Determine which corners to round for each box
+                        let roundedCorners = "";
+                        if (color.id === 0) {
+                          // Top-left: round outer corners (top-left) and inner corner (bottom-right)
+                          roundedCorners = "rounded-4xl";
+                        } else if (color.id === 1) {
+                          // Top-right: round outer corners (top-right) and inner corner (bottom-left)
+                          roundedCorners = "rounded-4xl";
+                        } else if (color.id === 2) {
+                          // Bottom-left: round outer corners (bottom-left) and inner corner (top-right)
+                          roundedCorners = "rounded-4xl";
+                        } else if (color.id === 3) {
+                          // Bottom-right: round outer corners (bottom-right) and inner corner (top-left)
+                          roundedCorners = "rounded-4xl";
+                        }
+
+                        return (
+                          <button
+                            key={color.id}
+                            onClick={() => handleSignalClick(color.id)}
+                            disabled={gamePhase !== "input"}
+                            className={`aspect-square border-2 transition-all duration-150 cursor-pointer hover:scale-105 
+                                ${roundedCorners} ${
+                              wrongSignal === color.id ? "animate-pulse" : ""
+                            }`}
+                            style={{
+                              backgroundColor:
+                                wrongSignal === color.id
+                                  ? "#FF0000"
+                                  : activeSignal === color.id
+                                  ? color.active
+                                  : color.bg,
+                              borderColor:
+                                wrongSignal === color.id
+                                  ? "#8B0000"
+                                  : color.border,
+                              opacity:
+                                wrongSignal === color.id
+                                  ? 1
+                                  : activeSignal === color.id
+                                  ? 1
+                                  : 0.7,
+                              transform:
+                                activeSignal === color.id
+                                  ? "scale(0.95)"
+                                  : "scale(1)",
+                              boxShadow:
+                                wrongSignal === color.id
+                                  ? "0 0 40px #FF0000, inset 0 0 20px #8B0000"
+                                  : activeSignal === color.id
+                                  ? `0 0 30px ${color.active}`
+                                  : "none",
+                            }}
+                          >
+                            <div className="w-full h-full flex items-center justify-center">
+                              {/* Label removed for cleaner design */}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
       </div>
