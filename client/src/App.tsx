@@ -102,7 +102,16 @@ function App() {
         <header className={`px-8 py-6 ${bgColor} bg-transparent`}>
           <div className="max-w-[1600px] mx-auto flex items-center justify-between">
             {/* Brand Name */}
-            <h1 className="text-4xl font-bold font-Tsuchigumo tracking-wider brand">
+            <h1 className="text-4xl font-bold font-Tsuchigumo tracking-wider brand flex gap-3 items-center">
+              <img
+                src={
+                  isDarkMode
+                    ? "/images/playo-logo-light.png"
+                    : "/images/playo-logo-dark.png"
+                }
+                alt="Playo Logo"
+                className="h-12 w-12 text-black"
+              />
               Playo
             </h1>
 
