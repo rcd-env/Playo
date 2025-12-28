@@ -63,7 +63,7 @@ export function Sidebar({
 
   return (
     <aside
-      className={`fixed z-50 transition-all duration-300 ease-in-out ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] rounded-lg overflow-hidden top-1/2 -translate-y-1/2`}
+      className={`hidden lg:block lg:fixed z-50 transition-all duration-300 ease-in-out ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] rounded-lg overflow-hidden top-1/2 -translate-y-1/2`}
       style={{
         left: "16px",
         width: isExpanded ? "280px" : "80px",

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Moon, Sun, Info, Play } from "lucide-react";
+import { Moon, Sun, Info, Play, Grip } from "lucide-react";
 import { WalletConnect } from "./components/wallet-connect";
 import { ErrorNotification } from "./components/ErrorNotification";
 import { Sidebar } from "./components/Sidebar";
@@ -14,6 +14,7 @@ function App() {
   const [selectedGame, setSelectedGame] = useState("flippo");
   const [showRules, setShowRules] = useState(false);
   const [showDemoVideo, setShowDemoVideo] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Apply theme to document for scrollbar styling
@@ -49,6 +50,28 @@ function App() {
     simon: "/videos/simono-demo.mp4",
   };
 
+  // Game list for mobile menu
+  const games = [
+    {
+      id: "flippo",
+      name: "Flippo",
+      imagePath: "/images/flippo-logo.png",
+      badge: "original",
+    },
+    {
+      id: "tappo",
+      name: "Tappo",
+      imagePath: "/images/tappo-logo.jpeg",
+      badge: "new",
+    },
+    {
+      id: "simon",
+      name: "Simono",
+      imagePath: "/images/simono-logo.png",
+      badge: "new",
+    },
+  ];
+
   return (
     <div
       className={`min-h-screen ${textColor} ${
@@ -70,7 +93,7 @@ function App() {
         }}
       />
 
-      {/* Sidebar */}
+      {/* Sidebar - Hidden on mobile */}
       <Sidebar
         isDarkMode={isDarkMode}
         onHover={setIsSidebarHovered}
@@ -92,17 +115,18 @@ function App() {
 
       {/* Main Content */}
       <div
-        className="relative"
+        className="relative lg:ml-28"
         style={{
-          marginLeft: "112px", // Space for collapsed sidebar (80px + 32px margin)
           zIndex: 1,
         }}
       >
         {/* Top Bar */}
-        <header className={`px-8 py-6 ${bgColor} bg-transparent`}>
-          <div className="max-w-[1600px] mx-auto flex items-center justify-between">
+        <header
+          className={`px-4 md:px-8 py-4 md:py-6 ${bgColor} bg-transparent`}
+        >
+          <div className="max-w-[1600px] mx-auto flex items-center justify-between flex-wrap gap-4">
             {/* Brand Name */}
-            <h1 className="text-4xl font-bold font-Tsuchigumo tracking-wider brand flex gap-3 items-center">
+            <h1 className="text-4xl md:text-4xl font-bold font-Tsuchigumo tracking-wider brand flex gap-3 md:gap-3 items-center">
               <img
                 src={
                   isDarkMode
@@ -110,13 +134,13 @@ function App() {
                     : "/images/playo-logo-dark.png"
                 }
                 alt="Playo Logo"
-                className="h-12 w-12 text-black"
+                className="h-12 w-12  text-black"
               />
               Playo
             </h1>
 
-            {/* Center Buttons Group */}
-            <div className="flex items-center gap-4">
+            {/* Center Buttons Group - Hidden on mobile */}
+            <div className="hidden lg:flex items-center gap-4">
               {/* Game Info Button */}
               <button
                 onClick={() => setShowRules(true)}
@@ -142,28 +166,66 @@ function App() {
               </button>
             </div>
 
-            {/* Theme Toggle & Wallet Connect */}
-            <div className="flex items-center gap-4">
+            {/* Theme Toggle & Wallet Connect - Hidden on mobile */}
+            <div className="hidden lg:flex items-center gap-2 md:gap-4">
               <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
-                className={`p-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer`}
+                className={`p-2 md:p-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer`}
                 style={{
                   backgroundColor: isDarkMode ? "#0fa594" : "#FCFF51",
                 }}
               >
                 {isDarkMode ? (
-                  <Moon className="w-6 h-6 text-black" />
+                  <Moon className="w-5 h-5 md:w-6 md:h-6 text-black" />
                 ) : (
-                  <Sun className="w-6 h-6 text-black" />
+                  <Sun className="w-5 h-5 md:w-6 md:h-6 text-black" />
                 )}
               </button>
               <WalletConnect isDarkMode={isDarkMode} />
             </div>
+
+            {/* Mobile Menu Button - Only visible on mobile */}
+            <button
+              onClick={() => setShowMobileMenu(true)}
+              className={`lg:hidden p-2 md:p-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer`}
+              style={{
+                backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
+              }}
+            >
+              <Grip className={`w-6 h-6 ${textColor}`} />
+            </button>
+          </div>
+
+          {/* Mobile Buttons - Below navbar on small screens */}
+          <div className="lg:hidden flex items-center gap-2 md:gap-3 mt-4 justify-center">
+            {/* Game Info Button */}
+            <button
+              onClick={() => setShowRules(true)}
+              className={`flex-1 px-4 py-2.5 md:py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer flex items-center justify-center gap-2 ${textColor} text-sm md:text-base`}
+              style={{
+                backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
+              }}
+            >
+              <Info className="w-4 h-4 md:w-5 md:h-5" />
+              <span className="font-semibold">Game Info</span>
+            </button>
+
+            {/* Demo Video Button */}
+            <button
+              onClick={() => setShowDemoVideo(true)}
+              className={`flex-1 px-4 py-2.5 md:py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer flex items-center justify-center gap-2 ${textColor} text-sm md:text-base`}
+              style={{
+                backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
+              }}
+            >
+              <Play className="w-4 h-4 md:w-5 md:h-5" />
+              <span className="font-semibold">Game Demo</span>
+            </button>
           </div>
         </header>
 
         {/* Main Content */}
-        <main className="max-w-[1600px] mx-auto px-8 py-8">
+        <main className="max-w-[1600px] mx-auto px-4 md:px-8 py-4 md:py-8">
           {selectedGame === "flippo" && (
             <FlippoGame
               isDarkMode={isDarkMode}
@@ -209,7 +271,7 @@ function App() {
             style={{ backdropFilter: "blur(4px)" }}
           />
           <div
-            className={`relative max-w-2xl w-full rounded-lg border ${borderColor} shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] p-8 max-h-[80vh] overflow-y-auto overflow-x-hidden scrollbar-hide`}
+            className={`relative max-w-2xl w-full rounded-lg border ${borderColor} shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] p-4 max-h-[80vh] overflow-y-auto overflow-x-hidden scrollbar-hide`}
             style={{
               backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
               scrollbarWidth: "none",
@@ -226,18 +288,18 @@ function App() {
                     <img
                       src="/images/flippo-logo.png"
                       alt="Flippo Logo"
-                      className="w-24 h-24 object-cover rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]"
+                      className="w-18 h-18 md:w-24 md:h-24 object-cover rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]"
                     />
                   </div>
                   {/* Title and Description */}
                   <div className="flex-1">
                     <h2
-                      className={`text-3xl font-bold mb-3 ${textColor} font-Tsuchigumo`}
+                      className={`text-2xl md:text-3xl font-bold mb-1 md:mb-3 ${textColor} font-Tsuchigumo`}
                     >
                       Flippo - Flip Your Fate
                     </h2>
                     <p
-                      className={`text-lg ${
+                      className={`text-sm md:text-lg ${
                         isDarkMode ? "text-gray-300" : "text-gray-700"
                       }`}
                     >
@@ -475,18 +537,18 @@ function App() {
                     <img
                       src="/images/simono-logo.png"
                       alt="Simono Logo"
-                      className="w-24 h-24 object-cover rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]"
+                      className="w-18 h-18 md:w-24 md:h-24 object-cover rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]"
                     />
                   </div>
                   {/* Title and Description */}
                   <div className="flex-1">
                     <h2
-                      className={`text-3xl font-bold mb-3 ${textColor} font-Tsuchigumo`}
+                      className={`text-2xl md:text-3xl font-bold mb-1 md:mb-3 ${textColor} font-Tsuchigumo`}
                     >
                       Simono - Choose Your Fate
                     </h2>
                     <p
-                      className={`text-lg ${
+                      className={`text-sm md:text-lg ${
                         isDarkMode ? "text-gray-300" : "text-gray-700"
                       }`}
                     >
@@ -1078,14 +1140,14 @@ function App() {
             </div> */}
 
             {/* Video Player */}
-            <div className="my-3">
+            <div className="my-3 relative min-h-[40vh] md:min-h-[50vh] flex items-center justify-center bg-black/5 rounded-lg">
               <video
                 ref={videoRef}
                 key={selectedGame}
                 loop
                 playsInline
                 preload="auto"
-                className="rounded-lg"
+                className="rounded-lg w-full h-auto"
                 style={{ maxHeight: "70vh" }}
                 src={demoVideos[selectedGame]}
               >
@@ -1123,6 +1185,121 @@ function App() {
             >
               Gotcha!
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Menu Modal */}
+      {showMobileMenu && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowMobileMenu(false)}
+        >
+          <div
+            className="fixed inset-0 bg-black opacity-50"
+            style={{ backdropFilter: "blur(4px)" }}
+          />
+          <div
+            className={`relative max-w-md w-full rounded-lg border ${borderColor} shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] p-6 max-h-[80vh] overflow-y-auto scrollbar-hide`}
+            style={{
+              backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Games List */}
+            <div className="space-y-3 mb-6">
+              <div className="grid grid-cols-3 gap-3">
+                {games.map((game) => (
+                  <button
+                    key={game.id}
+                    onClick={() => {
+                      setSelectedGame(game.id);
+                      setShowMobileMenu(false);
+                    }}
+                    className={`flex flex-col items-center gap-2 p-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer`}
+                    style={{
+                      backgroundColor:
+                        selectedGame === game.id
+                          ? isDarkMode
+                            ? "#0fa594"
+                            : "#FCFF51"
+                          : isDarkMode
+                          ? "#153243"
+                          : "#FFFFFF",
+                      color:
+                        selectedGame === game.id
+                          ? "#000000"
+                          : isDarkMode
+                          ? "#FFFFFF"
+                          : "#000000",
+                    }}
+                  >
+                    <img
+                      src={game.imagePath}
+                      alt={game.name}
+                      className="w-16 h-16 object-cover rounded-lg border border-black"
+                    />
+                    <div className="text-center">
+                      <div className="font-bold text-sm">{game.name}</div>
+                      {game.badge && (
+                        <span
+                          className="text-xs px-1.5 py-0.5 rounded mt-1 inline-block"
+                          style={{
+                            backgroundColor:
+                              game.badge === "new"
+                                ? "#10b981"
+                                : game.badge === "original"
+                                ? "#f59e0b"
+                                : "#3b82f6",
+                            color: "#000000",
+                          }}
+                        >
+                          {game.badge.toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Theme Toggle & Wallet Connect */}
+            <div className="pt-4 border-t-2 border-black mb-4 flex gap-2">
+              <button
+                onClick={() => {
+                  setIsDarkMode(!isDarkMode);
+                }}
+                className={`w-auto px-3 py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer flex items-center justify-center gap-3 font-semibold text-lg`}
+                style={{
+                  backgroundColor: isDarkMode ? "#0fa594" : "#FCFF51",
+                  color: "#000000",
+                }}
+              >
+                {isDarkMode ? (
+                  <>
+                    <Moon className="w-6 h-6" />
+                  </>
+                ) : (
+                  <>
+                    <Sun className="w-6 h-6" />
+                  </>
+                )}
+              </button>
+              <div className="w-full">
+                <WalletConnect isDarkMode={isDarkMode} fullWidth={true} />
+              </div>
+            </div>
+
+            {/* Close Button */}
+            {/* <button
+              onClick={() => setShowMobileMenu(false)}
+              className={`mt-6 w-full py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer text-lg font-bold ${textColor}`}
+              style={{
+                backgroundColor: isDarkMode ? "#153243" : "#F4F9E9",
+              }}
+            >
+              Close
+            </button> */}
           </div>
         </div>
       )}

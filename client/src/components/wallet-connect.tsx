@@ -4,14 +4,15 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 interface WalletConnectProps {
   isDarkMode: boolean;
+  fullWidth?: boolean;
 }
 
-export function WalletConnect({ isDarkMode }: WalletConnectProps) {
+export function WalletConnect({ isDarkMode, fullWidth = false }: WalletConnectProps) {
   const buttonColor = isDarkMode ? "#0fa594" : "#FCFF51";
   const textColor = "#000000";
 
   return (
-    <div className="flex justify-center">
+    <div className={fullWidth ? "w-full" : "flex justify-center"}>
       <ConnectButton.Custom>
         {({
           account,
@@ -46,7 +47,7 @@ export function WalletConnect({ isDarkMode }: WalletConnectProps) {
                     <button
                       onClick={openConnectModal}
                       type="button"
-                      className="px-4 py-3 rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all font-medium cursor-pointer"
+                      className={`px-4 py-3 rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all font-medium cursor-pointer ${fullWidth ? 'w-full' : ''}`}
                       style={{
                         backgroundColor: buttonColor,
                         color: textColor,
@@ -62,7 +63,7 @@ export function WalletConnect({ isDarkMode }: WalletConnectProps) {
                     <button
                       onClick={openChainModal}
                       type="button"
-                      className="px-4 py-3 rounded-lg border-2 border-red-500 bg-red-500 text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all font-medium cursor-pointer"
+                      className={`px-4 py-3 rounded-lg border-2 border-red-500 bg-red-500 text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all font-medium cursor-pointer ${fullWidth ? 'w-full' : ''}`}
                     >
                       Wrong network
                     </button>
@@ -70,11 +71,11 @@ export function WalletConnect({ isDarkMode }: WalletConnectProps) {
                 }
 
                 return (
-                  <div className="flex gap-2">
+                  <div className={fullWidth ? "w-full" : "flex gap-2"}>
                     <button
                       onClick={openAccountModal}
                       type="button"
-                      className="px-4 py-3 rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all font-medium cursor-pointer"
+                      className={`px-4 py-3 rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all font-medium cursor-pointer ${fullWidth ? 'w-full' : ''}`}
                       style={{
                         backgroundColor: buttonColor,
                         color: textColor,

@@ -18,6 +18,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
   const [shakeScore, setShakeScore] = useState(false);
   const [showBonus, setShowBonus] = useState(false);
   const [gameStartPending, setGameStartPending] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Audio refs
   const successSound = useRef<HTMLAudioElement | null>(null);
@@ -48,8 +49,8 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
     errorSound.current.volume = 0.5;
   }, []);
 
-  // Fixed bubble count (12 columns × 7 rows = 84 bubbles)
-  const bubbleCount = 84;
+  // Responsive bubble count: 7 rows × 7 cols = 49 on mobile, 7 rows × 12 cols = 84 on desktop
+  const bubbleCount = isMobile ? 49 : 96;
 
   // Get win multiplier based on timer duration
   const getWinMultiplier = () => {
@@ -81,8 +82,25 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
 
   // Generate initial bubbles on mount
   useEffect(() => {
+    // Check initial screen size
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
     generateBubbles();
+
+    // Listen for window resize
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  // Regenerate bubbles when screen size changes
+  useEffect(() => {
+    if (bubbles.length > 0) {
+      generateBubbles();
+    }
+  }, [isMobile]);
 
   // Handle transaction confirmations
   useEffect(() => {
@@ -339,9 +357,11 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
 
           {/* Game Stats - Always visible */}
           <div
-            className={`p-6 rounded-lg border ${borderColor} ${cardBg} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] min-h-[200px]`}
+            className={`p-3 md:p-6 rounded-lg border ${borderColor} ${cardBg} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] min-h-[150px] md:min-h-[200px]`}
           >
-            <h3 className={`text-xl font-medium mb-4 ${textColor}`}>
+            <h3
+              className={`text-base md:text-xl font-medium mb-3 md:mb-4 ${textColor}`}
+            >
               Game Stats
             </h3>
             <div className="space-y-2">
@@ -402,7 +422,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
                     fontWeight: "bolder",
                   }}
                 >
-                  {maxAchievablePoints} points
+                  {maxAchievablePoints} pts
                 </span>
               </div>
               <div className="flex justify-between">
@@ -418,7 +438,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
                     fontWeight: "bolder",
                   }}
                 >
-                  {minPointsToBreakEven} points
+                  {minPointsToBreakEven} pts
                 </span>
               </div>
               <div className="flex justify-between">
@@ -432,7 +452,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
                     isDarkMode ? "text-green-400" : "text-green-600"
                   }`}
                 >
-                  + 10 points
+                  + 10 pts
                 </span>
               </div>
               <div className="flex justify-between">
@@ -446,7 +466,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
                     isDarkMode ? "text-red-400" : "text-red-600"
                   }`}
                 >
-                  - 5 points
+                  - 5 pts
                 </span>
               </div>
             </div>
@@ -455,7 +475,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
 
         {/* Right Column - Game Board (2/3 width) */}
         <div
-          className={`lg:col-span-2 rounded-lg border ${borderColor} ${cardBg} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] p-6 flex flex-col max-h-[1000px]`}
+          className={`lg:col-span-2 rounded-lg border ${borderColor} ${cardBg} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] p-3 md:p-6 flex flex-col max-h-[700px] md:max-h-[1000px]`}
         >
           {gameStatus === "starting" && (
             <div className="flex items-center justify-center flex-1">
@@ -477,14 +497,16 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
           {gameStatus !== "starting" && (
             <>
               {/* Stats Header - shown in both idle and playing states */}
-              <div className="flex justify-around items-center mb-4 gap-4">
+              <div className="flex justify-around items-center mb-2 md:mb-4 gap-2 md:gap-4">
                 {/* Timer */}
-                <div className="flex items-center gap-3">
-                  <span className={`text-2xl font-bold ${textColor}`}>
+                <div className="flex items-center gap-1.5 md:gap-3">
+                  <span
+                    className={`text-base md:text-2xl font-bold ${textColor}`}
+                  >
                     Timer
                   </span>
                   <div
-                    className={`px-6 py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-2xl font-bold min-w-[60px] text-center`}
+                    className={`px-3 md:px-6 py-1 md:py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-base md:text-2xl font-bold min-w-[40px] md:min-w-[60px] text-center`}
                     style={{
                       backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
                       color: isDarkMode ? "#ffffff" : "#000000",
@@ -495,10 +517,14 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
                 </div>
 
                 {/* Hit Target */}
-                <div className="flex items-center gap-3">
-                  <span className={`text-2xl font-bold ${textColor}`}>Hit</span>
+                <div className="flex items-center gap-1.5 md:gap-3">
+                  <span
+                    className={`text-base md:text-2xl font-bold ${textColor}`}
+                  >
+                    Hit
+                  </span>
                   <div
-                    className={`px-6 py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-2xl font-bold min-w-[60px] text-center`}
+                    className={`px-3 md:px-6 py-1 md:py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-base md:text-2xl font-bold min-w-[40px] md:min-w-[60px] text-center`}
                     style={{
                       backgroundColor:
                         gameStatus === "idle"
@@ -521,13 +547,15 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
                 </div>
 
                 {/* Score */}
-                <div className="flex items-center gap-3">
-                  <span className={`text-2xl font-bold ${textColor}`}>
+                <div className="flex items-center gap-1.5 md:gap-3">
+                  <span
+                    className={`text-base md:text-2xl font-bold ${textColor}`}
+                  >
                     Score
                   </span>
                   <div className="relative">
                     <div
-                      className={`px-6 py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-2xl font-bold min-w-[60px] text-center transition-all ${
+                      className={`px-3 md:px-6 py-1 md:py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-base md:text-2xl font-bold min-w-[40px] md:min-w-[60px] text-center transition-all ${
                         shakeScore ? "animate-shake" : ""
                       }`}
                       style={{
@@ -564,11 +592,10 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
           )}
 
           {gameStatus === "idle" && (
-            <div className="flex items-center justify-center flex-1">
+            <div className="flex items-center justify-center flex-1 overflow-y-auto px-2">
               <div
-                className="grid gap-2 w-full h-full overflow-y-auto pr-2"
+                className="grid grid-cols-7 md:grid-cols-12 gap-2 w-full pb-2"
                 style={{
-                  gridTemplateColumns: "repeat(12, minmax(0, 1fr))",
                   maxHeight: "700px",
                 }}
               >
@@ -590,11 +617,10 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
           )}
 
           {gameStatus === "playing" && (
-            <div className="flex items-center justify-center flex-1">
+            <div className="flex items-center justify-center flex-1 overflow-y-auto px-2">
               <div
-                className="grid gap-2 w-full h-full overflow-y-auto pr-2"
+                className="grid grid-cols-7 md:grid-cols-12 gap-2 w-full pb-4"
                 style={{
-                  gridTemplateColumns: "repeat(12, minmax(0, 1fr))",
                   maxHeight: "600px",
                 }}
               >

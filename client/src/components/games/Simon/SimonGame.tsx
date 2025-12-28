@@ -489,9 +489,9 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
 
           {/* Game Stats - Always visible */}
           <div
-            className={`p-6 rounded-lg border ${borderColor} ${cardBg} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] min-h-[200px]`}
+            className={`p-3 md:p-6 rounded-lg border ${borderColor} ${cardBg} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] min-h-[150px] md:min-h-[200px]`}
           >
-            <h3 className={`text-xl font-medium mb-4 ${textColor}`}>
+            <h3 className={`text-base md:text-xl font-medium mb-3 md:mb-4 ${textColor}`}>
               Game Stats
             </h3>
             <div className="space-y-2">
@@ -540,7 +540,7 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
                     ? (parseFloat(betAmount) * config.rewardMultiplier).toFixed(
                         4
                       )
-                    : "0.0000"}{" "}
+                    : "0.00"}{" "}
                   MNT
                 </span>
               </div>
@@ -582,7 +582,7 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
 
         {/* Right Column - Game Board */}
         <div
-          className={`rounded-lg border ${borderColor} ${cardBg} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] p-6 flex flex-col min-h-[600px]`}
+          className={`rounded-lg border ${borderColor} ${cardBg} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] p-3 md:p-6 flex flex-col min-h-[400px] md:min-h-[600px]`}
         >
           {gameStatus === "starting" && (
             <div className="flex items-center justify-center flex-1">
@@ -604,14 +604,14 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
           {gameStatus !== "starting" && (
             <>
               {/* Stats Header - shown in both idle and playing states */}
-              <div className="flex justify-around items-center mb-6 gap-4">
+              <div className="flex justify-around items-center mb-3 md:mb-6 gap-2 md:gap-4">
                 {/* Status / Progress */}
-                <div className="flex items-center gap-3">
-                  <span className={`text-2xl font-bold ${textColor}`}>
+                <div className="flex items-center gap-1.5 md:gap-3">
+                  <span className={`text-base md:text-2xl font-bold ${textColor}`}>
                     Done
                   </span>
                   <div
-                    className={`px-6 py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-2xl font-bold min-w-20 text-center`}
+                    className={`px-3 md:px-6 py-1 md:py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-base md:text-2xl font-bold min-w-16 md:min-w-20 text-center`}
                     style={{
                       backgroundColor:
                         gamePhase === "input" && inputTimer < 3
@@ -629,12 +629,12 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
                 </div>
 
                 {/* Level (Sequence Length) */}
-                <div className="flex items-center gap-3">
-                  <span className={`text-2xl font-bold ${textColor}`}>
+                <div className="flex items-center gap-1.5 md:gap-3">
+                  <span className={`text-base md:text-2xl font-bold ${textColor}`}>
                     Level
                   </span>
                   <div
-                    className={`px-6 py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-2xl font-bold min-w-[60px] text-center`}
+                    className={`px-3 md:px-6 py-1 md:py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-base md:text-2xl font-bold min-w-[40px] md:min-w-[60px] text-center`}
                     style={{
                       backgroundColor:
                         gameStatus === "idle"
@@ -657,12 +657,12 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
                 </div>
 
                 {/* Time Remaining */}
-                <div className="flex items-center gap-3">
-                  <span className={`text-2xl font-bold ${textColor}`}>
+                <div className="flex items-center gap-1.5 md:gap-3">
+                  <span className={`text-base md:text-2xl font-bold ${textColor}`}>
                     Time
                   </span>
                   <div
-                    className={`px-6 py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-2xl font-bold min-w-[60px] text-center`}
+                    className={`px-3 md:px-6 py-1 md:py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-base md:text-2xl font-bold min-w-[40px] md:min-w-[60px] text-center`}
                     style={{
                       backgroundColor:
                         gamePhase === "input" && inputTimer < 3
