@@ -1076,7 +1076,7 @@ function App() {
                 loop
                 playsInline
                 preload="auto"
-                className="rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]"
+                className="rounded-lg"
                 style={{ maxHeight: "70vh" }}
                 src={demoVideos[selectedGame]}
               >
