@@ -129,7 +129,7 @@ function App() {
                 }}
               >
                 <Play className="w-5 h-5" />
-                <span className="font-semibold">Demo Video</span>
+                <span className="font-semibold">Game Demo</span>
               </button>
             </div>
 
@@ -1083,6 +1083,26 @@ function App() {
                 Your browser does not support the video tag.
               </video>
             </div>
+
+            {selectedGame === "simon" && (
+              <p className="text-center">
+                **Each round highlights only the <b>new</b> signal.
+                <br /> You must remember the full sequence from memory.
+              </p>
+            )}
+            {selectedGame === "tappo" && (
+              <p className="text-center">
+                **Tap only the bubbles matching the{" "}
+                <span className="font-bold">Hit</span> number to score points.
+                Wrong taps deduct points!
+              </p>
+            )}
+            {selectedGame === "flippo" && (
+              <p className="text-center">
+                **Tap cards to reveal and match pairs.
+                <br /> Try to complete the grid within the flip limit!
+              </p>
+            )}
 
             <button
               onClick={() => setShowDemoVideo(false)}

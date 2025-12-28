@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
 /**
- * Hook to preload game result videos for instant playback
- * Preloads both win and lose videos when the game starts
+ * Hook to preload game videos for instant playback
+ * Preloads win, lose, and demo videos when the game starts
  */
 export function useVideoPreloader(gameStarted: boolean) {
   const [videosPreloaded, setVideosPreloaded] = useState(false);
@@ -13,6 +13,18 @@ export function useVideoPreloader(gameStarted: boolean) {
     const videos = [
       { src: "/videos/Win.mp4", element: null as HTMLVideoElement | null },
       { src: "/videos/Lost.mp4", element: null as HTMLVideoElement | null },
+      {
+        src: "/videos/flippo-demo.mp4",
+        element: null as HTMLVideoElement | null,
+      },
+      {
+        src: "/videos/tappo-demo.mp4",
+        element: null as HTMLVideoElement | null,
+      },
+      {
+        src: "/videos/simono-demo.mp4",
+        element: null as HTMLVideoElement | null,
+      },
     ];
 
     let loadedCount = 0;
