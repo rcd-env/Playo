@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Moon, Sun, Info } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { Moon, Sun, Info, Play } from "lucide-react";
 import { WalletConnect } from "./components/wallet-connect";
 import { ErrorNotification } from "./components/ErrorNotification";
 import { Sidebar } from "./components/Sidebar";
@@ -13,6 +13,8 @@ function App() {
   const [isSidebarHovered, setIsSidebarHovered] = useState(false);
   const [selectedGame, setSelectedGame] = useState("flippo");
   const [showRules, setShowRules] = useState(false);
+  const [showDemoVideo, setShowDemoVideo] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Apply theme to document for scrollbar styling
   useEffect(() => {
@@ -23,11 +25,29 @@ function App() {
     }
   }, [isDarkMode]);
 
+  // Delay video playback when demo modal opens
+  useEffect(() => {
+    if (showDemoVideo && videoRef.current) {
+      const timer = setTimeout(() => {
+        videoRef.current?.play();
+      }, 1000); // 1 second delay
+
+      return () => clearTimeout(timer);
+    }
+  }, [showDemoVideo, selectedGame]);
+
   const { address, isLoading, transactionError } = usePlayoGame();
 
   const bgColor = isDarkMode ? "bg-[#3C1F47]" : "bg-[#FFFFFF]";
   const textColor = isDarkMode ? "text-white" : "text-gray-900";
   const borderColor = "border-black border-2";
+
+  // Map games to their demo videos
+  const demoVideos: { [key: string]: string } = {
+    flippo: "/videos/flippo-demo.mp4",
+    tappo: "/videos/tappo-demo.mp4",
+    simon: "/videos/simono-demo.mp4",
+  };
 
   return (
     <div
@@ -86,17 +106,32 @@ function App() {
               Playo
             </h1>
 
-            {/* Rules Button - Center */}
-            <button
-              onClick={() => setShowRules(true)}
-              className={`px-6 py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer flex items-center gap-2 ${textColor}`}
-              style={{
-                backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
-              }}
-            >
-              <Info className="w-5 h-5" />
-              <span className="font-semibold">Game Info</span>
-            </button>
+            {/* Center Buttons Group */}
+            <div className="flex items-center gap-4">
+              {/* Game Info Button */}
+              <button
+                onClick={() => setShowRules(true)}
+                className={`px-6 py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer flex items-center gap-2 ${textColor}`}
+                style={{
+                  backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
+                }}
+              >
+                <Info className="w-5 h-5" />
+                <span className="font-semibold">Game Info</span>
+              </button>
+
+              {/* Demo Video Button */}
+              <button
+                onClick={() => setShowDemoVideo(true)}
+                className={`px-6 py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer flex items-center gap-2 ${textColor}`}
+                style={{
+                  backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
+                }}
+              >
+                <Play className="w-5 h-5" />
+                <span className="font-semibold">Demo Video</span>
+              </button>
+            </div>
 
             {/* Theme Toggle & Wallet Connect */}
             <div className="flex items-center gap-4">
@@ -993,6 +1028,71 @@ function App() {
               }}
             >
               Got it!
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Demo Video Modal */}
+      {showDemoVideo && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowDemoVideo(false)}
+        >
+          <div
+            className="fixed inset-0 bg-black opacity-70"
+            style={{ backdropFilter: "blur(4px)" }}
+          />
+          <div
+            className={`relative max-w-4xl rounded-lg border ${borderColor} shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] p-6`}
+            style={{
+              backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header with Close Button */}
+            {/* <div className="flex items-center justify-between mb-4">
+              <h2
+                className={`text-2xl font-bold ${textColor} font-Tsuchigumo capitalize`}
+              >
+                {selectedGame} Demo
+              </h2>
+              <button
+                onClick={() => setShowDemoVideo(false)}
+                className={`p-2 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer`}
+                style={{
+                  backgroundColor: isDarkMode ? "#0fa594" : "#FCFF51",
+                }}
+              >
+                <X className="w-5 h-5 text-black" />
+              </button>
+            </div> */}
+
+            {/* Video Player */}
+            <div className="my-3">
+              <video
+                ref={videoRef}
+                key={selectedGame}
+                loop
+                playsInline
+                preload="auto"
+                className="rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]"
+                style={{ maxHeight: "70vh" }}
+                src={demoVideos[selectedGame]}
+              >
+                Your browser does not support the video tag.
+              </video>
+            </div>
+
+            <button
+              onClick={() => setShowDemoVideo(false)}
+              className={`mt-4 w-full py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer text-xl font-bold`}
+              style={{
+                backgroundColor: isDarkMode ? "#0fa594" : "#FCFF51",
+                color: "#000000",
+              }}
+            >
+              Gotcha!
             </button>
           </div>
         </div>
