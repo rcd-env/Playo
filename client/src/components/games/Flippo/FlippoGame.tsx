@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { GameBoard } from "../../GameBoard";
 import { GameResult } from "../../GameResult";
-import { GameStats } from "../../GameStats";
 import { usePlayoGame } from "../../../hooks/usePlayoGame";
 
 interface FlippoGameProps {
@@ -112,7 +111,7 @@ export function FlippoGame({
               Quick Bets:
             </p>
             <div className="flex flex-wrap gap-2">
-              {["0.01", "0.5", "2", "5", "10"].map((amount) => (
+              {["0.01", "1", "2", "5", "10"].map((amount) => (
                 <button
                   key={amount}
                   onClick={() => updateBetAmount(amount)}
@@ -174,175 +173,219 @@ export function FlippoGame({
               : "Start Game"}
           </button>
 
-          {/* Game Stats Box */}
+          {/* Game Stats Box - Always visible */}
           <div
             className={`p-6 rounded-lg border ${borderColor} ${cardBg} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] min-h-[200px]`}
           >
             <h3 className={`text-xl font-medium mb-4 ${textColor}`}>
-              {gameStatus === "idle" ? "Game Stats" : "Game Progress"}
+              Game Stats
             </h3>
-
-            {gameStatus === "idle" && (
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span
-                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
-                  >
-                    Grid Size:
-                  </span>
-                  <span
-                    className={`font-bold ${
-                      isDarkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    {gridSize}×{gridSize}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span
-                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
-                  >
-                    Reward Multiplier:
-                  </span>
-                  <span
-                    className={`font-bold ${
-                      isDarkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    {gridSize === 2
-                      ? "1.2"
-                      : gridSize === 4
-                      ? "1.5"
-                      : gridSize === 6
-                      ? "2.0"
-                      : "2.5"}
-                    x
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span
-                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
-                  >
-                    Maximum Possible Reward:
-                  </span>
-                  <span
-                    className="font-bold"
-                    style={{
-                      color: isDarkMode ? "#10b981" : "#059669",
-                      fontWeight: "bolder",
-                    }}
-                  >
-                    {potentialReward} MNT
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span
-                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
-                  >
-                    Maximum Flips Allowed:
-                  </span>
-                  <span
-                    className={`font-bold ${
-                      isDarkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    {maxFlips}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span
-                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
-                  >
-                    Total Pairs:
-                  </span>
-                  <span
-                    className={`font-bold ${
-                      isDarkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    {totalPairs}
-                  </span>
-                </div>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span
+                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                >
+                  Grid Size:
+                </span>
+                <span
+                  className={`font-bold ${
+                    isDarkMode ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  {gridSize}×{gridSize}
+                </span>
               </div>
-            )}
-
-            {(gameStatus === "playing" || gameStatus === "starting") && (
-              <GameStats
-                matchesFound={matchesFound}
-                totalPairs={totalPairs}
-                betAmount={betAmount}
-                potentialReward={potentialReward}
-                flips={flips}
-                maxFlips={maxFlips}
-                correctPairs={correctPairs}
-                wrongPairs={wrongPairs}
-                netGain={netGain}
-                gridSize={gridSize}
-                isDarkMode={isDarkMode}
-              />
-            )}
+              <div className="flex justify-between">
+                <span
+                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                >
+                  Reward Multiplier:
+                </span>
+                <span
+                  className={`font-bold ${
+                    isDarkMode ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  {gridSize === 2
+                    ? "1.2"
+                    : gridSize === 4
+                    ? "1.5"
+                    : gridSize === 6
+                    ? "2.0"
+                    : "2.5"}
+                  x
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span
+                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                >
+                  Maximum Possible Reward:
+                </span>
+                <span
+                  className="font-bold"
+                  style={{
+                    color: isDarkMode ? "#10b981" : "#059669",
+                    fontWeight: "bolder",
+                  }}
+                >
+                  {potentialReward} MNT
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span
+                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                >
+                  Maximum Pair Flips Allowed:
+                </span>
+                <span
+                  className={`font-bold ${
+                    isDarkMode ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  {maxFlips}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span
+                  className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                >
+                  Total Pairs:
+                </span>
+                <span
+                  className={`font-bold ${
+                    isDarkMode ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  {(gridSize * gridSize) / 2}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Right Column - Game Board */}
         <div
-          className={`rounded-lg border ${borderColor} ${cardBg} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] p-6 flex items-center justify-center max-h-[800px] `}
+          className={`rounded-lg border ${borderColor} ${cardBg} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] p-6 flex flex-col max-h-[800px]`}
         >
-          {gameStatus === "idle" && (
-            <div
-              className="grid gap-3 w-full"
-              style={{
-                gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))`,
-                maxWidth: "500px",
-              }}
-            >
-              {Array.from({ length: gridSize * gridSize }).map((_, index) => (
-                <div key={index} className="relative w-full aspect-square">
+          {gameStatus === "starting" && (
+            <div className="flex items-center justify-center flex-1">
+              <div className="text-center">
+                <div
+                  className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-t-transparent mb-4"
+                  style={{
+                    borderColor: isDarkMode ? "#0fa594" : "#000000",
+                    borderTopColor: "transparent",
+                  }}
+                ></div>
+                <p className={`text-lg opacity-70 ${textColor}`}>
+                  Starting game...
+                </p>
+              </div>
+            </div>
+          )}
+
+          {gameStatus !== "starting" && (
+            <>
+              {/* Stats Header - shown in both idle and playing states */}
+              <div className="flex justify-around items-center mb-6 gap-4">
+                {/* Correct Flips */}
+                <div className="flex items-center gap-3">
+                  <span className={`text-2xl font-bold ${textColor}`}>
+                    Correct
+                  </span>
                   <div
-                    className={`absolute w-full h-full rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center ${
-                      isDarkMode ? "bg-[#153243]" : "bg-[#F4F9E9]"
-                    } cursor-pointer`}
-                    onMouseEnter={playHoverSound}
+                    className={`px-6 py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-2xl font-bold min-w-[60px] text-center`}
+                    style={{
+                      backgroundColor:
+                        gameStatus === "idle"
+                          ? isDarkMode
+                            ? "#1d505c"
+                            : "#F4F9E9"
+                          : isDarkMode
+                          ? "#0fa594"
+                          : "#FCFF51",
+                      color:
+                        gameStatus === "idle"
+                          ? isDarkMode
+                            ? "#ffffff"
+                            : "#000000"
+                          : "#000000",
+                    }}
                   >
-                    <div
-                      className="text-4xl font-bold"
-                      style={{
-                        color: isDarkMode ? "white" : "#000000",
-                      }}
-                    >
-                      ?
-                    </div>
+                    {gameStatus === "idle" ? "0" : correctPairs}
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
 
-          {gameStatus === "starting" && (
-            <div className="text-center">
-              <div
-                className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-t-transparent mb-4"
-                style={{
-                  borderColor: isDarkMode ? "#0fa594" : "#000000",
-                  borderTopColor: "transparent",
-                }}
-              ></div>
-              <p className="text-lg opacity-70">Starting game...</p>
-            </div>
-          )}
+                {/* Flips Left */}
+                <div className="flex items-center gap-3">
+                  <span className={`text-2xl font-bold ${textColor}`}>
+                    Flips Left
+                  </span>
+                  <div
+                    className={`px-6 py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-2xl font-bold min-w-[60px] text-center`}
+                    style={{
+                      backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
+                      color: isDarkMode ? "#ffffff" : "#000000",
+                    }}
+                  >
+                    {gameStatus === "idle" ? maxFlips : maxFlips - flips}
+                  </div>
+                </div>
+              </div>
 
-          {gameStatus === "playing" && (
-            <GameBoard
-              gridSize={gridSize}
-              onMatch={recordMatch}
-              onGameComplete={handleGameComplete}
-              disabled={false}
-              isDarkMode={isDarkMode}
-              onFlip={incrementFlips}
-              checkFlipLimit={checkFlipLimit}
-              flips={flips}
-              maxFlips={maxFlips}
-            />
+              {/* Game Board Content */}
+              <div className="flex items-center justify-center flex-1">
+                {gameStatus === "idle" && (
+                  <div
+                    className="grid gap-3 w-full"
+                    style={{
+                      gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))`,
+                      maxWidth: "500px",
+                    }}
+                  >
+                    {Array.from({ length: gridSize * gridSize }).map(
+                      (_, index) => (
+                        <div
+                          key={index}
+                          className="relative w-full aspect-square"
+                        >
+                          <div
+                            className={`absolute w-full h-full rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center ${
+                              isDarkMode ? "bg-[#153243]" : "bg-[#F4F9E9]"
+                            } cursor-help`}
+                            onMouseEnter={playHoverSound}
+                          >
+                            <div
+                              className="text-4xl font-bold"
+                              style={{
+                                color: isDarkMode ? "white" : "#000000",
+                              }}
+                            >
+                              ?
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
+
+                {gameStatus === "playing" && (
+                  <GameBoard
+                    gridSize={gridSize}
+                    onMatch={recordMatch}
+                    onGameComplete={handleGameComplete}
+                    disabled={false}
+                    isDarkMode={isDarkMode}
+                    onFlip={incrementFlips}
+                    checkFlipLimit={checkFlipLimit}
+                    flips={flips}
+                    maxFlips={maxFlips}
+                  />
+                )}
+              </div>
+            </>
           )}
         </div>
       </div>
