@@ -30,7 +30,7 @@ function App() {
     if (showDemoVideo && videoRef.current) {
       const timer = setTimeout(() => {
         videoRef.current?.play();
-      }, 1000); // 1 second delay
+      }, 500); // 1 second delay
 
       return () => clearTimeout(timer);
     }
