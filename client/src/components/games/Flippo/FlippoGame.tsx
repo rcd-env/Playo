@@ -177,7 +177,9 @@ export function FlippoGame({
           <div
             className={`p-3 md:p-6 rounded-lg border ${borderColor} ${cardBg} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] min-h-[150px] md:min-h-[200px]`}
           >
-            <h3 className={`text-base md:text-xl font-medium mb-3 md:mb-4 ${textColor}`}>
+            <h3
+              className={`text-base md:text-xl font-medium mb-3 md:mb-4 ${textColor}`}
+            >
               Game Stats
             </h3>
             <div className="space-y-2">
@@ -291,7 +293,9 @@ export function FlippoGame({
               <div className="flex justify-around items-center mb-3 md:mb-6 gap-2 md:gap-4">
                 {/* Correct Flips */}
                 <div className="flex items-center gap-1.5 md:gap-3">
-                  <span className={`text-base md:text-2xl font-bold ${textColor}`}>
+                  <span
+                    className={`text-base md:text-2xl font-bold ${textColor}`}
+                  >
                     Correct
                   </span>
                   <div
@@ -319,7 +323,9 @@ export function FlippoGame({
 
                 {/* Flips Left */}
                 <div className="flex items-center gap-1.5 md:gap-3">
-                  <span className={`text-base md:text-2xl font-bold ${textColor}`}>
+                  <span
+                    className={`text-base md:text-2xl font-bold ${textColor}`}
+                  >
                     Flips Left
                   </span>
                   <div
