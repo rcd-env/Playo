@@ -3,7 +3,7 @@ import { http } from "viem";
 import { mantleSepolia } from "./config";
 
 export const config = getDefaultConfig({
-  appName: "Earno",
+  appName: "Playo",
   projectId:
     import.meta.env.VITE_WALLETCONNECT_PROJECT_ID ||
     "YOUR_WALLETCONNECT_PROJECT_ID",
