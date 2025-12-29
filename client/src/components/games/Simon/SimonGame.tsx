@@ -15,10 +15,8 @@ interface DifficultyConfig {
   playbackSpeed: number; // milliseconds for signal display
   baseInputTime: number; // base seconds for total input
   timePerSignal: number; // additional seconds per signal in sequence
-  perInputTimeout: number; // max seconds per single input
   rewardMultiplier: number;
   targetScore: number;
-  pressureRampRate: number; // timeout reduction rate for late game
 }
 
 const DIFFICULTY_CONFIGS: Record<Difficulty, DifficultyConfig> = {
@@ -26,28 +24,22 @@ const DIFFICULTY_CONFIGS: Record<Difficulty, DifficultyConfig> = {
     playbackSpeed: 1000,
     baseInputTime: 5,
     timePerSignal: 1.5,
-    perInputTimeout: 1.2,
     rewardMultiplier: 1.3,
     targetScore: 16,
-    pressureRampRate: 0.08, // 8% reduction every 2 levels after level 5
   },
   medium: {
     playbackSpeed: 700,
     baseInputTime: 4,
     timePerSignal: 1,
-    perInputTimeout: 0.9,
     rewardMultiplier: 1.6,
     targetScore: 12,
-    pressureRampRate: 0.1, // 10% reduction every 2 levels after level 5
   },
   hard: {
     playbackSpeed: 500,
     baseInputTime: 3,
     timePerSignal: 0.7,
-    perInputTimeout: 0.6,
     rewardMultiplier: 2.0,
     targetScore: 8,
-    pressureRampRate: 0.12, // 12% reduction every 2 levels after level 5
   },
 };
 
@@ -81,8 +73,10 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
   const [activeSignal, setActiveSignal] = useState<number | null>(null);
   const [wrongSignal, setWrongSignal] = useState<number | null>(null);
   const [inputTimer, setInputTimer] = useState(0);
-  const [lastInputTime, setLastInputTime] = useState(0);
   const [gameStartPending, setGameStartPending] = useState(false);
+  const [failureReason, setFailureReason] = useState<
+    "timeout" | "wrong" | null
+  >(null);
   const [earnedReward, setEarnedReward] = useState("0");
   const [netGain, setNetGain] = useState(0);
 
@@ -184,6 +178,7 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
       setTimeout(() => {
         setGamePhase("input");
         setPlayerInput([]);
+        setFailureReason(null);
         // Calculate input time with sub-linear scaling: base + perSignal × (sequenceLength ^ 0.7)
         const sequenceLength = score + 1;
         setCurrentLevelLength(sequenceLength); // Set current level length for display
@@ -191,7 +186,6 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
           config.baseInputTime +
           config.timePerSignal * Math.pow(sequenceLength, 0.7);
         setInputTimer(totalInputTime);
-        setLastInputTime(totalInputTime); // Initialize last input time
         setCompletedInputs(0); // Reset completed inputs for new level
       }, 500);
     }, config.playbackSpeed);
@@ -203,6 +197,7 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
 
     if (inputTimer <= 0) {
       // Time's up - player failed
+      setFailureReason("timeout");
       if (errorSound.current) {
         errorSound.current.currentTime = 0;
         errorSound.current.play().catch(() => {});
@@ -235,46 +230,8 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
   const handleSignalClick = (signalId: number) => {
     if (gamePhase !== "input" || gameStatus !== "playing") return;
 
-    const currentTime = inputTimer;
-
-    // Calculate per-input timeout with late-game pressure ramp
-    const sequenceLength = score + 1;
-    let effectivePerInputTimeout = config.perInputTimeout;
-
-    // Apply pressure ramp after level 5 (every 2 levels)
-    if (sequenceLength > 5) {
-      const levelsAbove5 = sequenceLength - 5;
-      const rampSteps = Math.floor(levelsAbove5 / 2);
-      const reductionFactor = Math.pow(1 - config.pressureRampRate, rampSteps);
-      effectivePerInputTimeout *= reductionFactor;
-    }
-
-    // Check per-input timeout ONLY for subsequent inputs (not the first input)
-    // First input has no previous input to check against
-    if (playerInput.length > 0) {
-      const timeSinceLastInput = lastInputTime - currentTime;
-
-      if (timeSinceLastInput > effectivePerInputTimeout) {
-        // Input took too long - game over
-        setTimeout(() => {
-          setWrongSignal(signalId);
-          if (errorSound.current) {
-            errorSound.current.currentTime = 0;
-            errorSound.current.play().catch(() => {});
-          }
-          setTimeout(() => {
-            setWrongSignal(null);
-            handleMistake();
-          }, 800);
-        }, 200);
-        return;
-      }
-    }
-
     const newInput = [...playerInput, signalId];
     setPlayerInput(newInput);
-    setLastInputTime(currentTime); // Update last input time
-
     setActiveSignal(signalId);
 
     const currentSequence = sequence.slice(0, score + 1);
@@ -283,6 +240,7 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
     // Check if input is correct
     if (newInput[inputIndex] !== currentSequence[inputIndex]) {
       // Wrong input - play error sound and show red flash
+      setFailureReason("wrong");
       if (errorSound.current) {
         errorSound.current.currentTime = 0;
         errorSound.current.play().catch(() => {});
@@ -344,18 +302,12 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
 
   // Handle mistake (wrong input or timeout)
   const handleMistake = useCallback(() => {
-    // For timeout, play error sound (not played yet)
-    if (wrongSignal === null && errorSound.current) {
-      errorSound.current.currentTime = 0;
-      errorSound.current.play().catch(() => {});
-    }
-
     // Calculate final reward
     calculateReward(score);
 
     setGamePhase("completed");
     endGame();
-  }, [score, calculateReward, endGame, wrongSignal]);
+  }, [score, calculateReward, endGame]);
 
   // Handle reset
   const handleReset = () => {
@@ -368,7 +320,7 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
     setActiveSignal(null);
     setWrongSignal(null);
     setInputTimer(0);
-    setLastInputTime(0);
+    setFailureReason(null);
     setEarnedReward("0");
     setNetGain(0);
     setGameStartPending(false);
@@ -568,14 +520,14 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
                 <span
                   className={isDarkMode ? "text-gray-300" : "text-gray-700"}
                 >
-                  Base Input Time:
+                  Total Input Time:
                 </span>
                 <span
                   className={`font-bold ${
                     isDarkMode ? "text-white" : "text-gray-900"
                   }`}
                 >
-                  {config.baseInputTime}s + {config.timePerSignal}s/signal
+                  {config.baseInputTime}s + {config.timePerSignal}s × level^0.7
                 </span>
               </div>
             </div>
@@ -823,6 +775,7 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
           correctPairs={score}
           wrongPairs={0}
           netGain={netGain}
+          failureReason={failureReason}
           onPlayAgain={handleReset}
           onWithdraw={withdrawWinnings}
           isWithdrawing={isTransactionLoading}

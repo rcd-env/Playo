@@ -1,5 +1,18 @@
 import { useMemo } from "react";
 
+// Quotes
+const loseQuotes = [
+  "You should start a charity - oh wait, you did.",
+  "You made it look easy - losing, I mean.",
+  "Skill issue. Major one.",
+];
+
+const winQuotes = [
+  "Hot hands - don't let them cool.",
+  "You're on fire - fan the flames.",
+  "Win mode: ON. Play again to confirm.",
+];
+
 interface GameResultProps {
   won: boolean;
   reward: string;
@@ -9,6 +22,7 @@ interface GameResultProps {
   correctPairs: number;
   wrongPairs: number;
   netGain: number;
+  failureReason?: "timeout" | "wrong" | null;
   onPlayAgain: () => void;
   onWithdraw: (amount: string) => void;
   isWithdrawing?: boolean;
@@ -23,6 +37,7 @@ export function GameResult({
   // wrongPairs,
   netGain,
   reward,
+  failureReason,
   onPlayAgain,
   onWithdraw,
   isWithdrawing = false,
@@ -34,19 +49,6 @@ export function GameResult({
   const textColor = isDarkMode ? "white" : "#000000";
   const borderColor = "border-black border-2";
   const cardBg = isDarkMode ? "#153243" : "#F4F9E9";
-
-  // Quotes
-  const loseQuotes = [
-    "You should start a charity - oh wait, you did.",
-    "You made it look easy - losing, I mean.",
-    "Skill issue. Major one.",
-  ];
-
-  const winQuotes = [
-    "Hot hands - don't let them cool.",
-    "You're on fire - fan the flames.",
-    "Win mode: ON. Play again to confirm.",
-  ];
 
   // Select random quote based on result - memoized so it doesn't change on re-renders
   const quote = useMemo(
@@ -65,6 +67,21 @@ export function GameResult({
       >
         {/* Stats */}
         <div className="space-y-3">
+          {/* Failure Reason - Only show if game was lost */}
+          {failureReason && netGain <= 0 && (
+            <div
+              className={`rounded-lg p-3 ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]`}
+              style={{
+                backgroundColor: isDarkMode ? "#7f1d1d" : "#fee2e2",
+                color: isDarkMode ? "#fca5a5" : "#dc2626",
+              }}
+            >
+              <div className="text-sm font-bold uppercase tracking-wider">
+                {failureReason === "timeout" ? "Time Expired" : "Wrong Input"}
+              </div>
+            </div>
+          )}
+
           {/* Net Gain/Loss - Prominent */}
           <div
             className={`rounded-lg p-4 ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]`}
