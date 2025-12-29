@@ -1201,7 +1201,7 @@ function App() {
             </div> */}
 
               {/* Video Player */}
-              <div className="my-3 relative min-h-[40vh] md:min-h-[50vh] flex items-center justify-center bg-black/5 rounded-lg">
+              <div className="my-3 relative min-h-[20vh] md:min-h-[50vh] flex items-center justify-center bg-black/5 rounded-lg">
                 <video
                   ref={videoRef}
                   key={selectedGame}
@@ -1217,20 +1217,20 @@ function App() {
               </div>
 
               {selectedGame === "simon" && (
-                <p className="text-center">
+                <p>
                   **Each round highlights only the <b>new</b> signal.
                   <br /> You must remember the full sequence from memory.
                 </p>
               )}
               {selectedGame === "tappo" && (
-                <p className="text-center">
+                <p>
                   **Tap only the bubbles matching the{" "}
                   <span className="font-bold">Hit</span> number to score points.
                   Wrong taps deduct points!
                 </p>
               )}
               {selectedGame === "flippo" && (
-                <p className="text-center">
+                <p>
                   **Tap cards to reveal and match pairs.
                   <br /> Try to complete the grid within the flip limit!
                 </p>
