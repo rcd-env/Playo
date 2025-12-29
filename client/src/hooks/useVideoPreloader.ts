@@ -10,60 +10,46 @@ export function useVideoPreloader(gameStarted: boolean) {
   useEffect(() => {
     if (!gameStarted || videosPreloaded) return;
 
-    const videos = [
-      { src: "/videos/Win.mp4", element: null as HTMLVideoElement | null },
-      { src: "/videos/Lost.mp4", element: null as HTMLVideoElement | null },
-      {
-        src: "/videos/flippo-demo.mp4",
-        element: null as HTMLVideoElement | null,
-      },
-      {
-        src: "/videos/tappo-demo.mp4",
-        element: null as HTMLVideoElement | null,
-      },
-      {
-        src: "/videos/simono-demo.mp4",
-        element: null as HTMLVideoElement | null,
-      },
+    const videoSources = [
+      "/videos/Win.mp4",
+      "/videos/Lost.mp4",
+      "/videos/flippo-demo.mp4",
+      "/videos/tappo-demo.mp4",
+      "/videos/simono-demo.mp4",
     ];
 
     let loadedCount = 0;
+    const totalVideos = videoSources.length;
 
-    // Preload both videos
-    videos.forEach((video, index) => {
-      const videoElement = document.createElement("video");
-      videoElement.src = video.src;
-      videoElement.preload = "auto";
-      videoElement.muted = true; // Muted videos can autoplay without user interaction
+    // Preload videos using fetch API for better reliability
+    const preloadPromises = videoSources.map((src) =>
+      fetch(src)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.blob();
+        })
+        .then(() => {
+          loadedCount++;
+          if (loadedCount === totalVideos) {
+            setVideosPreloaded(true);
+            console.log("🎬 Game videos preloaded successfully");
+          }
+        })
+        .catch((error) => {
+          console.warn(`Failed to preload video: ${src}`, error);
+          loadedCount++;
+          if (loadedCount === totalVideos) {
+            setVideosPreloaded(true);
+          }
+        })
+    );
 
-      videos[index].element = videoElement;
+    // Wait for all videos to load or fail
+    Promise.allSettled(preloadPromises);
 
-      videoElement.onloadeddata = () => {
-        loadedCount++;
-        if (loadedCount === videos.length) {
-          setVideosPreloaded(true);
-          console.log("🎬 Game videos preloaded successfully");
-        }
-      };
-
-      videoElement.onerror = () => {
-        console.warn(`Failed to preload video: ${video.src}`);
-        loadedCount++;
-        if (loadedCount === videos.length) {
-          setVideosPreloaded(true);
-        }
-      };
-    });
-
-    // Cleanup
-    return () => {
-      videos.forEach(({ element }) => {
-        if (element) {
-          element.src = "";
-          element.load();
-        }
-      });
-    };
+    // No cleanup needed for fetch-based preloading
   }, [gameStarted, videosPreloaded]);
 
   return videosPreloaded;
