@@ -32,6 +32,12 @@ function App() {
     setShowSplash(false);
   };
 
+  // Handle theme toggle with splash animation
+  const handleThemeToggle = () => {
+    setIsDarkMode(!isDarkMode);
+    setShowSplash(true);
+  };
+
   // Apply theme to document for scrollbar styling and save to localStorage
   useEffect(() => {
     if (isDarkMode) {
@@ -200,7 +206,7 @@ function App() {
               {/* Theme Toggle & Wallet Connect - Hidden on mobile */}
               <div className="hidden lg:flex items-center gap-2 md:gap-4">
                 <button
-                  onClick={() => setIsDarkMode(!isDarkMode)}
+                  onClick={handleThemeToggle}
                   className={`p-2 md:p-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer`}
                   style={{
                     backgroundColor: isDarkMode ? "#0fa594" : "#FCFF51",
@@ -1329,9 +1335,7 @@ function App() {
                 {/* Theme Toggle & Wallet Connect */}
                 <div className="pt-4 border-t-2 border-black mb-4 flex gap-2">
                   <button
-                    onClick={() => {
-                      setIsDarkMode(!isDarkMode);
-                    }}
+                    onClick={handleThemeToggle}
                     className={`w-auto px-3 py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer flex items-center justify-center gap-3 font-semibold text-lg`}
                     style={{
                       backgroundColor: isDarkMode ? "#0fa594" : "#FCFF51",
