@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { createPortal } from "react-dom";
 
 // Quotes
 const loseQuotes = [
@@ -57,8 +58,11 @@ export function GameResult({
     [netGain]
   );
 
-  return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+  const modalContent = (
+    <div
+      className="fixed inset-0 bg-black/80 flex items-center justify-center z-100 p-4"
+      style={{ pointerEvents: "all" }}
+    >
       <div
         className={`rounded-2xl p-8 max-w-md w-full text-center space-y-6 animate-fade-in ${borderColor} shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)]`}
         style={{ backgroundColor: bgColor }}
@@ -245,4 +249,6 @@ export function GameResult({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
