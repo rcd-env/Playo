@@ -1,30 +1,52 @@
 import { useEffect, useState, useRef } from "react";
 import { Moon, Sun, Info, Play, Grip } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { WalletConnect } from "./components/wallet-connect";
 import { ErrorNotification } from "./components/ErrorNotification";
 import { Sidebar } from "./components/Sidebar";
+import { SplashScreen } from "./components/SplashScreen";
+import { GameTransition } from "./components/GameTransition";
 import { FlippoGame } from "./components/games/Flippo/FlippoGame";
 import { TappoGame } from "./components/games/Tappo/TappoGame";
 import { SimonGame } from "./components/games/Simon/SimonGame";
 import { usePlayoGame } from "./hooks/usePlayoGame";
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem("playoThemeMode");
+    return saved === "dark";
+  });
   const [isSidebarHovered, setIsSidebarHovered] = useState(false);
-  const [selectedGame, setSelectedGame] = useState("flippo");
+  const [selectedGame, setSelectedGame] = useState(() => {
+    const saved = localStorage.getItem("playoSelectedGame");
+    return saved || "flippo";
+  });
   const [showRules, setShowRules] = useState(false);
   const [showDemoVideo, setShowDemoVideo] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Apply theme to document for scrollbar styling
+  // Handle splash completion
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+  };
+
+  // Apply theme to document for scrollbar styling and save to localStorage
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.removeAttribute("data-theme");
+      localStorage.setItem("playoThemeMode", "dark");
     } else {
       document.documentElement.setAttribute("data-theme", "light");
+      localStorage.setItem("playoThemeMode", "light");
     }
   }, [isDarkMode]);
+
+  // Save selected game to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("playoSelectedGame", selectedGame);
+  }, [selectedGame]);
 
   // Delay video playback when demo modal opens
   useEffect(() => {
@@ -73,1056 +95,1086 @@ function App() {
   ];
 
   return (
-    <div
-      className={`min-h-screen ${textColor} ${
-        !isDarkMode ? "light-mode" : ""
-      } relative overflow-y-auto scrollbar-hide`}
-    >
-      {/* Background Layer */}
-      <div
-        className="fixed inset-0"
-        style={{
-          backgroundColor: isDarkMode ? "#153243" : "#F4F9E9",
-          backgroundImage: isDarkMode
-            ? `linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-               linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px)`
-            : `linear-gradient(rgba(0, 0, 0, 0.09) 1px, transparent 1px),
-               linear-gradient(90deg, rgba(0, 0, 0, 0.09) 1px, transparent 1px)`,
-          backgroundSize: "40px 40px",
-          zIndex: 0,
-        }}
-      />
-
-      {/* Sidebar - Hidden on mobile */}
-      <Sidebar
-        isDarkMode={isDarkMode}
-        onHover={setIsSidebarHovered}
-        selectedGame={selectedGame}
-        onSelectGame={setSelectedGame}
-      />
-
-      {/* Overlay when sidebar is hovered */}
-      {isSidebarHovered && (
-        <div
-          className="fixed inset-0 bg-black transition-opacity duration-300"
-          style={{
-            opacity: 0.15,
-            zIndex: 40,
-            pointerEvents: "none",
-          }}
+    <>
+      {/* Splash Screen */}
+      {showSplash && (
+        <SplashScreen
+          onComplete={handleSplashComplete}
+          isDarkMode={isDarkMode}
         />
       )}
 
-      {/* Main Content */}
       <div
-        className="relative"
-        style={{
-          zIndex: 1,
-        }}
+        className={`min-h-screen ${textColor} ${
+          !isDarkMode ? "light-mode" : ""
+        } relative overflow-y-auto scrollbar-hide`}
       >
-        {/* Top Bar */}
-        <header
-          className={`px-4 md:px-8 py-4 md:py-6 ${bgColor} bg-transparent`}
-        >
-          <div className="max-w-[1600px] mx-auto flex items-center justify-between flex-wrap gap-4">
-            {/* Brand Name */}
-            <h1 className="text-4xl md:text-4xl font-bold font-Tsuchigumo tracking-wider brand flex gap-3 md:gap-3 items-center">
-              <img
-                src={
-                  isDarkMode
-                    ? "/images/playo-logo-light.png"
-                    : "/images/playo-logo-dark.png"
-                }
-                alt="Playo Logo"
-                className="h-12 w-12  text-black"
-              />
-              Playo
-            </h1>
+        {/* Background Layer */}
+        <div
+          className="fixed inset-0"
+          style={{
+            backgroundColor: isDarkMode ? "#153243" : "#F4F9E9",
+            backgroundImage: isDarkMode
+              ? `linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+               linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px)`
+              : `linear-gradient(rgba(0, 0, 0, 0.09) 1px, transparent 1px),
+               linear-gradient(90deg, rgba(0, 0, 0, 0.09) 1px, transparent 1px)`,
+            backgroundSize: "40px 40px",
+            zIndex: 0,
+          }}
+        />
 
-            {/* Center Buttons Group - Hidden on mobile */}
-            <div className="hidden lg:flex items-center gap-4">
-              {/* Game Info Button */}
+        {/* Sidebar - Hidden on mobile */}
+        <Sidebar
+          isDarkMode={isDarkMode}
+          onHover={setIsSidebarHovered}
+          selectedGame={selectedGame}
+          onSelectGame={setSelectedGame}
+        />
+
+        {/* Overlay when sidebar is hovered */}
+        {isSidebarHovered && (
+          <div
+            className="fixed inset-0 bg-black transition-opacity duration-300"
+            style={{
+              opacity: 0.15,
+              zIndex: 40,
+              pointerEvents: "none",
+            }}
+          />
+        )}
+
+        {/* Main Content */}
+        <div
+          className="relative"
+          style={{
+            zIndex: 1,
+          }}
+        >
+          {/* Top Bar */}
+          <header
+            className={`px-4 md:px-8 py-4 md:py-6 ${bgColor} bg-transparent`}
+          >
+            <div className="max-w-[1600px] mx-auto flex items-center justify-between flex-wrap gap-4">
+              {/* Brand Name */}
+              <h1 className="text-4xl md:text-4xl font-bold font-Tsuchigumo tracking-wider brand flex gap-3 md:gap-3 items-center">
+                <img
+                  src={
+                    isDarkMode
+                      ? "/images/playo-logo-light.png"
+                      : "/images/playo-logo-dark.png"
+                  }
+                  alt="Playo Logo"
+                  className="h-12 w-12  text-black"
+                />
+                Playo
+              </h1>
+
+              {/* Center Buttons Group - Hidden on mobile */}
+              <div className="hidden lg:flex items-center gap-4">
+                {/* Game Info Button */}
+                <button
+                  onClick={() => setShowRules(true)}
+                  className={`px-6 py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer flex items-center gap-2 ${textColor}`}
+                  style={{
+                    backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
+                  }}
+                >
+                  <Info className="w-5 h-5" />
+                  <span className="font-semibold">Game Info</span>
+                </button>
+
+                {/* Demo Video Button */}
+                <button
+                  onClick={() => setShowDemoVideo(true)}
+                  className={`px-6 py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer flex items-center gap-2 ${textColor}`}
+                  style={{
+                    backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
+                  }}
+                >
+                  <Play className="w-5 h-5" />
+                  <span className="font-semibold">Game Demo</span>
+                </button>
+              </div>
+
+              {/* Theme Toggle & Wallet Connect - Hidden on mobile */}
+              <div className="hidden lg:flex items-center gap-2 md:gap-4">
+                <button
+                  onClick={() => setIsDarkMode(!isDarkMode)}
+                  className={`p-2 md:p-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer`}
+                  style={{
+                    backgroundColor: isDarkMode ? "#0fa594" : "#FCFF51",
+                  }}
+                >
+                  {isDarkMode ? (
+                    <Moon className="w-5 h-5 md:w-6 md:h-6 text-black" />
+                  ) : (
+                    <Sun className="w-5 h-5 md:w-6 md:h-6 text-black" />
+                  )}
+                </button>
+                <WalletConnect isDarkMode={isDarkMode} />
+              </div>
+
+              {/* Mobile Menu Button - Only visible on mobile */}
               <button
-                onClick={() => setShowRules(true)}
-                className={`px-6 py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer flex items-center gap-2 ${textColor}`}
+                onClick={() => setShowMobileMenu(true)}
+                className={`lg:hidden p-2 md:p-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer`}
                 style={{
                   backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
                 }}
               >
-                <Info className="w-5 h-5" />
+                <Grip className={`w-6 h-6 ${textColor}`} />
+              </button>
+            </div>
+
+            {/* Mobile Buttons - Below navbar on small screens */}
+            <div className="lg:hidden flex items-center gap-2 md:gap-3 mt-4 justify-center">
+              {/* Game Info Button */}
+              <button
+                onClick={() => setShowRules(true)}
+                className={`flex-1 px-4 py-2.5 md:py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer flex items-center justify-center gap-2 ${textColor} text-sm md:text-base`}
+                style={{
+                  backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
+                }}
+              >
+                <Info className="w-4 h-4 md:w-5 md:h-5" />
                 <span className="font-semibold">Game Info</span>
               </button>
 
               {/* Demo Video Button */}
               <button
                 onClick={() => setShowDemoVideo(true)}
-                className={`px-6 py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer flex items-center gap-2 ${textColor}`}
+                className={`flex-1 px-4 py-2.5 md:py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer flex items-center justify-center gap-2 ${textColor} text-sm md:text-base`}
                 style={{
                   backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
                 }}
               >
-                <Play className="w-5 h-5" />
+                <Play className="w-4 h-4 md:w-5 md:h-5" />
                 <span className="font-semibold">Game Demo</span>
               </button>
             </div>
+          </header>
 
-            {/* Theme Toggle & Wallet Connect - Hidden on mobile */}
-            <div className="hidden lg:flex items-center gap-2 md:gap-4">
+          {/* Main Content */}
+          <main className="max-w-[1600px] mx-auto px-4 md:px-8 py-4 md:py-8 lg:ml-28">
+            <GameTransition gameId={selectedGame}>
+              {selectedGame === "flippo" && (
+                <FlippoGame
+                  isDarkMode={isDarkMode}
+                  address={address}
+                  isLoading={isLoading}
+                />
+              )}
+
+              {selectedGame === "tappo" && (
+                <TappoGame
+                  isDarkMode={isDarkMode}
+                  address={address}
+                  isLoading={isLoading}
+                />
+              )}
+
+              {selectedGame === "simon" && (
+                <SimonGame
+                  isDarkMode={isDarkMode}
+                  address={address}
+                  isLoading={isLoading}
+                />
+              )}
+            </GameTransition>
+          </main>
+
+          {/* Error Notification */}
+          {transactionError && (
+            <ErrorNotification
+              error={transactionError as Error}
+              onDismiss={() => {}}
+            />
+          )}
+        </div>
+
+        {/* Rules Modal */}
+        {showRules && (
+          <div
+            className="fixed inset-0 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowRules(false)}
+          >
+            <div
+              className="fixed inset-0 bg-black opacity-50"
+              style={{ backdropFilter: "blur(4px)" }}
+            />
+            <div
+              className={`relative max-w-2xl w-full rounded-lg border ${borderColor} shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] p-4 max-h-[80vh] overflow-y-auto overflow-x-hidden scrollbar-hide`}
+              style={{
+                backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {selectedGame === "flippo" && (
+                <div className={`space-y-4 ${textColor}`}>
+                  {/* Game Header with Logo and Title */}
+                  <div className="flex items-start gap-6 mb-6 pb-6 border-b-2 border-black">
+                    {/* Game Logo */}
+                    <div className="shrink-0">
+                      <img
+                        src="/images/flippo-logo.png"
+                        alt="Flippo Logo"
+                        className="w-18 h-18 md:w-24 md:h-24 object-cover rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]"
+                      />
+                    </div>
+                    {/* Title and Description */}
+                    <div className="flex-1">
+                      <h2
+                        className={`text-2xl md:text-3xl font-bold mb-1 md:mb-3 ${textColor} font-Tsuchigumo`}
+                      >
+                        Flippo - Flip Your Fate
+                      </h2>
+                      <p
+                        className={`text-sm md:text-lg ${
+                          isDarkMode ? "text-gray-300" : "text-gray-700"
+                        }`}
+                      >
+                        Memory matching game - flip cards to find pairs
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Game Objective</h3>
+                    <p>
+                      Flippo is a skill-based memory matching game where you
+                      flip cards to find matching pairs. Your memory and
+                      strategy directly determine your rewards based on how many
+                      pairs you successfully match.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Getting Started</h3>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Connect Wallet:</strong> Ensure your wallet is
+                        connected to Mantle Sepolia testnet
+                      </li>
+                      <li>
+                        <strong>Select Grid Size:</strong> Choose from 2×2, 4×4,
+                        or 6×6 grid sizes
+                      </li>
+                      <li>
+                        <strong>Stake Amount:</strong> Enter your MNT stake
+                        amount to participate
+                      </li>
+                      <li>
+                        <strong>Start Game:</strong> Click "Start Game" to begin
+                        and deposit your stake into the smart contract
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Gameplay Mechanics
+                    </h3>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Card Grid:</strong> Cards are placed face-down
+                        in your selected grid size
+                      </li>
+                      <li>
+                        <strong>Flip Cards:</strong> Click any card to reveal
+                        its symbol
+                      </li>
+                      <li>
+                        <strong>Match Pairs:</strong> Find two cards with
+                        identical symbols to make a match
+                      </li>
+                      <li>
+                        <strong>Matched Cards:</strong> Successfully matched
+                        pairs remain face-up
+                      </li>
+                      <li>
+                        <strong>Unmatched Cards:</strong> Non-matching cards
+                        flip back face-down
+                      </li>
+                      <li>
+                        <strong>Memory Challenge:</strong> Remember card
+                        positions to match pairs efficiently
+                      </li>
+                      <li>
+                        <strong>Limited Flips:</strong> You have a set number of
+                        flips based on grid size
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Grid Sizes & Multipliers
+                    </h3>
+                    <p className="mb-2">
+                      Choose your difficulty level based on the grid size:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>2×2 Grid:</strong> 2 pairs, 2 flips - 1.2×
+                        multiplier (Beginner)
+                      </li>
+                      <li>
+                        <strong>4×4 Grid:</strong> 8 pairs, 13 flips - 1.5×
+                        multiplier (Easy)
+                      </li>
+                      <li>
+                        <strong>6×6 Grid:</strong> 18 pairs, 25 flips - 2.0×
+                        multiplier (Medium)
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Performance & Scoring
+                    </h3>
+                    <p className="mb-2">
+                      Your success is measured by matched pairs and flip
+                      efficiency:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Matched Pairs:</strong> Each successfully
+                        matched pair contributes to your score
+                      </li>
+                      <li>
+                        <strong>Total Pairs:</strong> The number of pairs in
+                        your selected grid
+                      </li>
+                      <li>
+                        <strong>Wrong Flips:</strong> Incorrect matches count
+                        against your performance
+                      </li>
+                      <li>
+                        <strong>Perfect Game:</strong> Match all pairs within
+                        the flip limit for maximum reward
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Reward Calculation
+                    </h3>
+                    <p className="mb-2">
+                      Your reward is calculated proportionally based on your
+                      performance:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Formula:</strong> Reward = Stake Amount × Grid
+                        Multiplier × (Matched Pairs ÷ Total Pairs)
+                      </li>
+                      <li>
+                        <strong>Proportional System:</strong> Even partial
+                        completions earn proportional rewards
+                      </li>
+                      <li>
+                        <strong>Example (8×8):</strong> 10 MNT stake, match all
+                        32 pairs = 25 MNT reward (15 MNT profit)
+                      </li>
+                      <li>
+                        <strong>Example (4×4):</strong> 5 MNT stake, match 4/8
+                        pairs = 3.75 MNT reward
+                      </li>
+                      <li>
+                        <strong>Net Gain:</strong> Your profit/loss after
+                        deducting the initial stake
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Claiming Your Reward
+                    </h3>
+                    <p className="mb-2">After the game ends:</p>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Withdraw Reward:</strong> Claim your calculated
+                        reward from the prize pool based on matched pairs
+                      </li>
+                      <li>
+                        <strong>Partial Rewards:</strong> Even if you don't
+                        match all pairs, you receive proportional rewards
+                      </li>
+                      <li>
+                        <strong>No Matches:</strong> If no pairs are matched, no
+                        reward is earned
+                      </li>
+                      <li>
+                        All transactions are processed through the smart
+                        contract on Mantle Sepolia
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Fair Play Principles
+                    </h3>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Memory-Based:</strong> Outcomes depend entirely
+                        on your memory skills and strategy
+                      </li>
+                      <li>
+                        <strong>Deterministic Rewards:</strong> Your matched
+                        pairs directly determine your reward—no randomness
+                      </li>
+                      <li>
+                        <strong>Equal Opportunity:</strong> All players face the
+                        same card layouts and flip limits
+                      </li>
+                      <li>
+                        <strong>Transparent:</strong> All game logic and reward
+                        calculations are verifiable on-chain
+                      </li>
+                      <li>
+                        <strong>Prize Pool Funded:</strong> Rewards come from an
+                        owner-funded prize pool ensuring sustainability
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Strategy Tips</h3>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>Start with smaller grids (2×2 or 4×4) to practice</li>
+                      <li>
+                        Pay close attention to card positions when they flip
+                      </li>
+                      <li>
+                        Develop a systematic approach to revealing cards (e.g.,
+                        row by row)
+                      </li>
+                      <li>
+                        Larger grids offer higher multipliers but are harder
+                      </li>
+                      <li>
+                        Take your time to memorize patterns before rushing
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {selectedGame === "simon" && (
+                <div className={`space-y-4 ${textColor}`}>
+                  {/* Game Header with Logo and Title */}
+                  <div className="flex items-start gap-6 mb-6 pb-6 border-b-2 border-black">
+                    {/* Game Logo */}
+                    <div className="shrink-0">
+                      <img
+                        src="/images/simono-logo.png"
+                        alt="Simono Logo"
+                        className="w-18 h-18 md:w-24 md:h-24 object-cover rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]"
+                      />
+                    </div>
+                    {/* Title and Description */}
+                    <div className="flex-1">
+                      <h2
+                        className={`text-2xl md:text-3xl font-bold mb-1 md:mb-3 ${textColor} font-Tsuchigumo`}
+                      >
+                        Simono - Choose Your Fate
+                      </h2>
+                      <p
+                        className={`text-sm md:text-lg ${
+                          isDarkMode ? "text-gray-300" : "text-gray-700"
+                        }`}
+                      >
+                        Pure sequential memory - watch the new signal, remember
+                        the entire sequence
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Game Objective</h3>
+                    <p>
+                      Simon is a pure sequential memory challenge where only the
+                      newly added signal is shown each round. You must remember
+                      and input the entire growing sequence from memory. Your
+                      focus and recall ability directly determine your rewards.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Getting Started</h3>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Connect Wallet:</strong> Ensure your wallet is
+                        connected to Mantle Sepolia testnet
+                      </li>
+                      <li>
+                        <strong>Select Difficulty:</strong> Choose from Easy,
+                        Medium, or Hard difficulty levels
+                      </li>
+                      <li>
+                        <strong>Stake Amount:</strong> Enter your MNT stake
+                        amount to participate
+                      </li>
+                      <li>
+                        <strong>Start Game:</strong> Click "Start Game" to begin
+                        and deposit your stake into the smart contract
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Gameplay Mechanics
+                    </h3>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Round 1:</strong> Watch the first colored signal
+                        (Red, Blue, Green, or Yellow), then repeat it
+                      </li>
+                      <li>
+                        <strong>Each New Round:</strong> Only the newly added
+                        signal is shown—no full sequence replay
+                      </li>
+                      <li>
+                        <strong>Sequential Input:</strong> You must input the
+                        entire sequence from memory, in correct order
+                      </li>
+                      <li>
+                        <strong>Input Timer:</strong> You have base time + time
+                        per signal to complete the full sequence (e.g., Round 5
+                        = longer time than Round 2)
+                      </li>
+                      <li>
+                        <strong>Level Progress:</strong> Successfully completing
+                        a sequence advances you to the next level with +1 signal
+                      </li>
+                      <li>
+                        <strong>Game Over:</strong> Any incorrect signal or
+                        timeout ends the game immediately—no partial credit
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Difficulty Levels & Multipliers
+                    </h3>
+                    <p className="mb-2">
+                      Difficulty affects signal speed, total time, and per-input
+                      pressure:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Easy:</strong> 1s signal display, 1.2s max per
+                        input - 1.3× multiplier, target 16 levels
+                      </li>
+                      <li>
+                        <strong>Medium:</strong> 0.7s signal display, 0.9s max
+                        per input - 1.6× multiplier, target 12 levels
+                      </li>
+                      <li>
+                        <strong>Hard:</strong> 0.5s signal display, 0.6s max per
+                        input - 2.0× multiplier, target 8 levels
+                      </li>
+                    </ul>
+                    <p className="mt-2">
+                      <strong>Note:</strong> Total time scales sub-linearly
+                      (early levels are forgiving, late levels get tighter).
+                      After level 5, per-input timeout reduces every 2 levels
+                      for increased pressure.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Scoring & Performance
+                    </h3>
+                    <p className="mb-2">
+                      Your score equals the highest level (sequence length) you
+                      successfully completed:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Score = Levels Completed:</strong> Each correct
+                        full sequence = +1 level
+                      </li>
+                      <li>
+                        <strong>No Partial Credit:</strong> Incomplete sequences
+                        or wrong inputs don't count
+                      </li>
+                      <li>
+                        <strong>One Strike Rule:</strong> First mistake or
+                        timeout ends the game permanently
+                      </li>
+                      <li>
+                        <strong>Visual Feedback:</strong> Wrong inputs flash red
+                        before game ends
+                      </li>
+                      <li>
+                        <strong>No Retries:</strong> Each game session allows
+                        only one attempt—no continues
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Timing & Pressure Mechanics
+                    </h3>
+                    <p className="mb-2">
+                      Advanced timing system creates skill-based challenge:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Per-Input Timeout:</strong> Each click must
+                        happen within the max time limit (1.2s Easy, 0.9s
+                        Medium, 0.6s Hard) or game ends
+                      </li>
+                      <li>
+                        <strong>Sub-Linear Scaling:</strong> Total time grows
+                        slower than sequence length—early levels are generous,
+                        late levels demand efficiency
+                      </li>
+                      <li>
+                        <strong>Late-Game Pressure Ramp:</strong> After level 5,
+                        per-input timeout shrinks by ~8-12% every 2 levels
+                      </li>
+                      <li>
+                        <strong>Execution Matters:</strong> Can't hesitate on
+                        late levels—memorization alone isn't enough
+                      </li>
+                      <li>
+                        <strong>Hard Mode Ramps Fastest:</strong> High risk,
+                        high reward—pressure increases more aggressively
+                      </li>
+                    </ul>
+                    <p className="mt-2">
+                      <strong>Why This Matters:</strong> Prevents consistent
+                      profit by making execution under pressure the real
+                      challenge, not just memory.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Reward Calculation
+                    </h3>
+                    <p className="mb-2">
+                      Your reward is calculated proportionally and capped at the
+                      maximum multiplier:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Formula:</strong> Reward = Stake Amount ×
+                        Difficulty Multiplier × Performance Ratio
+                      </li>
+                      <li>
+                        <strong>Performance Ratio:</strong> Your score divided
+                        by the target score (capped at 1.0)
+                      </li>
+                      <li>
+                        <strong>Target Scores:</strong> Easy = 16 levels, Medium
+                        = 12 levels, Hard = 8 levels
+                      </li>
+                      <li>
+                        <strong>Example (Medium):</strong> 5 MNT stake, 12/12
+                        levels = 8 MNT reward (3 MNT profit)
+                      </li>
+                      <li>
+                        <strong>Example (Hard):</strong> 10 MNT stake, 6/8
+                        levels = 15 MNT reward (5 MNT profit)
+                      </li>
+                      <li>
+                        <strong>Reward Cap:</strong> Scoring above the target
+                        doesn't increase rewards beyond the maximum
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Claiming Your Reward
+                    </h3>
+                    <p className="mb-2">
+                      After the game ends, rewards are based on your final
+                      score:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Proportional Rewards:</strong> Even if you don't
+                        reach the target score, you receive proportional rewards
+                        based on your progress
+                      </li>
+                      <li>
+                        <strong>Perfect Performance:</strong> Reaching or
+                        exceeding the target score earns the maximum multiplier
+                      </li>
+                      <li>
+                        <strong>Zero Score:</strong> If you score 0 (fail on
+                        first sequence), no reward is earned
+                      </li>
+                      <li>
+                        <strong>Instant Settlement:</strong> All transactions
+                        are processed through the smart contract on Mantle
+                        Sepolia
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Fair Play Principles
+                    </h3>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Skill-Based Only:</strong> Outcomes depend
+                        entirely on your memory and focus—no luck involved
+                      </li>
+                      <li>
+                        <strong>Deterministic Sequences:</strong> Sequences are
+                        generated at game start using a deterministic algorithm
+                      </li>
+                      <li>
+                        <strong>No Mid-Game Changes:</strong> No randomness
+                        affects rewards after the sequence is generated
+                      </li>
+                      <li>
+                        <strong>Equal Challenge:</strong> Same rules and
+                        mechanics apply across all devices and sessions
+                      </li>
+                      <li>
+                        <strong>Transparent Rewards:</strong> All reward
+                        calculations are verifiable on-chain
+                      </li>
+                      <li>
+                        <strong>No Cashout Tricks:</strong> No double-or-nothing
+                        or mid-game cashout mechanics
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Strategy Tips</h3>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        Start with Easy to learn sequential memory and timing
+                        mechanics
+                      </li>
+                      <li>
+                        Focus intensely on each new signal—you won't see it
+                        again
+                      </li>
+                      <li>
+                        Build mental patterns: group colors, create stories, or
+                        use spatial memory
+                      </li>
+                      <li>
+                        Practice speed—after level 5, hesitation becomes
+                        dangerous
+                      </li>
+                      <li>
+                        Input with rhythm and confidence—consistent timing
+                        reduces mistakes
+                      </li>
+                      <li>
+                        Train muscle memory for color positions to speed up
+                        execution
+                      </li>
+                      <li>
+                        Eliminate distractions—late levels require perfect
+                        recall AND fast execution
+                      </li>
+                      <li>
+                        Hard mode offers 2× rewards but demands instant recall
+                        and lightning-fast inputs
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {selectedGame === "tappo" && (
+                <div className={`space-y-4 ${textColor}`}>
+                  {/* Game Header with Logo and Title */}
+                  <div className="flex items-start gap-6 mb-6 pb-6 border-b-2 border-black">
+                    {/* Game Logo */}
+                    <div className="shrink-0">
+                      <img
+                        src="/images/tappo-logo.jpeg"
+                        alt="Tappo Logo"
+                        className="w-24 h-24 object-cover rounded-3xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]"
+                      />
+                    </div>
+                    {/* Title and Description */}
+                    <div className="flex-1">
+                      <h2
+                        className={`text-3xl font-bold mb-3 ${textColor} font-Tsuchigumo`}
+                      >
+                        Tappo - Tap to Win
+                      </h2>
+                      <p
+                        className={`text-lg ${
+                          isDarkMode ? "text-gray-300" : "text-gray-700"
+                        }`}
+                      >
+                        Reflex game - tap bubbles matching the target number
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Game Objective</h3>
+                    <p>
+                      Tappo is a skill-based reflex game where you tap bubbles
+                      matching a target number to maximize your score within a
+                      time limit. Your performance directly determines your
+                      rewards.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Getting Started</h3>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Connect Wallet:</strong> Ensure your wallet is
+                        connected to Mantle Sepolia testnet
+                      </li>
+                      <li>
+                        <strong>Select Duration:</strong> Choose your game
+                        duration (15s, 30s, or 60s)
+                      </li>
+                      <li>
+                        <strong>Stake Amount:</strong> Enter your MNT stake
+                        amount to participate
+                      </li>
+                      <li>
+                        <strong>Start Game:</strong> Click "Start Game" to begin
+                        and deposit your stake into the smart contract
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Gameplay Mechanics
+                    </h3>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Target Display:</strong> A target number (0-9)
+                        is shown at the top of the game board
+                      </li>
+                      <li>
+                        <strong>Bubble Grid:</strong> Bubbles displaying random
+                        digits (0-9) appear on the board
+                      </li>
+                      <li>
+                        <strong>Correct Tap:</strong> Tap any bubble matching
+                        the target number to score +10 points
+                      </li>
+                      <li>
+                        <strong>Auto-Reshuffle:</strong> After each correct hit,
+                        all bubbles reshuffle with new random numbers
+                      </li>
+                      <li>
+                        <strong>Wrong Tap:</strong> Tapping an incorrect bubble
+                        deducts -5 points (score cannot go below 0)
+                      </li>
+                      <li>
+                        <strong>Timer:</strong> The countdown timer tracks your
+                        remaining time
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Scoring & Performance
+                    </h3>
+                    <p className="mb-2">
+                      Your final score reflects your skill through accuracy and
+                      speed:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>Each correct hit: +10 points</li>
+                      <li>Each incorrect tap: -5 points (minimum 0)</li>
+                      <li>
+                        Performance is measured by total score achieved during
+                        gameplay
+                      </li>
+                      <li>Higher scores result in better rewards</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Difficulty & Multipliers
+                    </h3>
+                    <p className="mb-2">
+                      Choose your difficulty level based on the timer duration:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>15 seconds:</strong> 2.0× multiplier (Hard -
+                        less time, higher potential reward)
+                      </li>
+                      <li>
+                        <strong>30 seconds:</strong> 1.6× multiplier (Medium -
+                        balanced difficulty)
+                      </li>
+                      <li>
+                        <strong>60 seconds:</strong> 1.3× multiplier (Easy -
+                        more time, moderate reward)
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Reward Calculation
+                    </h3>
+                    <p className="mb-2">
+                      Your reward is calculated transparently based on your
+                      performance:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Formula:</strong> Reward = Stake Amount ×
+                        Difficulty Multiplier × Performance Ratio
+                      </li>
+                      <li>
+                        <strong>Performance Ratio:</strong> Your score divided
+                        by target score (capped at 1.0). Scoring above the
+                        target score doesn't increase rewards beyond the maximum
+                        multiplier
+                      </li>
+                      <li>
+                        <strong>Example:</strong> 1 MNT stake, 30s duration
+                        (1.6×), 50% performance = 0.8 MNT reward
+                      </li>
+                      <li>
+                        <strong>Net Gain:</strong> Your profit/loss after
+                        deducting the initial stake
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Claiming Your Reward
+                    </h3>
+                    <p className="mb-2">
+                      After the timer expires, rewards are based on your score:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Profit (Score &gt; Break-Even):</strong>{" "}
+                        Withdraw your reward if you scored above the break-even
+                        threshold. You earn more than your initial stake!
+                      </li>
+                      <li>
+                        <strong>Break-Even (Score = Threshold):</strong> Receive
+                        your full stake back with no profit or loss.
+                      </li>
+                      <li>
+                        <strong>
+                          Partial Refund (0 &lt; Score &lt; Break-Even):
+                        </strong>{" "}
+                        Get back a portion of your stake proportional to your
+                        score. The better you perform, the more you recover.
+                      </li>
+                      <li>
+                        <strong>No Score (Score = 0):</strong> If you score 0
+                        points, no reward is earned and your stake is lost.
+                      </li>
+                      <li>
+                        All withdrawals are processed instantly through the
+                        smart contract on Mantle Sepolia.
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Fair Play Principles
+                    </h3>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>
+                        <strong>Skill-Based:</strong> Outcomes depend entirely
+                        on your reflexes and accuracy
+                      </li>
+                      <li>
+                        <strong>Deterministic Rewards:</strong> No randomness in
+                        reward calculation—your score determines your reward
+                      </li>
+                      <li>
+                        <strong>Equal Difficulty:</strong> Responsive design
+                        ensures consistent gameplay across all devices
+                      </li>
+                      <li>
+                        <strong>Transparent:</strong> All game logic and reward
+                        formulas are verifiable on-chain
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Strategy Tips</h3>
+                    <ul className="list-disc list-inside space-y-2 ml-2">
+                      <li>Prioritize accuracy over speed to avoid penalties</li>
+                      <li>
+                        Shorter durations offer higher multipliers but require
+                        faster reflexes
+                      </li>
+                      <li>Watch for the brief freeze after correct hits</li>
+                      <li>
+                        Practice with longer durations before attempting hard
+                        mode
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
               <button
-                onClick={() => setIsDarkMode(!isDarkMode)}
-                className={`p-2 md:p-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer`}
+                onClick={() => setShowRules(false)}
+                className={`mt-6 w-full py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer text-xl font-bold`}
                 style={{
                   backgroundColor: isDarkMode ? "#0fa594" : "#FCFF51",
+                  color: "#000000",
                 }}
               >
-                {isDarkMode ? (
-                  <Moon className="w-5 h-5 md:w-6 md:h-6 text-black" />
-                ) : (
-                  <Sun className="w-5 h-5 md:w-6 md:h-6 text-black" />
-                )}
+                Got it!
               </button>
-              <WalletConnect isDarkMode={isDarkMode} />
             </div>
-
-            {/* Mobile Menu Button - Only visible on mobile */}
-            <button
-              onClick={() => setShowMobileMenu(true)}
-              className={`lg:hidden p-2 md:p-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer`}
-              style={{
-                backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
-              }}
-            >
-              <Grip className={`w-6 h-6 ${textColor}`} />
-            </button>
           </div>
-
-          {/* Mobile Buttons - Below navbar on small screens */}
-          <div className="lg:hidden flex items-center gap-2 md:gap-3 mt-4 justify-center">
-            {/* Game Info Button */}
-            <button
-              onClick={() => setShowRules(true)}
-              className={`flex-1 px-4 py-2.5 md:py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer flex items-center justify-center gap-2 ${textColor} text-sm md:text-base`}
-              style={{
-                backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
-              }}
-            >
-              <Info className="w-4 h-4 md:w-5 md:h-5" />
-              <span className="font-semibold">Game Info</span>
-            </button>
-
-            {/* Demo Video Button */}
-            <button
-              onClick={() => setShowDemoVideo(true)}
-              className={`flex-1 px-4 py-2.5 md:py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer flex items-center justify-center gap-2 ${textColor} text-sm md:text-base`}
-              style={{
-                backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
-              }}
-            >
-              <Play className="w-4 h-4 md:w-5 md:h-5" />
-              <span className="font-semibold">Game Demo</span>
-            </button>
-          </div>
-        </header>
-
-        {/* Main Content */}
-        <main className="max-w-[1600px] mx-auto px-4 md:px-8 py-4 md:py-8 lg:ml-28">
-          {selectedGame === "flippo" && (
-            <FlippoGame
-              isDarkMode={isDarkMode}
-              address={address}
-              isLoading={isLoading}
-            />
-          )}
-
-          {selectedGame === "tappo" && (
-            <TappoGame
-              isDarkMode={isDarkMode}
-              address={address}
-              isLoading={isLoading}
-            />
-          )}
-
-          {selectedGame === "simon" && (
-            <SimonGame
-              isDarkMode={isDarkMode}
-              address={address}
-              isLoading={isLoading}
-            />
-          )}
-        </main>
-
-        {/* Error Notification */}
-        {transactionError && (
-          <ErrorNotification
-            error={transactionError as Error}
-            onDismiss={() => {}}
-          />
         )}
-      </div>
 
-      {/* Rules Modal */}
-      {showRules && (
-        <div
-          className="fixed inset-0 flex items-center justify-center z-50 p-4"
-          onClick={() => setShowRules(false)}
-        >
+        {/* Demo Video Modal */}
+        {showDemoVideo && (
           <div
-            className="fixed inset-0 bg-black opacity-50"
-            style={{ backdropFilter: "blur(4px)" }}
-          />
-          <div
-            className={`relative max-w-2xl w-full rounded-lg border ${borderColor} shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] p-4 max-h-[80vh] overflow-y-auto overflow-x-hidden scrollbar-hide`}
-            style={{
-              backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-            }}
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowDemoVideo(false)}
           >
-            {selectedGame === "flippo" && (
-              <div className={`space-y-4 ${textColor}`}>
-                {/* Game Header with Logo and Title */}
-                <div className="flex items-start gap-6 mb-6 pb-6 border-b-2 border-black">
-                  {/* Game Logo */}
-                  <div className="shrink-0">
-                    <img
-                      src="/images/flippo-logo.png"
-                      alt="Flippo Logo"
-                      className="w-18 h-18 md:w-24 md:h-24 object-cover rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]"
-                    />
-                  </div>
-                  {/* Title and Description */}
-                  <div className="flex-1">
-                    <h2
-                      className={`text-2xl md:text-3xl font-bold mb-1 md:mb-3 ${textColor} font-Tsuchigumo`}
-                    >
-                      Flippo - Flip Your Fate
-                    </h2>
-                    <p
-                      className={`text-sm md:text-lg ${
-                        isDarkMode ? "text-gray-300" : "text-gray-700"
-                      }`}
-                    >
-                      Memory matching game - flip cards to find pairs
-                    </p>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Game Objective</h3>
-                  <p>
-                    Flippo is a skill-based memory matching game where you flip
-                    cards to find matching pairs. Your memory and strategy
-                    directly determine your rewards based on how many pairs you
-                    successfully match.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Getting Started</h3>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Connect Wallet:</strong> Ensure your wallet is
-                      connected to Mantle Sepolia testnet
-                    </li>
-                    <li>
-                      <strong>Select Grid Size:</strong> Choose from 2×2, 4×4,
-                      or 6×6 grid sizes
-                    </li>
-                    <li>
-                      <strong>Stake Amount:</strong> Enter your MNT stake amount
-                      to participate
-                    </li>
-                    <li>
-                      <strong>Start Game:</strong> Click "Start Game" to begin
-                      and deposit your stake into the smart contract
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Gameplay Mechanics</h3>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Card Grid:</strong> Cards are placed face-down in
-                      your selected grid size
-                    </li>
-                    <li>
-                      <strong>Flip Cards:</strong> Click any card to reveal its
-                      symbol
-                    </li>
-                    <li>
-                      <strong>Match Pairs:</strong> Find two cards with
-                      identical symbols to make a match
-                    </li>
-                    <li>
-                      <strong>Matched Cards:</strong> Successfully matched pairs
-                      remain face-up
-                    </li>
-                    <li>
-                      <strong>Unmatched Cards:</strong> Non-matching cards flip
-                      back face-down
-                    </li>
-                    <li>
-                      <strong>Memory Challenge:</strong> Remember card positions
-                      to match pairs efficiently
-                    </li>
-                    <li>
-                      <strong>Limited Flips:</strong> You have a set number of
-                      flips based on grid size
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">
-                    Grid Sizes & Multipliers
-                  </h3>
-                  <p className="mb-2">
-                    Choose your difficulty level based on the grid size:
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>2×2 Grid:</strong> 2 pairs, 2 flips - 1.2×
-                      multiplier (Beginner)
-                    </li>
-                    <li>
-                      <strong>4×4 Grid:</strong> 8 pairs, 13 flips - 1.5×
-                      multiplier (Easy)
-                    </li>
-                    <li>
-                      <strong>6×6 Grid:</strong> 18 pairs, 25 flips - 2.0×
-                      multiplier (Medium)
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">
-                    Performance & Scoring
-                  </h3>
-                  <p className="mb-2">
-                    Your success is measured by matched pairs and flip
-                    efficiency:
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Matched Pairs:</strong> Each successfully matched
-                      pair contributes to your score
-                    </li>
-                    <li>
-                      <strong>Total Pairs:</strong> The number of pairs in your
-                      selected grid
-                    </li>
-                    <li>
-                      <strong>Wrong Flips:</strong> Incorrect matches count
-                      against your performance
-                    </li>
-                    <li>
-                      <strong>Perfect Game:</strong> Match all pairs within the
-                      flip limit for maximum reward
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Reward Calculation</h3>
-                  <p className="mb-2">
-                    Your reward is calculated proportionally based on your
-                    performance:
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Formula:</strong> Reward = Stake Amount × Grid
-                      Multiplier × (Matched Pairs ÷ Total Pairs)
-                    </li>
-                    <li>
-                      <strong>Proportional System:</strong> Even partial
-                      completions earn proportional rewards
-                    </li>
-                    <li>
-                      <strong>Example (8×8):</strong> 10 MNT stake, match all 32
-                      pairs = 25 MNT reward (15 MNT profit)
-                    </li>
-                    <li>
-                      <strong>Example (4×4):</strong> 5 MNT stake, match 4/8
-                      pairs = 3.75 MNT reward
-                    </li>
-                    <li>
-                      <strong>Net Gain:</strong> Your profit/loss after
-                      deducting the initial stake
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">
-                    Claiming Your Reward
-                  </h3>
-                  <p className="mb-2">After the game ends:</p>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Withdraw Reward:</strong> Claim your calculated
-                      reward from the prize pool based on matched pairs
-                    </li>
-                    <li>
-                      <strong>Partial Rewards:</strong> Even if you don't match
-                      all pairs, you receive proportional rewards
-                    </li>
-                    <li>
-                      <strong>No Matches:</strong> If no pairs are matched, no
-                      reward is earned
-                    </li>
-                    <li>
-                      All transactions are processed through the smart contract
-                      on Mantle Sepolia
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">
-                    Fair Play Principles
-                  </h3>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Memory-Based:</strong> Outcomes depend entirely on
-                      your memory skills and strategy
-                    </li>
-                    <li>
-                      <strong>Deterministic Rewards:</strong> Your matched pairs
-                      directly determine your reward—no randomness
-                    </li>
-                    <li>
-                      <strong>Equal Opportunity:</strong> All players face the
-                      same card layouts and flip limits
-                    </li>
-                    <li>
-                      <strong>Transparent:</strong> All game logic and reward
-                      calculations are verifiable on-chain
-                    </li>
-                    <li>
-                      <strong>Prize Pool Funded:</strong> Rewards come from an
-                      owner-funded prize pool ensuring sustainability
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Strategy Tips</h3>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>Start with smaller grids (2×2 or 4×4) to practice</li>
-                    <li>
-                      Pay close attention to card positions when they flip
-                    </li>
-                    <li>
-                      Develop a systematic approach to revealing cards (e.g.,
-                      row by row)
-                    </li>
-                    <li>
-                      Larger grids offer higher multipliers but are harder
-                    </li>
-                    <li>Take your time to memorize patterns before rushing</li>
-                  </ul>
-                </div>
-              </div>
-            )}
-
-            {selectedGame === "simon" && (
-              <div className={`space-y-4 ${textColor}`}>
-                {/* Game Header with Logo and Title */}
-                <div className="flex items-start gap-6 mb-6 pb-6 border-b-2 border-black">
-                  {/* Game Logo */}
-                  <div className="shrink-0">
-                    <img
-                      src="/images/simono-logo.png"
-                      alt="Simono Logo"
-                      className="w-18 h-18 md:w-24 md:h-24 object-cover rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]"
-                    />
-                  </div>
-                  {/* Title and Description */}
-                  <div className="flex-1">
-                    <h2
-                      className={`text-2xl md:text-3xl font-bold mb-1 md:mb-3 ${textColor} font-Tsuchigumo`}
-                    >
-                      Simono - Choose Your Fate
-                    </h2>
-                    <p
-                      className={`text-sm md:text-lg ${
-                        isDarkMode ? "text-gray-300" : "text-gray-700"
-                      }`}
-                    >
-                      Pure sequential memory - watch the new signal, remember
-                      the entire sequence
-                    </p>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Game Objective</h3>
-                  <p>
-                    Simon is a pure sequential memory challenge where only the
-                    newly added signal is shown each round. You must remember
-                    and input the entire growing sequence from memory. Your
-                    focus and recall ability directly determine your rewards.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Getting Started</h3>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Connect Wallet:</strong> Ensure your wallet is
-                      connected to Mantle Sepolia testnet
-                    </li>
-                    <li>
-                      <strong>Select Difficulty:</strong> Choose from Easy,
-                      Medium, or Hard difficulty levels
-                    </li>
-                    <li>
-                      <strong>Stake Amount:</strong> Enter your MNT stake amount
-                      to participate
-                    </li>
-                    <li>
-                      <strong>Start Game:</strong> Click "Start Game" to begin
-                      and deposit your stake into the smart contract
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Gameplay Mechanics</h3>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Round 1:</strong> Watch the first colored signal
-                      (Red, Blue, Green, or Yellow), then repeat it
-                    </li>
-                    <li>
-                      <strong>Each New Round:</strong> Only the newly added
-                      signal is shown—no full sequence replay
-                    </li>
-                    <li>
-                      <strong>Sequential Input:</strong> You must input the
-                      entire sequence from memory, in correct order
-                    </li>
-                    <li>
-                      <strong>Input Timer:</strong> You have base time + time
-                      per signal to complete the full sequence (e.g., Round 5 =
-                      longer time than Round 2)
-                    </li>
-                    <li>
-                      <strong>Level Progress:</strong> Successfully completing a
-                      sequence advances you to the next level with +1 signal
-                    </li>
-                    <li>
-                      <strong>Game Over:</strong> Any incorrect signal or
-                      timeout ends the game immediately—no partial credit
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">
-                    Difficulty Levels & Multipliers
-                  </h3>
-                  <p className="mb-2">
-                    Difficulty affects signal speed, total time, and per-input
-                    pressure:
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Easy:</strong> 1s signal display, 1.2s max per
-                      input - 1.3× multiplier, target 16 levels
-                    </li>
-                    <li>
-                      <strong>Medium:</strong> 0.7s signal display, 0.9s max per
-                      input - 1.6× multiplier, target 12 levels
-                    </li>
-                    <li>
-                      <strong>Hard:</strong> 0.5s signal display, 0.6s max per
-                      input - 2.0× multiplier, target 8 levels
-                    </li>
-                  </ul>
-                  <p className="mt-2">
-                    <strong>Note:</strong> Total time scales sub-linearly (early
-                    levels are forgiving, late levels get tighter). After level
-                    5, per-input timeout reduces every 2 levels for increased
-                    pressure.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">
-                    Scoring & Performance
-                  </h3>
-                  <p className="mb-2">
-                    Your score equals the highest level (sequence length) you
-                    successfully completed:
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Score = Levels Completed:</strong> Each correct
-                      full sequence = +1 level
-                    </li>
-                    <li>
-                      <strong>No Partial Credit:</strong> Incomplete sequences
-                      or wrong inputs don't count
-                    </li>
-                    <li>
-                      <strong>One Strike Rule:</strong> First mistake or timeout
-                      ends the game permanently
-                    </li>
-                    <li>
-                      <strong>Visual Feedback:</strong> Wrong inputs flash red
-                      before game ends
-                    </li>
-                    <li>
-                      <strong>No Retries:</strong> Each game session allows only
-                      one attempt—no continues
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">
-                    Timing & Pressure Mechanics
-                  </h3>
-                  <p className="mb-2">
-                    Advanced timing system creates skill-based challenge:
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Per-Input Timeout:</strong> Each click must happen
-                      within the max time limit (1.2s Easy, 0.9s Medium, 0.6s
-                      Hard) or game ends
-                    </li>
-                    <li>
-                      <strong>Sub-Linear Scaling:</strong> Total time grows
-                      slower than sequence length—early levels are generous,
-                      late levels demand efficiency
-                    </li>
-                    <li>
-                      <strong>Late-Game Pressure Ramp:</strong> After level 5,
-                      per-input timeout shrinks by ~8-12% every 2 levels
-                    </li>
-                    <li>
-                      <strong>Execution Matters:</strong> Can't hesitate on late
-                      levels—memorization alone isn't enough
-                    </li>
-                    <li>
-                      <strong>Hard Mode Ramps Fastest:</strong> High risk, high
-                      reward—pressure increases more aggressively
-                    </li>
-                  </ul>
-                  <p className="mt-2">
-                    <strong>Why This Matters:</strong> Prevents consistent
-                    profit by making execution under pressure the real
-                    challenge, not just memory.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Reward Calculation</h3>
-                  <p className="mb-2">
-                    Your reward is calculated proportionally and capped at the
-                    maximum multiplier:
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Formula:</strong> Reward = Stake Amount ×
-                      Difficulty Multiplier × Performance Ratio
-                    </li>
-                    <li>
-                      <strong>Performance Ratio:</strong> Your score divided by
-                      the target score (capped at 1.0)
-                    </li>
-                    <li>
-                      <strong>Target Scores:</strong> Easy = 16 levels, Medium =
-                      12 levels, Hard = 8 levels
-                    </li>
-                    <li>
-                      <strong>Example (Medium):</strong> 5 MNT stake, 12/12
-                      levels = 8 MNT reward (3 MNT profit)
-                    </li>
-                    <li>
-                      <strong>Example (Hard):</strong> 10 MNT stake, 6/8 levels
-                      = 15 MNT reward (5 MNT profit)
-                    </li>
-                    <li>
-                      <strong>Reward Cap:</strong> Scoring above the target
-                      doesn't increase rewards beyond the maximum
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">
-                    Claiming Your Reward
-                  </h3>
-                  <p className="mb-2">
-                    After the game ends, rewards are based on your final score:
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Proportional Rewards:</strong> Even if you don't
-                      reach the target score, you receive proportional rewards
-                      based on your progress
-                    </li>
-                    <li>
-                      <strong>Perfect Performance:</strong> Reaching or
-                      exceeding the target score earns the maximum multiplier
-                    </li>
-                    <li>
-                      <strong>Zero Score:</strong> If you score 0 (fail on first
-                      sequence), no reward is earned
-                    </li>
-                    <li>
-                      <strong>Instant Settlement:</strong> All transactions are
-                      processed through the smart contract on Mantle Sepolia
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">
-                    Fair Play Principles
-                  </h3>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Skill-Based Only:</strong> Outcomes depend
-                      entirely on your memory and focus—no luck involved
-                    </li>
-                    <li>
-                      <strong>Deterministic Sequences:</strong> Sequences are
-                      generated at game start using a deterministic algorithm
-                    </li>
-                    <li>
-                      <strong>No Mid-Game Changes:</strong> No randomness
-                      affects rewards after the sequence is generated
-                    </li>
-                    <li>
-                      <strong>Equal Challenge:</strong> Same rules and mechanics
-                      apply across all devices and sessions
-                    </li>
-                    <li>
-                      <strong>Transparent Rewards:</strong> All reward
-                      calculations are verifiable on-chain
-                    </li>
-                    <li>
-                      <strong>No Cashout Tricks:</strong> No double-or-nothing
-                      or mid-game cashout mechanics
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Strategy Tips</h3>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      Start with Easy to learn sequential memory and timing
-                      mechanics
-                    </li>
-                    <li>
-                      Focus intensely on each new signal—you won't see it again
-                    </li>
-                    <li>
-                      Build mental patterns: group colors, create stories, or
-                      use spatial memory
-                    </li>
-                    <li>
-                      Practice speed—after level 5, hesitation becomes dangerous
-                    </li>
-                    <li>
-                      Input with rhythm and confidence—consistent timing reduces
-                      mistakes
-                    </li>
-                    <li>
-                      Train muscle memory for color positions to speed up
-                      execution
-                    </li>
-                    <li>
-                      Eliminate distractions—late levels require perfect recall
-                      AND fast execution
-                    </li>
-                    <li>
-                      Hard mode offers 2× rewards but demands instant recall and
-                      lightning-fast inputs
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            )}
-
-            {selectedGame === "tappo" && (
-              <div className={`space-y-4 ${textColor}`}>
-                {/* Game Header with Logo and Title */}
-                <div className="flex items-start gap-6 mb-6 pb-6 border-b-2 border-black">
-                  {/* Game Logo */}
-                  <div className="shrink-0">
-                    <img
-                      src="/images/tappo-logo.jpeg"
-                      alt="Tappo Logo"
-                      className="w-24 h-24 object-cover rounded-3xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]"
-                    />
-                  </div>
-                  {/* Title and Description */}
-                  <div className="flex-1">
-                    <h2
-                      className={`text-3xl font-bold mb-3 ${textColor} font-Tsuchigumo`}
-                    >
-                      Tappo - Tap to Win
-                    </h2>
-                    <p
-                      className={`text-lg ${
-                        isDarkMode ? "text-gray-300" : "text-gray-700"
-                      }`}
-                    >
-                      Reflex game - tap bubbles matching the target number
-                    </p>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Game Objective</h3>
-                  <p>
-                    Tappo is a skill-based reflex game where you tap bubbles
-                    matching a target number to maximize your score within a
-                    time limit. Your performance directly determines your
-                    rewards.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Getting Started</h3>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Connect Wallet:</strong> Ensure your wallet is
-                      connected to Mantle Sepolia testnet
-                    </li>
-                    <li>
-                      <strong>Select Duration:</strong> Choose your game
-                      duration (15s, 30s, or 60s)
-                    </li>
-                    <li>
-                      <strong>Stake Amount:</strong> Enter your MNT stake amount
-                      to participate
-                    </li>
-                    <li>
-                      <strong>Start Game:</strong> Click "Start Game" to begin
-                      and deposit your stake into the smart contract
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Gameplay Mechanics</h3>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Target Display:</strong> A target number (0-9) is
-                      shown at the top of the game board
-                    </li>
-                    <li>
-                      <strong>Bubble Grid:</strong> Bubbles displaying random
-                      digits (0-9) appear on the board
-                    </li>
-                    <li>
-                      <strong>Correct Tap:</strong> Tap any bubble matching the
-                      target number to score +10 points
-                    </li>
-                    <li>
-                      <strong>Auto-Reshuffle:</strong> After each correct hit,
-                      all bubbles reshuffle with new random numbers
-                    </li>
-                    <li>
-                      <strong>Wrong Tap:</strong> Tapping an incorrect bubble
-                      deducts -5 points (score cannot go below 0)
-                    </li>
-                    <li>
-                      <strong>Timer:</strong> The countdown timer tracks your
-                      remaining time
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">
-                    Scoring & Performance
-                  </h3>
-                  <p className="mb-2">
-                    Your final score reflects your skill through accuracy and
-                    speed:
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>Each correct hit: +10 points</li>
-                    <li>Each incorrect tap: -5 points (minimum 0)</li>
-                    <li>
-                      Performance is measured by total score achieved during
-                      gameplay
-                    </li>
-                    <li>Higher scores result in better rewards</li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">
-                    Difficulty & Multipliers
-                  </h3>
-                  <p className="mb-2">
-                    Choose your difficulty level based on the timer duration:
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>15 seconds:</strong> 2.0× multiplier (Hard - less
-                      time, higher potential reward)
-                    </li>
-                    <li>
-                      <strong>30 seconds:</strong> 1.6× multiplier (Medium -
-                      balanced difficulty)
-                    </li>
-                    <li>
-                      <strong>60 seconds:</strong> 1.3× multiplier (Easy - more
-                      time, moderate reward)
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Reward Calculation</h3>
-                  <p className="mb-2">
-                    Your reward is calculated transparently based on your
-                    performance:
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Formula:</strong> Reward = Stake Amount ×
-                      Difficulty Multiplier × Performance Ratio
-                    </li>
-                    <li>
-                      <strong>Performance Ratio:</strong> Your score divided by
-                      target score (capped at 1.0). Scoring above the target
-                      score doesn't increase rewards beyond the maximum
-                      multiplier
-                    </li>
-                    <li>
-                      <strong>Example:</strong> 1 MNT stake, 30s duration
-                      (1.6×), 50% performance = 0.8 MNT reward
-                    </li>
-                    <li>
-                      <strong>Net Gain:</strong> Your profit/loss after
-                      deducting the initial stake
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">
-                    Claiming Your Reward
-                  </h3>
-                  <p className="mb-2">
-                    After the timer expires, rewards are based on your score:
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Profit (Score &gt; Break-Even):</strong> Withdraw
-                      your reward if you scored above the break-even threshold.
-                      You earn more than your initial stake!
-                    </li>
-                    <li>
-                      <strong>Break-Even (Score = Threshold):</strong> Receive
-                      your full stake back with no profit or loss.
-                    </li>
-                    <li>
-                      <strong>
-                        Partial Refund (0 &lt; Score &lt; Break-Even):
-                      </strong>{" "}
-                      Get back a portion of your stake proportional to your
-                      score. The better you perform, the more you recover.
-                    </li>
-                    <li>
-                      <strong>No Score (Score = 0):</strong> If you score 0
-                      points, no reward is earned and your stake is lost.
-                    </li>
-                    <li>
-                      All withdrawals are processed instantly through the smart
-                      contract on Mantle Sepolia.
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">
-                    Fair Play Principles
-                  </h3>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>
-                      <strong>Skill-Based:</strong> Outcomes depend entirely on
-                      your reflexes and accuracy
-                    </li>
-                    <li>
-                      <strong>Deterministic Rewards:</strong> No randomness in
-                      reward calculation—your score determines your reward
-                    </li>
-                    <li>
-                      <strong>Equal Difficulty:</strong> Responsive design
-                      ensures consistent gameplay across all devices
-                    </li>
-                    <li>
-                      <strong>Transparent:</strong> All game logic and reward
-                      formulas are verifiable on-chain
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Strategy Tips</h3>
-                  <ul className="list-disc list-inside space-y-2 ml-2">
-                    <li>Prioritize accuracy over speed to avoid penalties</li>
-                    <li>
-                      Shorter durations offer higher multipliers but require
-                      faster reflexes
-                    </li>
-                    <li>Watch for the brief freeze after correct hits</li>
-                    <li>
-                      Practice with longer durations before attempting hard mode
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            )}
-
-            <button
-              onClick={() => setShowRules(false)}
-              className={`mt-6 w-full py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer text-xl font-bold`}
+            <div
+              className="fixed inset-0 bg-black opacity-70"
+              style={{ backdropFilter: "blur(4px)" }}
+            />
+            <div
+              className={`relative max-w-4xl rounded-lg border ${borderColor} shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] p-6`}
               style={{
-                backgroundColor: isDarkMode ? "#0fa594" : "#FCFF51",
-                color: "#000000",
+                backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
               }}
+              onClick={(e) => e.stopPropagation()}
             >
-              Got it!
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Demo Video Modal */}
-      {showDemoVideo && (
-        <div
-          className="fixed inset-0 flex items-center justify-center z-50 p-4"
-          onClick={() => setShowDemoVideo(false)}
-        >
-          <div
-            className="fixed inset-0 bg-black opacity-70"
-            style={{ backdropFilter: "blur(4px)" }}
-          />
-          <div
-            className={`relative max-w-4xl rounded-lg border ${borderColor} shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] p-6`}
-            style={{
-              backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header with Close Button */}
-            {/* <div className="flex items-center justify-between mb-4">
+              {/* Header with Close Button */}
+              {/* <div className="flex items-center justify-between mb-4">
               <h2
                 className={`text-2xl font-bold ${textColor} font-Tsuchigumo capitalize`}
               >
@@ -1139,159 +1191,170 @@ function App() {
               </button>
             </div> */}
 
-            {/* Video Player */}
-            <div className="my-3 relative min-h-[40vh] md:min-h-[50vh] flex items-center justify-center bg-black/5 rounded-lg">
-              <video
-                ref={videoRef}
-                key={selectedGame}
-                loop
-                playsInline
-                preload="auto"
-                className="rounded-lg w-full h-auto"
-                style={{ maxHeight: "70vh" }}
-                src={demoVideos[selectedGame]}
-              >
-                Your browser does not support the video tag.
-              </video>
-            </div>
-
-            {selectedGame === "simon" && (
-              <p className="text-center">
-                **Each round highlights only the <b>new</b> signal.
-                <br /> You must remember the full sequence from memory.
-              </p>
-            )}
-            {selectedGame === "tappo" && (
-              <p className="text-center">
-                **Tap only the bubbles matching the{" "}
-                <span className="font-bold">Hit</span> number to score points.
-                Wrong taps deduct points!
-              </p>
-            )}
-            {selectedGame === "flippo" && (
-              <p className="text-center">
-                **Tap cards to reveal and match pairs.
-                <br /> Try to complete the grid within the flip limit!
-              </p>
-            )}
-
-            <button
-              onClick={() => setShowDemoVideo(false)}
-              className={`mt-4 w-full py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer text-xl font-bold`}
-              style={{
-                backgroundColor: isDarkMode ? "#0fa594" : "#FCFF51",
-                color: "#000000",
-              }}
-            >
-              Gotcha!
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Mobile Menu Modal */}
-      {showMobileMenu && (
-        <div
-          className="fixed inset-0 flex items-center justify-center z-50 p-4"
-          onClick={() => setShowMobileMenu(false)}
-        >
-          <div
-            className="fixed inset-0 bg-black opacity-50"
-            style={{ backdropFilter: "blur(4px)" }}
-          />
-          <div
-            className={`relative max-w-md w-full rounded-lg border ${borderColor} shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] p-6 max-h-[80vh] overflow-y-auto scrollbar-hide`}
-            style={{
-              backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Games List */}
-            <div className="space-y-3 mb-6">
-              <div className="grid grid-cols-3 gap-3">
-                {games.map((game) => (
-                  <button
-                    key={game.id}
-                    onClick={() => {
-                      setSelectedGame(game.id);
-                      setShowMobileMenu(false);
-                    }}
-                    className={`flex flex-col items-center gap-2 p-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer`}
-                    style={{
-                      backgroundColor:
-                        selectedGame === game.id
-                          ? isDarkMode
-                            ? "#0fa594"
-                            : "#FCFF51"
-                          : isDarkMode
-                          ? "#153243"
-                          : "#FFFFFF",
-                      color:
-                        selectedGame === game.id
-                          ? "#000000"
-                          : isDarkMode
-                          ? "#FFFFFF"
-                          : "#000000",
-                    }}
-                  >
-                    <img
-                      src={game.imagePath}
-                      alt={game.name}
-                      className="w-16 h-16 object-cover rounded-lg border border-black"
-                    />
-                    <div className="text-center">
-                      <div className="font-bold text-sm">{game.name}</div>
-                      {game.badge && (
-                        <span
-                          className="text-xs px-1.5 py-0.5 rounded mt-1 inline-block"
-                          style={{
-                            backgroundColor:
-                              game.badge === "new"
-                                ? "#10b981"
-                                : game.badge === "original"
-                                ? "#f59e0b"
-                                : "#3b82f6",
-                            color: "#000000",
-                          }}
-                        >
-                          {game.badge.toUpperCase()}
-                        </span>
-                      )}
-                    </div>
-                  </button>
-                ))}
+              {/* Video Player */}
+              <div className="my-3 relative min-h-[40vh] md:min-h-[50vh] flex items-center justify-center bg-black/5 rounded-lg">
+                <video
+                  ref={videoRef}
+                  key={selectedGame}
+                  loop
+                  playsInline
+                  preload="auto"
+                  className="rounded-lg w-full h-auto"
+                  style={{ maxHeight: "70vh" }}
+                  src={demoVideos[selectedGame]}
+                >
+                  Your browser does not support the video tag.
+                </video>
               </div>
-            </div>
 
-            {/* Theme Toggle & Wallet Connect */}
-            <div className="pt-4 border-t-2 border-black mb-4 flex gap-2">
+              {selectedGame === "simon" && (
+                <p className="text-center">
+                  **Each round highlights only the <b>new</b> signal.
+                  <br /> You must remember the full sequence from memory.
+                </p>
+              )}
+              {selectedGame === "tappo" && (
+                <p className="text-center">
+                  **Tap only the bubbles matching the{" "}
+                  <span className="font-bold">Hit</span> number to score points.
+                  Wrong taps deduct points!
+                </p>
+              )}
+              {selectedGame === "flippo" && (
+                <p className="text-center">
+                  **Tap cards to reveal and match pairs.
+                  <br /> Try to complete the grid within the flip limit!
+                </p>
+              )}
+
               <button
-                onClick={() => {
-                  setIsDarkMode(!isDarkMode);
-                }}
-                className={`w-auto px-3 py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer flex items-center justify-center gap-3 font-semibold text-lg`}
+                onClick={() => setShowDemoVideo(false)}
+                className={`mt-4 w-full py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer text-xl font-bold`}
                 style={{
                   backgroundColor: isDarkMode ? "#0fa594" : "#FCFF51",
                   color: "#000000",
                 }}
               >
-                {isDarkMode ? (
-                  <>
-                    <Moon className="w-6 h-6" />
-                  </>
-                ) : (
-                  <>
-                    <Sun className="w-6 h-6" />
-                  </>
-                )}
+                Gotcha!
               </button>
-              <div className="w-full">
-                <WalletConnect isDarkMode={isDarkMode} fullWidth={true} />
-              </div>
             </div>
+          </div>
+        )}
 
-            {/* Close Button */}
-            {/* <button
+        {/* Mobile Menu Modal */}
+        <AnimatePresence>
+          {showMobileMenu && (
+            <motion.div
+              className="fixed inset-0 flex items-center justify-center z-50 p-4"
+              onClick={() => setShowMobileMenu(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div
+                className="fixed inset-0 bg-black opacity-50"
+                style={{ backdropFilter: "blur(4px)" }}
+              />
+              <motion.div
+                className={`relative max-w-md w-full rounded-lg border ${borderColor} shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] p-6 max-h-[80vh] overflow-y-auto scrollbar-hide`}
+                style={{
+                  backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
+                }}
+                onClick={(e) => e.stopPropagation()}
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                {/* Games List */}
+                <div className="space-y-3 mb-6">
+                  <div className="grid grid-cols-3 gap-3">
+                    {games.map((game) => (
+                      <motion.button
+                        key={game.id}
+                        onClick={() => {
+                          setSelectedGame(game.id);
+                          setShowMobileMenu(false);
+                        }}
+                        className={`flex flex-col items-center gap-2 p-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer`}
+                        style={{
+                          backgroundColor:
+                            selectedGame === game.id
+                              ? isDarkMode
+                                ? "#0fa594"
+                                : "#FCFF51"
+                              : isDarkMode
+                              ? "#153243"
+                              : "#FFFFFF",
+                          color:
+                            selectedGame === game.id
+                              ? "#000000"
+                              : isDarkMode
+                              ? "#FFFFFF"
+                              : "#000000",
+                        }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ duration: 0.15 }}
+                      >
+                        <img
+                          src={game.imagePath}
+                          alt={game.name}
+                          className="w-16 h-16 object-cover rounded-lg border border-black"
+                        />
+                        <div className="text-center">
+                          <div className="font-bold text-sm">{game.name}</div>
+                          {game.badge && (
+                            <span
+                              className="text-xs px-1.5 py-0.5 rounded mt-1 inline-block"
+                              style={{
+                                backgroundColor:
+                                  game.badge === "new"
+                                    ? "#10b981"
+                                    : game.badge === "original"
+                                    ? "#f59e0b"
+                                    : "#3b82f6",
+                                color: "#000000",
+                              }}
+                            >
+                              {game.badge.toUpperCase()}
+                            </span>
+                          )}
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Theme Toggle & Wallet Connect */}
+                <div className="pt-4 border-t-2 border-black mb-4 flex gap-2">
+                  <button
+                    onClick={() => {
+                      setIsDarkMode(!isDarkMode);
+                    }}
+                    className={`w-auto px-3 py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer flex items-center justify-center gap-3 font-semibold text-lg`}
+                    style={{
+                      backgroundColor: isDarkMode ? "#0fa594" : "#FCFF51",
+                      color: "#000000",
+                    }}
+                  >
+                    {isDarkMode ? (
+                      <>
+                        <Moon className="w-6 h-6" />
+                      </>
+                    ) : (
+                      <>
+                        <Sun className="w-6 h-6" />
+                      </>
+                    )}
+                  </button>
+                  <div className="w-full">
+                    <WalletConnect isDarkMode={isDarkMode} fullWidth={true} />
+                  </div>
+                </div>
+
+                {/* Close Button */}
+                {/* <button
               onClick={() => setShowMobileMenu(false)}
               className={`mt-6 w-full py-3 rounded-lg border ${borderColor} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer text-lg font-bold ${textColor}`}
               style={{
@@ -1300,10 +1363,12 @@ function App() {
             >
               Close
             </button> */}
-          </div>
-        </div>
-      )}
-    </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </>
   );
 }
 
