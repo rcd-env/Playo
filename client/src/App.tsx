@@ -115,7 +115,7 @@ function App() {
 
       {/* Main Content */}
       <div
-        className="relative lg:ml-28"
+        className="relative"
         style={{
           zIndex: 1,
         }}
@@ -225,7 +225,7 @@ function App() {
         </header>
 
         {/* Main Content */}
-        <main className="max-w-[1600px] mx-auto px-4 md:px-8 py-4 md:py-8">
+        <main className="max-w-[1600px] mx-auto px-4 md:px-8 py-4 md:py-8 lg:ml-28">
           {selectedGame === "flippo" && (
             <FlippoGame
               isDarkMode={isDarkMode}
