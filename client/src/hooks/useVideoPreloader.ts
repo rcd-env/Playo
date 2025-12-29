@@ -34,7 +34,6 @@ export function useVideoPreloader(gameStarted: boolean) {
           loadedCount++;
           if (loadedCount === totalVideos) {
             setVideosPreloaded(true);
-            console.log("🎬 Game videos preloaded successfully");
           }
         })
         .catch((error) => {
