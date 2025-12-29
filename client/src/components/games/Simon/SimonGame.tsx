@@ -640,7 +640,7 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
                     Level
                   </span>
                   <div
-                    className={`px-3 md:px-6 py-1 md:py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-base md:text-2xl font-bold min-w-[40px] md:min-w-[60px] text-center`}
+                    className={`px-3 md:px-6 py-1 md:py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-base md:text-2xl font-bold min-w-10 md:min-w-[60px] text-center`}
                     style={{
                       backgroundColor:
                         gameStatus === "idle"
@@ -670,7 +670,7 @@ export function SimonGame({ isDarkMode, address, isLoading }: SimonGameProps) {
                     Time
                   </span>
                   <div
-                    className={`px-3 md:px-6 py-1 md:py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-base md:text-2xl font-bold min-w-[40px] md:min-w-[60px] text-center`}
+                    className={`px-3 md:px-6 py-1 md:py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-base md:text-2xl font-bold min-w-10 md:min-w-[60px] text-center`}
                     style={{
                       backgroundColor:
                         gamePhase === "input" && inputTimer < 3

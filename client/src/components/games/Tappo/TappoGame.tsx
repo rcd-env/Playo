@@ -93,6 +93,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
     // Listen for window resize
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Regenerate bubbles when screen size changes
@@ -100,6 +101,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
     if (bubbles.length > 0) {
       generateBubbles();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMobile]);
 
   // Handle transaction confirmations
@@ -116,6 +118,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
       generateNewHit();
       setGameStartPending(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConfirmed, gameStartPending, gameStatus, timerDuration]);
 
   // Handle game start button click
@@ -506,7 +509,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
                     Timer
                   </span>
                   <div
-                    className={`px-3 md:px-6 py-1 md:py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-base md:text-2xl font-bold min-w-[40px] md:min-w-[60px] text-center`}
+                    className={`px-3 md:px-6 py-1 md:py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-base md:text-2xl font-bold min-w-10 md:min-w-[60px] text-center`}
                     style={{
                       backgroundColor: isDarkMode ? "#1d505c" : "#F4F9E9",
                       color: isDarkMode ? "#ffffff" : "#000000",
@@ -524,7 +527,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
                     Hit
                   </span>
                   <div
-                    className={`px-3 md:px-6 py-1 md:py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-base md:text-2xl font-bold min-w-[40px] md:min-w-[60px] text-center`}
+                    className={`px-3 md:px-6 py-1 md:py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-base md:text-2xl font-bold min-w-10 md:min-w-[60px] text-center`}
                     style={{
                       backgroundColor:
                         gameStatus === "idle"
@@ -555,7 +558,7 @@ export function TappoGame({ isDarkMode, address, isLoading }: TappoGameProps) {
                   </span>
                   <div className="relative">
                     <div
-                      className={`px-3 md:px-6 py-1 md:py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-base md:text-2xl font-bold min-w-[40px] md:min-w-[60px] text-center transition-all ${
+                      className={`px-3 md:px-6 py-1 md:py-2 rounded-lg border ${borderColor} shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] text-base md:text-2xl font-bold min-w-10 md:min-w-[60px] text-center transition-all ${
                         shakeScore ? "animate-shake" : ""
                       }`}
                       style={{
