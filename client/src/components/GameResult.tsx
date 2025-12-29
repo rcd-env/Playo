@@ -76,7 +76,7 @@ export function GameResult({
             }}
           >
             <div className="text-sm opacity-70 font-medium uppercase tracking-wider">
-              {netGain > 0 ? "Profit" : "Partial Refund"}
+              {netGain > 0 ? "Profit" : "Partial Reward"}
             </div>
 
             <div className="text-3xl font-bold">
@@ -209,7 +209,7 @@ export function GameResult({
                 ? "Withdrawing..."
                 : netGain > 0
                 ? "Withdraw Winnings"
-                : "Claim Partial Refund"}
+                : "Claim Partial Reward"}
             </button>
           )}
 
