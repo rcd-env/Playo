@@ -43,8 +43,6 @@ export function GameResult({
   isWithdrawing = false,
   isDarkMode = false,
 }: GameResultProps) {
-  console.log("GameResult rendered with isWithdrawing:", isWithdrawing);
-
   const bgColor = isDarkMode ? "#1d505c" : "#F4F9E9";
   const textColor = isDarkMode ? "white" : "#000000";
   const borderColor = "border-black border-2";
