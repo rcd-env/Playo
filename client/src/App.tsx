@@ -735,36 +735,39 @@ function App() {
                       Timing & Pressure Mechanics
                     </h3>
                     <p className="mb-2">
-                      Advanced timing system creates skill-based challenge:
+                      Single global timer creates skill-based challenge:
                     </p>
                     <ul className="list-disc list-inside space-y-2 ml-2">
                       <li>
-                        <strong>Per-Input Timeout:</strong> Each click must
-                        happen within the max time limit (1.2s Easy, 0.9s
-                        Medium, 0.6s Hard) or game ends
+                        <strong>Global Input Timer:</strong> One countdown timer
+                        for the entire sequence—not per individual input
                       </li>
                       <li>
-                        <strong>Sub-Linear Scaling:</strong> Total time grows
-                        slower than sequence length—early levels are generous,
-                        late levels demand efficiency
+                        <strong>Sub-Linear Time Formula:</strong> Total time =
+                        Base Time + Time Per Signal × (Sequence Length ^ 0.7)
                       </li>
                       <li>
-                        <strong>Late-Game Pressure Ramp:</strong> After level 5,
-                        per-input timeout shrinks by ~8-12% every 2 levels
+                        <strong>Shrinking Think Time:</strong> Time per signal
+                        decreases as sequences grow—late levels demand faster
+                        recall
                       </li>
                       <li>
-                        <strong>Execution Matters:</strong> Can't hesitate on
-                        late levels—memorization alone isn't enough
+                        <strong>Base Times:</strong> Easy = 5s base + 1.5s per
+                        signal, Medium = 4s + 1s, Hard = 3s + 0.7s
                       </li>
                       <li>
-                        <strong>Hard Mode Ramps Fastest:</strong> High risk,
-                        high reward—pressure increases more aggressively
+                        <strong>Example (Medium, Level 8):</strong> 4 + 1.0 ×
+                        (8^0.7) ≈ 8.9 seconds total for all 8 inputs
+                      </li>
+                      <li>
+                        <strong>Game Ends If:</strong> Timer reaches zero OR you
+                        input the wrong signal
                       </li>
                     </ul>
                     <p className="mt-2">
-                      <strong>Why This Matters:</strong> Prevents consistent
-                      profit by making execution under pressure the real
-                      challenge, not just memory.
+                      <strong>Why This Matters:</strong> Memory pressure
+                      increases naturally as sequences grow, while keeping
+                      gameplay simple and predictable.
                     </p>
                   </div>
 
