@@ -3,7 +3,7 @@ const hre = require("hardhat");
 async function main() {
   // Get the contract address from command line or use default
   const contractAddress =
-    process.argv[2] || "0xcf8D7A35fCCFFb35ADA108AFa44B397ED3A8204C";
+    process.argv[2] || "0x1F2F46E8883Fe8bB2ef09CED2387bA66899934d6";
 
   console.log("Checking PlayoGames contract status...");
   console.log("Contract address:", contractAddress);

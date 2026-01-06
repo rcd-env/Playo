@@ -3,8 +3,8 @@ const hre = require("hardhat");
 async function main() {
   // Get the contract address from command line or use default
   const contractAddress =
-    process.argv[2] || "0xcf8D7A35fCCFFb35ADA108AFa44B397ED3A8204C";
-  const fundAmount = process.argv[3] || "0.1"; // Default 0.1 MNT
+    process.argv[2] || "0x1F2F46E8883Fe8bB2ef09CED2387bA66899934d6";
+  const fundAmount = process.argv[3] || "35"; // Default 35 MNT
 
   console.log("Funding PlayoGames contract prize pool...");
   console.log("Contract address:", contractAddress);

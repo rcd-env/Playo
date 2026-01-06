@@ -3,7 +3,7 @@ const hre = require("hardhat");
 async function main() {
   // Get the contract address and amount from command line
   const contractAddress =
-    process.argv[2] || "0xcf8D7A35fCCFFb35ADA108AFa44B397ED3A8204C";
+    process.argv[2] || "0x1F2F46E8883Fe8bB2ef09CED2387bA66899934d6";
   const withdrawAmount = process.argv[3]; // Amount to withdraw (required)
   const withdrawAll = process.argv[3] === "all"; // Special flag to withdraw all
 
