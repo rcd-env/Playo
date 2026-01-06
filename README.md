@@ -36,12 +36,13 @@ Playo is a blockchain-based gaming platform featuring multiple skill-based games
 
 - **🃏 Flippo** - Test your memory with card matching challenges
 - **⚡ Tappo** - Challenge your reflexes with fast-paced bubble tapping
+- **🎵 Simono** - Test your memory with sequence pattern matching
 
 Key Platform Features:
 
 - **Bet MNT tokens** on your gaming skills
-- **Earn proportional rewards** based on game performance (1.2x to 3.0x multipliers)
-- **Multiple difficulty levels** for both games
+- **Earn proportional rewards** based on game performance (1.2x to 2.0x multipliers)
+- **Multiple difficulty levels** for all three games
 - **Instant on-chain payouts** with transparent smart contracts
 - **Break-even indicators** to track your profit targets
 
@@ -58,8 +59,8 @@ A classic memory card game where you match identical pairs with limited flips.
 **Difficulty Levels:**
 
 - **2x2 Grid**: 2 pairs, 2 flips, 1.2x multiplier
-- **4x4 Grid**: 8 pairs, 13 flips, 1.5x multiplier
-- **6x6 Grid**: 18 pairs, 25 flips, 2.0x multiplier
+- **4x4 Grid**: 8 pairs, 12 flips, 1.5x multiplier
+- **6x6 Grid**: 18 pairs, 26 flips, 2.0x multiplier
 
 **Gameplay:**
 
@@ -85,14 +86,33 @@ A fast-paced bubble-tapping reflex game with timed challenges.
 - Timer durations: 60s (Easy), 30s (Medium), 15s (Hard)
 - Progressive difficulty with dynamic spawning
 
+### 🎵 Simono - Sequence Memory
+
+A classic Simon Says game that tests your pattern memory with color sequences.
+
+**Difficulty Levels:**
+
+- **Easy**: 1000ms playback speed, 16 rounds target, 1.3x multiplier
+- **Medium**: 700ms playback speed, 12 rounds target, 1.6x multiplier
+- **Hard**: 500ms playback speed, 8 rounds target, 2.0x multiplier
+
+**Gameplay:**
+
+- Watch the color sequence displayed
+- Repeat the sequence by clicking the colored buttons
+- Each round adds one more color to the sequence
+- Complete sequences to progress further
+- Time limit increases with sequence length
+- Progressive difficulty with faster playback speeds
+
 ---
 
 ## ✨ Features
 
 ### 🎯 Platform Features
 
-- **🎮 Multiple Games**: Choose between Flippo (memory) and Tappo (reflex)
-- **💰 Proportional Rewards**: Earn based on performance with 1.2x to 3.0x multipliers
+- **🎮 Multiple Games**: Choose between Flippo (memory), Tappo (reflex), and Simono (sequence memory)
+- **💰 Proportional Rewards**: Earn based on performance with 1.2x to 2.0x multipliers
 - **⚡ Instant Payouts**: Withdraw earnings immediately after games
 - **🔐 Secure Smart Contracts**: Battle-tested on Mantle Sepolia Testnet
 - **📊 Real-time Statistics**: Track score, accuracy, time, and potential earnings
@@ -105,59 +125,29 @@ A fast-paced bubble-tapping reflex game with timed challenges.
 
 ### 🃏 Flippo Features
 
-- **Four Difficulty Levels**: 2x2, 4x4, 6x6, or 8x8 grids
+- **Three Difficulty Levels**: 2x2, 4x4, or 6x6 grids
 - **Memory Challenge**: Match identical card pairs
 - **Limited Flips**: Strategic gameplay with flip restrictions
-- **Progressive Multipliers**: 1.2x to 2.5x based on grid size
+- **Progressive Multipliers**: 1.2x to 2.0x based on grid size
 - **No Time Pressure**: Focus purely on accuracy
 
 ### ⚡ Tappo Features
 
-- **Three Difficulty Levels**: Easy, Medium, Hard
-- **30-Second Rounds**: Fast-paced reflex challenge
-- **Progressive Difficulty**: Bubbles move faster as difficulty increases
-- **High Multipliers**: 2.0x to 3.0x reward potential
+- **Three Difficulty Levels**: Easy (60s), Medium (30s), Hard (15s)
+- **Timed Challenges**: Fast-paced reflex gameplay
+- **Progressive Difficulty**: Less time means higher rewards
+- **Reward Multipliers**: 1.3x to 2.0x reward potential
 - **Dynamic Spawning**: Unique bubble patterns every game
 - **Score Targets**: Clear break-even points displayed in stats
 
----
+### 🎵 Simono Features
 
-## 📸 Screenshots
-
-### Home Screen
-
-![Home Screen](./docs/screenshots/home.png)
-_Choose your game and difficulty level_
-
-### Flippo - Game Board
-
-![Flippo Game Board](./docs/screenshots/game-board.png)
-_Match identical cards with limited flips_
-
-### Tappo - Reflex Challenge
-
-![Tappo Game](./docs/screenshots/tappo.png)
-_Tap bubbles before they disappear in 30 seconds_
-
-### Game Statistics
-
-![Game Stats](./docs/screenshots/stats.png)
-_Track your performance with clear, readable real-time metrics_
-
-### Winning Screen
-
-![Winning Screen](./docs/screenshots/winning.png)
-_Celebrate your victory and claim your rewards_
-
-### Partial Refund
-
-![Losing Screen](./docs/screenshots/losing.png)
-_Get proportional refunds based on your performance_
-
-### Wallet Connection
-
-![Wallet Connect](./docs/screenshots/wallet.png)
-_Multiple wallet options powered by RainbowKit_
+- **Three Difficulty Levels**: Easy, Medium, Hard
+- **Pattern Memory**: Remember and repeat color sequences
+- **Progressive Challenge**: Sequences get longer each round
+- **Dynamic Timing**: Input time scales with sequence length
+- **Reward Multipliers**: 1.3x to 2.0x reward potential
+- **Audio-Visual Feedback**: Color signals with sound cues
 
 ---
 
@@ -166,9 +156,10 @@ _Multiple wallet options powered by RainbowKit_
 ### Deployed Contract Address
 
 **Network**: Mantle Sepolia Testnet (Chain ID: 5003)  
+**Address**: `0x1F2F46E8883Fe8bB2ef09CED2387bA66899934d6`  
 **Compiler**: Solidity 0.8.20  
 **Contract**: `PlayoGames.sol`  
-**Block Explorer**: https://sepolia.mantlescan.xyz  
+**Block Explorer**: [View on Mantle Explorer](https://sepolia.mantlescan.xyz/address/0x1F2F46E8883Fe8bB2ef09CED2387bA66899934d6)  
 **Faucet**: https://faucet.sepolia.mantle.xyz/
 
 Deploy your own contract using the instructions in [contract/README.md](contract/README.md)
@@ -314,12 +305,13 @@ npm run dev
 
    - **Flippo**: Test your memory with card matching
    - **Tappo**: Challenge your reflexes with bubble tapping
+   - **Simono**: Test your sequence memory with color patterns
 
 3. **Select Difficulty**
 
    - **Flippo**: 2x2, 4x4, or 6x6 grid sizes
    - **Tappo**: Easy (60s), Medium (30s), or Hard (15s)
-   - **Tappo**: Easy, Medium, or Hard difficulty
+   - **Simono**: Easy, Medium, or Hard difficulty
 
 4. **Place Your Bet**
    - Enter the amount of MNT you want to bet
@@ -364,6 +356,32 @@ npm run dev
    - When the timer reaches zero
    - Your reward is calculated based on final score
 
+### Playing Simono
+
+1. **Watch and Remember**
+
+   - Watch the color sequence displayed
+   - A new color is added each round
+   - Playback speed varies by difficulty
+
+2. **Repeat the Sequence**
+
+   - Click the colored buttons in the correct order
+   - Complete the sequence before time runs out
+   - Each successful round increases your score
+
+3. **Track Stats**
+
+   - **Round**: Current round number
+   - **Time**: Countdown timer for your input
+   - **Potential Reward**: Current earnings estimate
+   - **Break-Even**: Rounds needed to profit
+
+4. **Game Ends**
+   - When you click the wrong color
+   - When the input timer reaches zero
+   - Your reward is calculated based on completed rounds
+
 ### Claiming Your Reward
 
 After any game ends, your reward is automatically calculated based on your performance:
@@ -396,8 +414,8 @@ After any game ends, your reward is automatically calculated based on your perfo
 | Grid Size | Total Pairs | Max Flips | Reward Multiplier |
 | --------- | ----------- | --------- | ----------------- |
 | 2x2       | 2 pairs     | 2 flips   | 1.2x              |
-| 4x4       | 8 pairs     | 13 flips  | 1.5x              |
-| 6x6       | 18 pairs    | 25 flips  | 2.0x              |
+| 4x4       | 8 pairs     | 12 flips  | 1.5x              |
+| 6x6       | 18 pairs    | 26 flips  | 2.0x              |
 
 _\*Rewards are proportional to the number of pairs successfully matched, encouraging both precision and progress._
 
@@ -410,6 +428,16 @@ _\*Rewards are proportional to the number of pairs successfully matched, encoura
 | Hard       | 90             | 15s        | 2.0x              | 45                |
 
 _\*Target Score is the benchmark for maximum reward. Scoring at or above this earns the full multiplier. Scoring below it gives proportional rewards._
+
+### Simono - Reward Multipliers by Difficulty
+
+| Difficulty | Target Rounds | Playback Speed | Input Time Formula       | Reward Multiplier |
+| ---------- | ------------- | -------------- | ------------------------ | ----------------- |
+| Easy       | 16 rounds     | 1000ms         | 5s + 1.5s × (rounds^0.7) | 1.3x              |
+| Medium     | 12 rounds     | 700ms          | 4s + 1.0s × (rounds^0.7) | 1.6x              |
+| Hard       | 8 rounds      | 500ms          | 3s + 0.7s × (rounds^0.7) | 2.0x              |
+
+_\*Input time scales sub-linearly with sequence length to maintain fairness._
 
 ### Proportional Rewards System
 
@@ -433,11 +461,22 @@ Net Gain/Loss = Earned Reward - Bet Amount
 
 _Note: Scoring above the Target Score doesn't increase your reward beyond the maximum multiplier._
 
+**Simono Formula:**
+
+```
+Performance Ratio = Completed Rounds / Target Rounds (capped at 1.0)
+Earned Reward = Bet Amount × Reward Multiplier × Performance Ratio
+Net Gain/Loss = Earned Reward - Bet Amount
+```
+
+_Note: Each successfully completed round counts toward your reward._
+
 **Break-Even Formula:**
 
 ```
-Flippo: Break-Even Pairs = Total Pairs / Reward Multiplier
+Flippe: Break-Even Pairs = Total Pairs / Reward Multiplier
 Tappo: Break-Even Points = Target Score / Reward Multiplier
+Simono: Break-Even Rounds = Target Rounds / Reward Multiplier
 ```
 
 _This tells you the minimum score needed to recover your bet (neither profit nor loss)._
@@ -472,6 +511,13 @@ _This tells you the minimum score needed to recover your bet (neither profit nor
 - Reward: 10 MNT back
 - **Profit: 0 MNT** (no loss, no gain)
 
+**Simono - Partial Win (Medium):**
+
+- Bet: 15 MNT
+- Result: 9/12 rounds completed (75%)
+- Reward: 15 × 1.6 × 0.75 = 18 MNT
+- **Profit: 3 MNT** ✨
+
 ### Game Over Conditions
 
 **Flippo:**
@@ -485,6 +531,12 @@ _This tells you the minimum score needed to recover your bet (neither profit nor
 - ✅ **Win**: Score ≥ Break-even points
 - ⚠️ **Partial**: 0 < Score < Break-even points (proportional refund)
 - ❌ **Loss**: Score = 0 (no refund)
+
+**Simono:**
+
+- ✅ **Win**: Rounds ≥ Break-even rounds
+- ⚠️ **Partial**: 0 < Rounds < Break-even rounds (proportional refund)
+- ❌ **Loss**: Wrong sequence or timeout (no refund)
 - **Multi-Wallet Support**: MetaMask, Rainbow, WalletConnect, and more
 - **Expandable Sidebar**: Easy navigation with hover-to-expand menu
 
@@ -494,42 +546,6 @@ _This tells you the minimum score needed to recover your bet (neither profit nor
 - **Transparent**: Open-source code on GitHub
 - **Non-custodial**: You maintain full control of your wallet
 - **Auditable**: All transactions on Mantle Sepolia Explorer
-
----
-
-## 📸 Screenshots
-
-### Game Wireframe
-
-![Game Wireframe](./docs/screenshots/wireframe.png)
-
-### Home Screen
-
-![Home Screen](./docs/screenshots/home.png)
-![Home Screen Dark Mode](./docs/screenshots/home-dark.png)
-_Connect your wallet and choose your difficulty level_
-
-### Game Board
-
-![Game Board - 4x4 Grid](./docs/screenshots/4x4-grid.png)
-_Match pairs to earn rewards - the more you match, the more you earn_
-
-### Game Stats
-
-![Game Statistics](./docs/screenshots/stats.png)
-_Real-time tracking of your performance and potential rewards_
-
-### Winning Screen
-
-![Victory Screen](./docs/screenshots/won.png)
-_Celebrate your win and withdraw your earnings_
-
-### Losing Screen
-
-![Victory Screen](./docs/screenshots/lose.png)
-_"Pandavo ko v krishna bet harne ke bad hi mile the"_
-
-### Wallet Connection
 
 ---
 
@@ -557,8 +573,10 @@ Playo/
 │   │   │   └── games/
 │   │   │       ├── Flippo/
 │   │   │       │   └── FlippoGame.tsx  # Flippo game logic
-│   │   │       └── Tappo/
-│   │   │           └── TappoGame.tsx   # Tappo game logic
+│   │   │       ├── Tappo/
+│   │   │       │   └── TappoGame.tsx   # Tappo game logic
+│   │   │       └── Simon/
+│   │   │           └── SimonGame.tsx   # Simono game logic
 │   │   ├── hooks/             # Custom React hooks
 │   │   │   ├── usePlayoGame.ts         # Main game state hook
 │   │   │   └── useVideoPreloader.ts    # Media preloading
@@ -808,7 +826,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- **Live Demo**: [Coming Soon]
+- **Live Demo**: [Click here!](https://playo-beta.vercel.app)
 - **Mantle Sepolia Explorer**: [View Transactions](https://sepolia.mantlescan.xyz)
 - **Mantle Faucet**: [Get Test MNT](https://faucet.sepolia.mantle.xyz/)
 - **Mantle Documentation**: [https://docs.mantle.xyz](https://docs.mantle.xyz)
@@ -820,12 +838,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### Current Features ✅
 
-- Flippo memory game with 4 difficulty levels
-- Tappo reflex game with 3 difficulty levels
-- Proportional reward system
+- Flippo memory game with 3 difficulty levels (2x2, 4x4, 6x6)
+- Tappo reflex game with 3 difficulty levels (Easy, Medium, Hard)
+- Simono sequence memory game with 3 difficulty levels
+- Proportional reward system (1.2x to 2.0x multipliers)
 - Real-time statistics and break-even indicators
 - Beautiful UI with Space Grotesk typography
 - Multi-wallet support via RainbowKit
+- Deployed on Mantle Sepolia Testnet
 
 ### Upcoming Features 🚀
 
