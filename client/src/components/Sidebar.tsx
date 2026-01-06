@@ -113,7 +113,7 @@ export function Sidebar({
               <img
                 src={game.imagePath}
                 alt={game.name}
-                className="w-full h-full object-cover rounded-xl border border-black"
+                className="w-full h-full object-cover rounded-md"
               />
             </div>
             {isExpanded && (
